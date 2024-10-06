@@ -27,12 +27,12 @@
 
 ## Technologies to use
 1. Backend
-   a) C#
-   b) ASP.NET Web API
-   c) Sql database
-   d) Azure
+   1. C#
+   2. ASP.NET Web API
+   3. Sql database
+   4. Azure
 2. Frontend
-   a) Kotlin in Android Studio
-   b) Jetpack Compose
+   1. Kotlin in Android Studio
+   2. Jetpack Compose
    
 
