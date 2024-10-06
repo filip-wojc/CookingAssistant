@@ -21,7 +21,18 @@
 17. Light/Dark themes
 18. Server (with own DB)
 19. Proxy (server protection)
+20. Authorization and Authentication
+21. Results pagination
 
 
-## Technologies to use 
+## Technologies to use
+1. Backend
+   a) C#
+   b) ASP.NET Web API
+   c) Sql database
+   d) Azure
+2. Frontend
+   a) Kotlin in Android Studio
+   b) Jetpack Compose
+   
 
