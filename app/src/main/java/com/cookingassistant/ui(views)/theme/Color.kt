@@ -1,4 +1,4 @@
-package com.cookingassistant.ui.theme
+package com.cookingassistant.`ui(views)`.theme
 
 import androidx.compose.ui.graphics.Color
 

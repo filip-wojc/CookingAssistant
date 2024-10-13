@@ -1,6 +1,5 @@
-package com.cookingassistant.ui.theme
+package com.cookingassistant.`ui(views)`.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
