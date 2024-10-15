@@ -41,8 +41,12 @@ android {
 }
 
 dependencies {
-    val nav_version = "2.8.2"
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    implementation(libs.retrofit) // api into interface
+    implementation(libs.converter.gson) // For JSON parsing with Gson
+    implementation(libs.okhttp) // networking
+    implementation(libs.logging.interceptor) // Optional: for logging HTTP requests
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

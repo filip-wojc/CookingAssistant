@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -21,18 +22,24 @@ import com.cookingassistant.ui.screens.home.LoginViewModel
 
 
 @Composable
-fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = viewModel()){
+fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = viewModel()) {
     val username by loginViewModel.username.collectAsState()
     val password by loginViewModel.password.collectAsState()
 
+
+    // Show popup dialog if loading
+
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center
-    ){
+    ) {
         TextField(
             value = username,
-            onValueChange = {loginViewModel.onUsernameChanged(it)},
-            label = {Text("Login")},
+            onValueChange = { loginViewModel.onUsernameChanged(it) },
+            label = { Text("Login") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -48,19 +55,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = v
 
         Button(
             onClick = {
-                if(loginViewModel.login()) {
-                    navController.navigate("home")
-                } else {
-                    // LOGIN FAILURE HANDLER
-                }
-                },
+                loginViewModel.login()
+            },
             modifier = Modifier.fillMaxWidth()
-
-        ){
+        ) {
             Text("Log in")
         }
+
+
     }
-
-
-
 }
+

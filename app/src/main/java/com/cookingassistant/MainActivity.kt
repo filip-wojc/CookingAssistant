@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.cookingassistant.ui.theme.CookingAssistantTheme
@@ -18,13 +20,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.cookingassistant.data.network.RetrofitClient
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AppNavigator()
+            // AppNavigator()
+            PetList()
         }
     }
 }
@@ -43,3 +49,18 @@ fun NavGraph(navController: NavHostController) {
     }
 }
 
+
+
+@Composable
+fun PetList() {
+    val viewModel = remember {
+        testViewModel(api = RetrofitClient().retrofit)
+    }
+
+    val state = viewModel.state.collectAsState()
+    LazyColumn {
+        items(state.value){
+            Text(it)
+        }
+    }
+}
