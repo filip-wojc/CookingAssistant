@@ -2,12 +2,12 @@ package com.cookingassistant.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cookingassistant.data.network.*
+import com.cookingassistant.services.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val repository: ApiRepository) : ViewModel() {
+class LoginViewModel(private val repository: UserService) : ViewModel() {
 
     // Hold login and password input
     private val _username = MutableStateFlow("")

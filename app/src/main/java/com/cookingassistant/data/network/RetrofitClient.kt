@@ -20,6 +20,6 @@ class RetrofitClient{
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
-            .build().create(ApiService::class.java)
+            .build().create(ApiRepository::class.java)
     }
 }
