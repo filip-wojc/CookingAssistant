@@ -8,11 +8,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 class RetrofitClient{
     private val BASE_URL = "http://192.168.111.51:5080/api/"
 
+
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
     // configure OkHttpClient for logging, authentication
-    private val okHttpClient = OkHttpClient.Builder().build()
+    private val okHttpClient = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
 
     val retrofit by lazy {
         Retrofit.Builder()

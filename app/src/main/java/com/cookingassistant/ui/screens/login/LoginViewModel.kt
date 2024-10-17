@@ -1,31 +1,52 @@
 package com.cookingassistant.ui.screens.home
 
-import android.net.Network
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cookingassistant.data.network.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class LoginViewModel() : ViewModel(){
-    private val _username = MutableStateFlow("") // hold login input
+class LoginViewModel(private val repository: ApiRepository) : ViewModel() {
+
+    // Hold login and password input
+    private val _username = MutableStateFlow("")
     val username: StateFlow<String> = _username
 
-    private val _password = MutableStateFlow("") // hold password input
+    private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password
 
+    // Handle login result (token or error message)
+    private val _loginResult = MutableStateFlow<String?>(null)
+    val loginResult: StateFlow<String?> = _loginResult
 
-    fun onUsernameChanged(newUsername:String){
+    // Handle loading state during login request
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    fun onUsernameChanged(newUsername: String) {
         _username.value = newUsername
     }
 
-    fun onPasswordChanged(newPassword:String){
+    fun onPasswordChanged(newPassword: String) {
         _password.value = newPassword
     }
 
-    // do wyjebania pozniej
-    fun login():Boolean{
-        return (_username.value == "user" && _password.value == "password")
+    fun login() {
+        viewModelScope.launch {
+            _isLoading.value = true // Start loading
+            try {
+                val response = repository.logInUser(username.value, password.value)
+                if (response.isSuccessful) {
+                    _loginResult.value = response.body()?.token // Update with token if successful
+                } else {
+                    _loginResult.value = "Login failed: ${response.message()}" // Update with error message
+                }
+            } catch (e: Exception) {
+                _loginResult.value = "Error: ${e.message}" // Handle exceptions
+            } finally {
+                _isLoading.value = false // Stop loading
+            }
+        }
     }
 }

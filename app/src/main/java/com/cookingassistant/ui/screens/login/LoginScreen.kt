@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -22,13 +23,11 @@ import com.cookingassistant.ui.screens.home.LoginViewModel
 
 
 @Composable
-fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     val username by loginViewModel.username.collectAsState()
     val password by loginViewModel.password.collectAsState()
-
-
-    // Show popup dialog if loading
-
+    val loginResult by loginViewModel.loginResult.collectAsState()
+    val isLoading by loginViewModel.isLoading.collectAsState()
 
     Column(
         modifier = Modifier
@@ -36,6 +35,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = v
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        // Username input
         TextField(
             value = username,
             onValueChange = { loginViewModel.onUsernameChanged(it) },
@@ -44,6 +44,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = v
         )
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Password input
         TextField(
             value = password,
             onValueChange = { loginViewModel.onPasswordChanged(it) },
@@ -53,6 +54,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = v
         )
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Login button
         Button(
             onClick = {
                 loginViewModel.login()
@@ -62,7 +64,24 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = v
             Text("Log in")
         }
 
+        // Loading indicator
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+        }
 
+        // Show result (either token or error message) in a dialog
+        loginResult?.let {
+            AlertDialog(
+                onDismissRequest = { /* Dismiss the dialog */ },
+                title = { Text("Login Result") },
+                text = { Text(it) },
+                confirmButton = {
+                    Button(onClick = { /* Navigate to another screen if successful */ }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
     }
 }
 

@@ -23,44 +23,34 @@ import androidx.navigation.compose.rememberNavController
 import com.cookingassistant.data.network.RetrofitClient
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import com.cookingassistant.data.network.ApiRepository
+import com.cookingassistant.ui.screens.home.LoginViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val apiService = RetrofitClient().retrofit
+        val apiRepository = ApiRepository(apiService)
+        val loginViewModel = LoginViewModel(apiRepository)
         setContent {
-            // AppNavigator()
-            PetList()
+            AppNavigator(loginViewModel)
         }
     }
 }
 
 @Composable
-fun AppNavigator(){
+fun AppNavigator(loginViewModel: LoginViewModel){
     val navController = rememberNavController()
-    NavGraph(navController = navController)
+    NavGraph(navController = navController, loginViewModel = loginViewModel)
 }
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(navController: NavHostController, loginViewModel: LoginViewModel) {
     NavHost(navController = navController, startDestination = "login") {
-        composable("login") { LoginScreen(navController) }
+        composable("login") { LoginScreen(navController, loginViewModel = loginViewModel ) }
         composable("home") { HomeScreen() }
     }
 }
 
-
-
-@Composable
-fun PetList() {
-    val viewModel = remember {
-        testViewModel(api = RetrofitClient().retrofit)
-    }
-
-    val state = viewModel.state.collectAsState()
-    LazyColumn {
-        items(state.value){
-            Text(it)
-        }
-    }
-}
