@@ -22,8 +22,6 @@ class LoginViewModel(private val _service: UserService,private val tokenReposito
     private val _isPasswordVisible = MutableStateFlow(false)
     val isPasswordVisible: StateFlow<Boolean> = _isPasswordVisible
 
-    fun onUsernameChanged(newUsername:String){
-    // Handle login result (token or error message)
     private val _loginResult = MutableStateFlow<String?>(null)
     val loginResult: StateFlow<String?> = _loginResult
 

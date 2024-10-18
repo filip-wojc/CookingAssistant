@@ -55,7 +55,7 @@ fun NavGraph(navController: NavHostController,tokenRepository: TokenRepository, 
             val loginViewModel = LoginViewModel(userService, tokenRepository)
             LoginScreen(navController, loginViewModel) }
         composable("home") { HomeScreen() }
-        composable("test") {  TestRecipesColumn() } //For testing purposes
+
         composable("registration"){
             val registrationViewModel = RegistrationViewModel(userService)
             RegistrationScreen(navController, registrationViewModel)
