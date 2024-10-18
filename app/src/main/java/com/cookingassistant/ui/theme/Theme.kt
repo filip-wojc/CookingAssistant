@@ -1,4 +1,4 @@
-package com.cookingassistant.`ui(views)`.theme
+package com.cookingassistant.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

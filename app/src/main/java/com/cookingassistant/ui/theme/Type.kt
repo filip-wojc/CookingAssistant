@@ -1,4 +1,4 @@
-package com.cookingassistant.`ui(views)`.theme
+package com.cookingassistant.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
