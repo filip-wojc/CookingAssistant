@@ -80,7 +80,8 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
         // Login button
         Button(
             onClick = {
-                loginViewModel.login()
+                //loginViewModel.login()
+                navController.navigate("home")
             },
             modifier = Modifier.fillMaxWidth()
         ) {

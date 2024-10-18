@@ -67,7 +67,8 @@ fun RegistrationScreen(navController: NavController, registrationViewModel: Regi
         // Login button
         Button(
             onClick = {
-                registrationViewModel.registerUser()
+                navController.navigate("login")
+                //registrationViewModel.registerUser()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
