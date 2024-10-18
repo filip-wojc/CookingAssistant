@@ -2,12 +2,13 @@ package com.cookingassistant.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cookingassistant.data.TokenRepository
 import com.cookingassistant.services.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val repository: UserService) : ViewModel() {
+class LoginViewModel(private val _service: UserService,private val tokenRepository: TokenRepository) : ViewModel() {
 
     // Hold login and password input
     private val _username = MutableStateFlow("")
@@ -36,9 +37,10 @@ class LoginViewModel(private val repository: UserService) : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true // Start loading
             try {
-                val response = repository.logInUser(username.value, password.value)
+                val response = _service.logInUser(username.value, password.value)
                 if (response.isSuccessful) {
                     _loginResult.value = response.body()?.token // Update with token if successful
+                    tokenRepository.saveToken(loginResult.value.toString())
                 } else {
                     _loginResult.value = "Login failed: ${response.message()}" // Update with error message
                 }

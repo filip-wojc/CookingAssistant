@@ -12,4 +12,7 @@ interface ApiRepository{
 
     @POST("users/login")
     suspend fun logIn(@Body loginRequest: LoginRequest):Response<LoginResponse>
+
+    @POST("users/register")
+    suspend fun register(@Body registerRequest: RegisterRequest):Response<String?>
 }

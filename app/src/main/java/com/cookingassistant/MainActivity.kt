@@ -1,5 +1,6 @@
 package com.cookingassistant
 
+import android.media.session.MediaSession.Token
 import com.cookingassistant.ui.screens.home.HomeScreen
 import com.cookingassistant.ui.screens.login.LoginScreen
 import android.os.Bundle
@@ -12,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.cookingassistant.data.TokenRepository
 import com.cookingassistant.data.network.RetrofitClient
 import com.cookingassistant.services.UserService
 import com.cookingassistant.ui.screens.home.LoginViewModel
@@ -24,29 +26,30 @@ class MainActivity : ComponentActivity() {
         val apiRepository = RetrofitClient().retrofit
         // Login screen service creation
         val userService = UserService(apiRepository)
-        // pass userService to loginViewModel
-        val loginViewModel = LoginViewModel(userService)
+        val tokenRepository = TokenRepository(applicationContext)
         setContent {
-            AppNavigator(userService) // inject services here
+            AppNavigator(userService, tokenRepository) // inject services here
         }
     }
 }
 
 @Composable
 // modify this code to inject services
-fun AppNavigator(userService: UserService){
+fun AppNavigator(userService: UserService, tokenRepository:TokenRepository){
     val navController = rememberNavController()
-    NavGraph(navController = navController, userService = userService)
+    NavGraph(navController = navController,
+        tokenRepository = tokenRepository,
+        userService = userService)
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, userService: UserService) {
+fun NavGraph(navController: NavHostController,tokenRepository: TokenRepository, userService: UserService) {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             // create viewModel and inject service
             // TODO: Implement factories later
             //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
-            val loginViewModel = LoginViewModel(userService)
+            val loginViewModel = LoginViewModel(userService, tokenRepository)
             LoginScreen(navController, loginViewModel) }
         composable("home") { HomeScreen() }
     }

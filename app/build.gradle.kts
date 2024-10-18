@@ -43,6 +43,7 @@ android {
 dependencies {
 
     implementation(libs.retrofit) // api into interface
+    implementation (libs.androidx.security.crypto) // token encryption
     implementation(libs.converter.gson) // For JSON parsing with Gson
     implementation(libs.okhttp) // networking
     implementation(libs.logging.interceptor) // Optional: for logging HTTP requests
