@@ -12,12 +12,19 @@ class LoginViewModel : ViewModel(){
     private val _password = MutableStateFlow("") // hold password input
     val password: StateFlow<String> = _password
 
+    private val _isPasswordVisible = MutableStateFlow(false)
+    val isPasswordVisible: StateFlow<Boolean> = _isPasswordVisible
+
     fun onUsernameChanged(newUsername:String){
         _username.value = newUsername
     }
 
     fun onPasswordChanged(newPassword:String){
         _password.value = newPassword
+    }
+
+    fun onPasswordVisibilityChange() {
+        _isPasswordVisible.value = !_isPasswordVisible.value
     }
 
     // do wyjebania pozniej
