@@ -8,7 +8,7 @@ import retrofit2.http.POST
 interface ApiRepository{
 
     @GET("recipes/nutrientsList")
-    suspend fun getAllNutrients():List<String>
+    suspend fun getAllNutrientsList():List<String>
 
     @POST("users/login")
     suspend fun logIn(@Body loginRequest: LoginRequest):Response<LoginResponse>

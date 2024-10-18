@@ -1,17 +1,16 @@
-package com.cookingassistant.ui.screens.home
+package com.cookingassistant.ui.screens.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cookingassistant.data.TokenRepository
 import com.cookingassistant.services.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val _service: UserService,private val tokenRepository: TokenRepository) : ViewModel() {
+class RegistrationViewModel(private val _service: UserService) : ViewModel() {
 
-    private val _ingredientsList = MutableStateFlow<List<Pair<String,Int>>?>(null)
-    val ingredientsList:StateFlow<List<Pair<String,Int>>?> = _ingredientsList
+    private val _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email
     // Hold login and password input
     private val _username = MutableStateFlow("")
     val username: StateFlow<String> = _username
@@ -20,12 +19,12 @@ class LoginViewModel(private val _service: UserService,private val tokenReposito
     val password: StateFlow<String> = _password
 
     // Handle login result (token or error message)
-    private val _loginResult = MutableStateFlow<String?>(null)
-    val loginResult: StateFlow<String?> = _loginResult
+    private val _registrationResult = MutableStateFlow<String?>(null)
+    val registrationResult: StateFlow<String?> = _registrationResult
 
-    // Login success tracker
-    private val _isLoginSuccessful = MutableStateFlow<Boolean>(false)
-    val isLoginSuccessful: StateFlow<Boolean> = _isLoginSuccessful
+    // Registration success
+    private val _isRegistrationSucessful = MutableStateFlow<Boolean>(false)
+    val isRegistrationSuccessful: StateFlow<Boolean> = _isRegistrationSucessful
 
     // Handle loading state during login request
     private val _isLoading = MutableStateFlow(false)
@@ -43,23 +42,28 @@ class LoginViewModel(private val _service: UserService,private val tokenReposito
         _password.value = newPassword
     }
 
-    fun login() {
+    fun onEmailChanged(newEmail: String) {
+        _email.value = newEmail
+    }
+
+    fun registerUser() {
         viewModelScope.launch {
             _isLoading.value = true // Start loading
             try {
-                val response = _service.logInUser(username.value, password.value)
+                val response = _service.registerUser(username.value, email.value, password.value)
                 if (response.isSuccessful) {
-                    _loginResult.value = "Login successful" // Update with token if successful
-                    tokenRepository.saveToken(loginResult.value.toString())
-                    _isLoginSuccessful.value = true
-
+                    _isRegistrationSucessful.value = true
+                    _registrationResult.value = "Registration Successful"
                 } else {
-                    _loginResult.value = "Login failed: ${response.message()}" // Update with error message
-                    _isLoginSuccessful.value = false
+                    val errorBody = response.errorBody()?.string()
+                    _isRegistrationSucessful.value = false
+                    _registrationResult.value = errorBody ?: "Registration failed: ${response.message()}" // Update with error message
                 }
+
             } catch (e: Exception) {
-                _loginResult.value = "Error: ${e.message}" // Handle exceptions
-                _isLoginSuccessful.value = false
+                _isRegistrationSucessful.value = false
+                _registrationResult.value = "Error: ${e.message}" // Handle exceptions
+
             } finally {
                 _isLoading.value = false // Stop loading
                 _isDialogVisible.value = true

@@ -17,6 +17,8 @@ import com.cookingassistant.data.TokenRepository
 import com.cookingassistant.data.network.RetrofitClient
 import com.cookingassistant.services.UserService
 import com.cookingassistant.ui.screens.home.LoginViewModel
+import com.cookingassistant.ui.screens.registration.RegistrationScreen
+import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +54,10 @@ fun NavGraph(navController: NavHostController,tokenRepository: TokenRepository, 
             val loginViewModel = LoginViewModel(userService, tokenRepository)
             LoginScreen(navController, loginViewModel) }
         composable("home") { HomeScreen() }
+        composable("registration"){
+            val registrationViewModel = RegistrationViewModel(userService)
+            RegistrationScreen(navController, registrationViewModel)
+        }
     }
 }
 

@@ -12,7 +12,6 @@ class UserService(private val apiRepository: ApiRepository) {
         val requestBody = LoginRequest(email = email, password = password)
         return apiRepository.logIn(requestBody)
     }
-    // TODO: finish registration
     suspend fun registerUser(username: String, email: String, password: String): Response<String?>
     {
         val requestBody = RegisterRequest(username, email, password)

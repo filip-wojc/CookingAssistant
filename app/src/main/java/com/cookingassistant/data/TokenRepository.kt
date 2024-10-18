@@ -26,7 +26,7 @@ class TokenRepository(context: Context)
         sharedPreferences.edit()
             .putString("auth_token", token)
             .apply() // Use apply() to save in the background
-        println("Saved token: ${sharedPreferences.getString("auth_token", null)}")
+        // println("Saved token: ${sharedPreferences.getString("auth_token", null)}")
     }
 
     // Function to retrieve the token
