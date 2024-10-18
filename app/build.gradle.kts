@@ -32,6 +32,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
+    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -48,6 +51,15 @@ dependencies {
     implementation(libs.okhttp) // networking
     implementation(libs.logging.interceptor) // Optional: for logging HTTP requests
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.espresso.core)
+    val nav_version = "2.8.2"
+    implementation("androidx.compose.runtime:runtime:1.7.3")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.3")
+    implementation("androidx.compose.runtime:runtime-rxjava2:1.7.3")
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

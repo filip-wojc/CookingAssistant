@@ -19,6 +19,10 @@ class LoginViewModel(private val _service: UserService,private val tokenReposito
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password
 
+    private val _isPasswordVisible = MutableStateFlow(false)
+    val isPasswordVisible: StateFlow<Boolean> = _isPasswordVisible
+
+    fun onUsernameChanged(newUsername:String){
     // Handle login result (token or error message)
     private val _loginResult = MutableStateFlow<String?>(null)
     val loginResult: StateFlow<String?> = _loginResult
@@ -43,7 +47,11 @@ class LoginViewModel(private val _service: UserService,private val tokenReposito
         _password.value = newPassword
     }
 
-    fun login() {
+    fun onPasswordVisibilityChange() {
+        _isPasswordVisible.value = !_isPasswordVisible.value
+    }
+
+   fun login() {
         viewModelScope.launch {
             _isLoading.value = true // Start loading
             try {

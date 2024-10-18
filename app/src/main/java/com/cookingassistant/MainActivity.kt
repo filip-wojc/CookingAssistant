@@ -19,6 +19,7 @@ import com.cookingassistant.services.UserService
 import com.cookingassistant.ui.screens.home.LoginViewModel
 import com.cookingassistant.ui.screens.registration.RegistrationScreen
 import com.cookingassistant.ui.screens.registration.RegistrationViewModel
+import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +55,7 @@ fun NavGraph(navController: NavHostController,tokenRepository: TokenRepository, 
             val loginViewModel = LoginViewModel(userService, tokenRepository)
             LoginScreen(navController, loginViewModel) }
         composable("home") { HomeScreen() }
+        composable("test") {  TestRecipesColumn() } //For testing purposes
         composable("registration"){
             val registrationViewModel = RegistrationViewModel(userService)
             RegistrationScreen(navController, registrationViewModel)
