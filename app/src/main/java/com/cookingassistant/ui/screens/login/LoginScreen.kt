@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import coil3.compose.AsyncImage
 import com.cookingassistant.ui.screens.home.LoginViewModel
 
 @Composable
@@ -65,7 +66,6 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = v
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
         Button(
             onClick = {
                 if(loginViewModel.login()) {
