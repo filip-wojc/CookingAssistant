@@ -15,10 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen(navController: NavController, homeScreenViewModel: HomeScreenViewModel){
     TopAppBar {
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -28,7 +29,7 @@ fun HomeScreen(){
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = { /* Log out or any other action */ }, modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = { }, modifier = Modifier.fillMaxWidth()) {
                 Text("Log Out")
             }
         }
