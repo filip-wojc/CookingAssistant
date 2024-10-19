@@ -1,4 +1,4 @@
-package com.cookingassistant.data
+package com.cookingassistant.data.DTO
 
 //IMPORTANT:
 //This class is used ONLY to display found recipes in column!
