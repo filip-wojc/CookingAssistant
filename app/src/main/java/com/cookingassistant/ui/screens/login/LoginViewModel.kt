@@ -1,5 +1,6 @@
 package com.cookingassistant.ui.screens.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.TokenRepository
@@ -54,9 +55,11 @@ class LoginViewModel(private val _service: UserService,private val tokenReposito
             _isLoading.value = true // Start loading
             try {
                 val response = _service.logInUser(username.value, password.value)
+
                 if (response.isSuccessful) {
+                    val token = response.body()?.token
+                    tokenRepository.saveToken(token)
                     _loginResult.value = "Login successful" // Update with token if successful
-                    tokenRepository.saveToken(loginResult.value.toString())
                     _isLoginSuccessful.value = true
 
                 } else {
