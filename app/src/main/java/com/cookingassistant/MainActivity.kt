@@ -33,9 +33,8 @@ class MainActivity : ComponentActivity() {
         val userService = UserService(apiRepository)
         val tokenRepository = TokenRepository(applicationContext)
         setContent {
-            AppNavigator(userService, tokenRepository) // inject services here
             AppTheme {
-                AppNavigator()
+                AppNavigator(userService, tokenRepository) // inject services here
             }
         }
     }
