@@ -2,41 +2,30 @@ package com.cookingassistant.ui.screens.RecipesList
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.content.MediaType.Companion.Text
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -80,7 +69,7 @@ suspend fun simulateDatabaseConnection(): Deferred<List<RecipeItemPreview>> = co
         recipes.add( RecipeItemPreview(125u,"Chicken SuperSpicy", "Easy", 5 ))
         recipes.add( RecipeItemPreview(53u,"Chicken", "More Effort", 4 ))
         recipes.add( RecipeItemPreview(67u,"Not Chicken", "Easy", 2 ))
-        recipes.add( RecipeItemPreview(67u,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "Easy", 3 ))
+        recipes.add( RecipeItemPreview(67u,"Super ultra omega giga hot spicy chicken with cooked potatoes and mushroom soup", "Easy", 3 ))
         return@async recipes
     }
 }
@@ -107,20 +96,19 @@ fun RecipesColumn(
         LazyColumn(
             modifier = Modifier
                 .padding(top = 100.dp, start = 10.dp, end = 10.dp, bottom = 50.dp)
+                .wrapContentWidth(Alignment.CenterHorizontally)
                 .fillMaxWidth()
         ) {
-            item {
-                Spacer(
-                Modifier
-                    .fillMaxWidth()
-                    .height(5.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-            ) }
             items(recipesPreviewList) {item ->
                 Column(
                     Modifier.padding(10.dp)
                         .height(400.dp)
-                        .clickable {  },
+                        .clip(RoundedCornerShape(10))
+                        .clickable {  }
+                        .background(MaterialTheme.colorScheme.surfaceBright)
+                        .wrapContentHeight(Alignment.CenterVertically)
+
+                    ,
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
@@ -138,7 +126,6 @@ fun RecipesColumn(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .weight(1f)
-                                .verticalScroll(rememberScrollState())
                                 .wrapContentHeight(align = Alignment.CenterVertically),
                             textAlign = TextAlign.Center,
                             overflow = TextOverflow.Ellipsis,
@@ -167,19 +154,12 @@ fun RecipesColumn(
                         }
                     }
                     AsyncImage(
-                        modifier = Modifier.fillMaxHeight().clip(RoundedCornerShape(10.dp)),
+                        modifier = Modifier.clip(RoundedCornerShape(10.dp)),
                         model = item.imageUrl,
                         contentDescription = null,
                         contentScale = ContentScale.FillHeight,
                     )
                 }
-
-
-                HorizontalDivider(Modifier
-                    .fillMaxWidth()
-                    .height(5.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                )
             }
         }
     }

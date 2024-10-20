@@ -1,4 +1,4 @@
-package com.cookingassistant.compose
+package com.example.compose
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -13,7 +13,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import com.cookingassistant.ui.theme.AppTypography
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,

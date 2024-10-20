@@ -19,7 +19,9 @@ import com.cookingassistant.services.UserService
 import com.cookingassistant.ui.screens.home.LoginViewModel
 import com.cookingassistant.ui.screens.registration.RegistrationScreen
 import com.cookingassistant.ui.screens.registration.RegistrationViewModel
+import com.cookingassistant.compose.AppTheme
 import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
+import com.cookingassistant.ui.screens.recipescreen.TestRecipeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +34,9 @@ class MainActivity : ComponentActivity() {
         val tokenRepository = TokenRepository(applicationContext)
         setContent {
             AppNavigator(userService, tokenRepository) // inject services here
+            AppTheme {
+                AppNavigator()
+            }
         }
     }
 }

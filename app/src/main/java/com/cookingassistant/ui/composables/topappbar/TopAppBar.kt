@@ -6,6 +6,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -40,20 +42,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cookingassistant.compose.AppTheme
 import com.cookingassistant.ui.composables.bottomBorder
 import kotlinx.coroutines.launch
 
 @Preview
 @Composable
 fun testBar(){
-    TopAppBar {  }
+    AppTheme(true) {
+        TopAppBar {  }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,10 +86,10 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
                 ) {
                     Text(
-                        color = MaterialTheme.colorScheme.inversePrimary,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         fontSize = 40.sp,
                         text = "TOOLS",
                         modifier = Modifier
@@ -93,7 +100,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
 
                 HorizontalDivider()
                 NavigationDrawerItem(
-                    label = { Text(text = "Drawer Item") },
+                    label = { Text(text = "Drawer Item", fontSize = 18.sp) },
                     selected = false,
                     onClick = { /*TODO*/ }
                 )
@@ -111,12 +118,11 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
                 HorizontalDivider(modifier = Modifier
                     .height(100.dp)
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .bottomBorder(10.dp,MaterialTheme.colorScheme.primary)
+                    .background(MaterialTheme.colorScheme.surfaceContainer)
                 )
                 CenterAlignedTopAppBar(
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .background(MaterialTheme.colorScheme.surfaceContainer)
                     ,
                     colors = TopAppBarColors(containerColor = Color.Transparent,
                         actionIconContentColor = TopAppBarDefaults.topAppBarColors().actionIconContentColor,
@@ -127,7 +133,8 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
                     scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
                     title = {
                         OutlinedTextField(
-                            modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer),
+                            textStyle = TextStyle.Default.copy(fontSize = 16.sp, color = MaterialTheme.colorScheme.onSecondaryContainer),
                             singleLine = true,
                             value = searchText,
                             onValueChange = {topAppBarviewModel.onSearchTextChanged(it)},
@@ -166,11 +173,10 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
                 )
             },
             content = { padding ->
-                val padd = padding
+                Spacer(Modifier.padding(padding))
                 content()
             },
 
         )
-
     }
 }

@@ -1,4 +1,4 @@
-package com.cookingassistant.compose
+package com.example.compose
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF62539B)
