@@ -17,4 +17,5 @@ class UserService(private val apiRepository: ApiRepository) {
         val requestBody = RegisterRequest(username, email, password)
         return apiRepository.register(requestBody)
     }
+
 }

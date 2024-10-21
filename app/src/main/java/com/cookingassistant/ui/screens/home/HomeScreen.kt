@@ -1,6 +1,7 @@
 package com.cookingassistant.ui.screens.home
 
 import android.graphics.Bitmap
+import android.os.Environment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
+import com.cookingassistant.util.ImageConverter
 
 @Composable
 fun HomeScreen(navController: NavController, homeScreenViewModel: HomeScreenViewModel){
@@ -38,7 +41,11 @@ fun HomeScreen(navController: NavController, homeScreenViewModel: HomeScreenView
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = {
-                homeScreenViewModel.getAllIngredientsList()
+                val imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/ja.jpg"
+                val imageConverter = ImageConverter()
+                val imageByteArray = imageConverter.convertImageToByteArray(imagePath)
+
+                homeScreenViewModel.postRecipeWithImage()
                              }, modifier = Modifier.fillMaxWidth()) {
                 Text("Show Image")
             }

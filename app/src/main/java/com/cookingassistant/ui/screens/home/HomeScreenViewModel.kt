@@ -1,9 +1,11 @@
 package com.cookingassistant.ui.screens.home
-
+import com.cookingassistant.util.ImageConverter
 import android.graphics.Bitmap
+import android.os.Environment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.DTO.RecipeGetDTO
+import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.services.RecipeService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -72,7 +74,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService):ViewModel()
                         println("No details available")
                     }
                     // TODO : ADD HANDLING
-                    // Handle nutrients list (for example, store it in a LiveData)
+                    // Handle nutrients list
                 } else {
                     // Handle error
                 }
@@ -82,6 +84,50 @@ class HomeScreenViewModel(private val _recipeService: RecipeService):ViewModel()
         }
     }
 
+
+
+    // Test recipe post
+    fun postRecipeWithImage(){
+        // /storage/emulated/0/Download/ja.jpg
+
+        viewModelScope.launch {
+            try {
+                val imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/ja.jpg"
+                val imageConverter = ImageConverter()
+                val imageByteArray = imageConverter.convertImageToByteArray(imagePath)
+                val testRecipe = RecipePostDTO(
+                    name = "Test Recipe",
+                    description = "A delicious test recipe",
+                    imageData = imageByteArray,
+                    serves = 4,
+                    difficulty = "Medium",
+                    timeInMinutes = 45,
+                    categoryId = 1,
+                    ingredientNames = listOf("Flour", "Eggs", "Milk"),
+                    ingredientQuantities = listOf("200", "3", "250"),
+                    ingredientUnits = listOf("g", "pcs", "ml"),
+                    steps = listOf("Mix the ingredients", "Bake for 30 minutes", "Let cool before serving"),
+                    nutrientNames = listOf("Calories", "Protein", "Carbohydrates"),
+                    nutrientQuantities = listOf("300", "10", "50"),
+                    nutrientUnits = listOf("kcal", "g", "g")
+                )
+                // Call the suspend function from within a coroutine
+                val response = _recipeService.addRecipe(testRecipe,imagePath)
+                // Handle the response here (e.g., update UI state)
+                if (response.isSuccessful) {
+                    println("Poggers")
+
+                    // TODO : ADD HANDLING
+                    // Handle nutrients list
+                } else {
+                    println("NOT POGGERS")
+                    // Handle error
+                }
+            } catch (e: Exception) {
+                println("EXception:${e.message}")
+            }
+        }
+    }
 
 // TODO : REMOVE AFTER FINISHED TESTING
     private fun printRecipeDetails(recipe: RecipeGetDTO?) {

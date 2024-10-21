@@ -1,5 +1,6 @@
 package com.cookingassistant
 
+import android.content.pm.PackageManager
 import android.media.session.MediaSession.Token
 import com.cookingassistant.ui.screens.home.HomeScreen
 import com.cookingassistant.ui.screens.login.LoginScreen
@@ -7,7 +8,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.core.app.ActivityCompat
+import android.Manifest
+import android.os.Build
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,10 +30,29 @@ import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
 import com.cookingassistant.ui.screens.home.HomeScreenViewModel
 
+
 class MainActivity : ComponentActivity() {
+    // Declare the permission request contract
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission is granted, proceed with your logic
+            println("Permission granted")
+        } else {
+            // Permission denied, handle accordingly
+            println("Permission denied")
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Check and request permission if not already granted
+        checkAndRequestPermission()
+        
         //Retrofit HTTP Client creation (singleton)
         val tokenRepository = TokenRepository(applicationContext)
         val apiRepository = RetrofitClient(tokenRepository).retrofit
@@ -35,6 +61,46 @@ class MainActivity : ComponentActivity() {
         val recipeService = RecipeService(apiRepository)
         setContent {
             AppNavigator(userService,recipeService, tokenRepository) // inject services here
+        }
+    }
+
+    private fun checkAndRequestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) ==
+                        PackageManager.PERMISSION_GRANTED -> {
+
+                    println("Permission already granted")
+                }
+                ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_MEDIA_IMAGES) -> {
+
+                    println("Need permission to access images")
+                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                }
+                else -> {
+
+                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                }
+            }
+        } else {
+
+            when {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                        PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted, proceed with file access
+                    println("Permission already granted")
+
+                }
+                ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) -> {
+                    // Show rationale if necessary and request permission
+                    println("Need permission to access storage")
+                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+                else -> {
+                    // Request the permission
+                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+            }
         }
     }
 }
@@ -69,4 +135,5 @@ fun NavGraph(navController: NavHostController, userService: UserService,recipeSe
         }
     }
 }
+
 

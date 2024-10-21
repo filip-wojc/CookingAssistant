@@ -1,19 +1,39 @@
 package com.cookingassistant.data.DTO
-data class RecipeCreateDTO(
+
+import android.graphics.Bitmap
+
+data class Recipe(
     val name: String?,
     val description: String?,
-    val imageData: ByteArray?,
+    val image: Bitmap?,
     val serves: Int,
     val difficulty: String?,
     val timeInMinutes: Int?,
     val categoryId: Int,
-    val ingredientNames: List<String>?,
-    val ingredientQuantities: List<String>?,
-    val ingredientUnits: List<String>?,
-    val steps: List<String>?,
-    val nutrientNames: List<String>?,
-    val nutrientQuantities: List<String>?,
-    val nutrientUnits: List<String>?
+    val ingredientNames: List<String?>,
+    val ingredientQuantities: List<String?>,
+    val ingredientUnits: List<String?>,
+    val steps: List<String?>,
+    val nutrientNames: List<String?>,
+    val nutrientQuantities: List<String?>,
+    val nutrientUnits: List<String?>
+)
+
+data class RecipePostDTO(
+    val name: String,
+    val description: String?,
+    val imageData: ByteArray?,
+    val serves: Int?,
+    val difficulty: String?,
+    val timeInMinutes: Int?,
+    val categoryId: Int,
+    val ingredientNames: List<String?>,
+    val ingredientQuantities: List<String?>,
+    val ingredientUnits: List<String?>,
+    val steps: List<String?>,
+    val nutrientNames: List<String?>,
+    val nutrientQuantities: List<String?>,
+    val nutrientUnits: List<String?>
 )
 
 data class RecipeGetDTO(
@@ -51,6 +71,11 @@ data class StepGetDTO(
 
 data class RecipeImage(
     val imageData:ByteArray?
+)
+
+data class ReviewPostDTO(
+    val value: Int,
+    val description: String?
 )
 
 
