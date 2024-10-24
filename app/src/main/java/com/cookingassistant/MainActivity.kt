@@ -57,10 +57,11 @@ fun NavGraph(navController: NavHostController,tokenRepository: TokenRepository, 
             // TODO: Implement factories later
             //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
             val loginViewModel = LoginViewModel(userService, tokenRepository)
-            LoginScreen(navController, loginViewModel) }
+            LoginScreen(navController, loginViewModel)
+        }
         composable("home") { HomeScreen() }
-        composable("test") {  TestRecipesColumn() } //For testing purposes
-        composable("registration"){
+        composable("test") {  TestRecipeScreen() } //For testing purposes
+        composable("registration") {
             val registrationViewModel = RegistrationViewModel(userService)
             RegistrationScreen(navController, registrationViewModel)
         }
