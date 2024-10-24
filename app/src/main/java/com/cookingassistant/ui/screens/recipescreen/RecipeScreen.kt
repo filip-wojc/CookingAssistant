@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.cookingassistant.data.RecipeItem
+import com.cookingassistant.ui.screens.recipescreen.composables.RecipeDetailsPage
+import com.cookingassistant.ui.screens.recipescreen.composables.RecipeScreenFrontPage
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -117,92 +119,6 @@ fun TestRecipeScreen() {
 //---------------------------------//
 
 @Composable
-fun RecipeScreenFrontPage(
-    name : String,
-    imageUrl : String,
-    desc : String,
-    author : String,
-    category : String,
-    type : String,
-    difficulty : String,
-    size: Float = 0.9f
-) {
-    Box(Modifier
-        .fillMaxHeight(size)
-        .fillMaxWidth()
-        .padding(10.dp)
-        ,
-    ) {
-        Column (
-            Modifier.align(Alignment.TopCenter),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                fontWeight = FontWeight.Bold,
-                text=name,
-                fontSize = 26.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Spacer(Modifier.padding(vertical = 20.dp))
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                item {
-                    Text(text="Author: ${author}", color = MaterialTheme.colorScheme.onBackground)
-                    Spacer(Modifier.height(20.dp).fillMaxWidth())
-                }
-                item {
-                    Text(text="Difficulty: ${difficulty}", color = MaterialTheme.colorScheme.onBackground)
-                    Spacer(Modifier.height(20.dp).fillMaxWidth())
-                }
-                item{
-                    HorizontalDivider(thickness = 5.dp, modifier = Modifier.padding(vertical = 10.dp))
-                }
-                item{
-                    HorizontalDivider(thickness = 5.dp, modifier = Modifier.padding(vertical = 10.dp))
-                }
-                item {
-                    Text(text="Category: ${category}", color = MaterialTheme.colorScheme.onBackground)
-                }
-                item {
-                    Text(text="Type: ${type}", color = MaterialTheme.colorScheme.onBackground)
-                }
-            }
-        }
-
-        AsyncImage(
-            modifier = Modifier.fillMaxHeight()
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(50))
-            ,
-            model = imageUrl,
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null
-        )
-
-        Column(
-            Modifier.align(Alignment.BottomCenter),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.tertiary)
-                    .padding(5.dp)
-            ) {
-                Text(
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Justify,
-                    text = desc,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun RecipeScreen(
     recipeScreenViewModel : RecipeScreenViewModel
 ) {
@@ -212,8 +128,11 @@ fun RecipeScreen(
     val pagesCount by remember { mutableStateOf(recipe.Steps.size + 3 - 1) }
     var currentPage by remember { mutableStateOf(0) }
     var offsetX by remember { mutableStateOf(0f) }
-    val sizeAnim by animateFloatAsState(
-        targetValue = if (currentPage == 0) 1.0f else 0f
+    val sizeAnim1 by animateFloatAsState(
+        targetValue = if (currentPage % 2 == 0) 1.0f else 0f
+    )
+    val sizeAnim2 by animateFloatAsState(
+        targetValue = if (currentPage % 2 == 1) 1.0f else 0f
     )
 
     Box(
@@ -237,12 +156,17 @@ fun RecipeScreen(
             }
     ) {
 
-        if(currentPage == 0) {
-            Column (Modifier
-                .fillMaxHeight(sizeAnim)
-                .align(Alignment.Center)
-            ){
-                RecipeScreenFrontPage(recipe.Name,recipe.ImageUrl,recipe.Description,recipe.Author,recipe.Category,recipe.Type,recipe.Difficulty)
+        Column (Modifier
+            .fillMaxHeight(if(currentPage % 2 == 0) sizeAnim1 else sizeAnim2)
+            .align(Alignment.Center)
+        ){
+            when(currentPage) {
+                0 -> {
+                    RecipeScreenFrontPage(recipe.Name,recipe.ImageUrl,recipe.Description,recipe.Author,recipe.Category,recipe.Type,recipe.Difficulty)
+                }
+                1 -> {
+                    RecipeDetailsPage(recipe.Calories,recipe.PreparationTime,recipe.CookingTime,recipe.Url, modifier = Modifier.padding(vertical = 30.dp, horizontal = 5.dp))
+                }
             }
         }
 
