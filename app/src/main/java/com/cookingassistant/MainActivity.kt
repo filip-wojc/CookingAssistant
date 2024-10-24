@@ -20,6 +20,7 @@ import com.cookingassistant.ui.screens.home.LoginViewModel
 import com.cookingassistant.ui.screens.registration.RegistrationScreen
 import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.compose.AppTheme
+import com.cookingassistant.data.SearchEngine
 import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
 import com.cookingassistant.ui.screens.recipescreen.TestRecipeScreen
 
@@ -37,6 +38,11 @@ class MainActivity : ComponentActivity() {
                 AppNavigator(userService, tokenRepository) // inject services here
             }
         }
+
+        //--FOR TESTING PURPOSES--//
+        //------TO BE REMOVED-----//
+        SearchEngine.loadHardcoded()
+        //------------------------//
     }
 }
 

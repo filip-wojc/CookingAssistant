@@ -68,8 +68,8 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
         Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.33f).padding(bottom = 10.dp).wrapContentSize(Alignment.Center)) {
             Box() {
                 Image(
-                    painter = painterResource(R.drawable.projectlogotransparencycircular),
-                    contentDescription = null,
+                    painter = painterResource(R.drawable.projectlogo2kcircular),
+                    contentDescription = "Cooking assistant app",
                     modifier = Modifier.fillMaxWidth().fillMaxHeight()
                 )
                 Text(text="Cooking Assistant",

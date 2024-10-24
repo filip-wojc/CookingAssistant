@@ -2,9 +2,11 @@ package com.cookingassistant.ui.composables.topappbar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,12 +16,16 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.HideSource
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,11 +43,13 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -73,6 +81,9 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
     var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val searchText by topAppBarviewModel.QuickSearchText.collectAsState()
+    val searchResults by topAppBarviewModel.QuickSearchResults.collectAsState()
+    val showResults by topAppBarviewModel.ShowSearchResults.collectAsState()
+
     topAppBarviewModel.onSearchTextChanged(searchQuery)
 
     //---------//
@@ -176,7 +187,43 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
                 Spacer(Modifier.padding(padding))
                 content()
             },
-
         )
+        if(showResults) {
+            Box(Modifier.fillMaxWidth().padding(top = 75.dp)) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(0.7f)
+                        .clip(RoundedCornerShape(bottomEnd = 20.dp, bottomStart = 20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.5f))
+                        .align(Alignment.Center).shadow(elevation = 2.dp)
+                        .padding(top = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    for (result in searchResults) {
+                        Text(text = result,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.clickable {
+                                topAppBarviewModel.onSearchTextChanged(result)
+                                topAppBarviewModel.onResultsHide()
+                            }
+                                .padding(vertical = 5.dp, horizontal = 5.dp)
+                        )
+                        HorizontalDivider()
+                    }
+                    Row(Modifier.fillMaxWidth().clickable { topAppBarviewModel.onResultsHide() }
+                        .background(MaterialTheme.colorScheme.inversePrimary)
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+
+                    ) {
+                        IconButton(onClick = { topAppBarviewModel.onResultsHide() }) {
+                            Icon(
+                                Icons.Filled.KeyboardArrowUp,
+                                "Hide menu",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
