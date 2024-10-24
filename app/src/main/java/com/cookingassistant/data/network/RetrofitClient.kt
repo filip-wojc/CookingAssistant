@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.logging.HttpLoggingInterceptor
 
 class RetrofitClient{
-    private val BASE_URL = "http://192.168.111.51:5080/api/"
+    private val BASE_URL = "http://192.168.52.183:5080/api/"
 
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
