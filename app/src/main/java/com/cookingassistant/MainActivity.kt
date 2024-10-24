@@ -51,7 +51,7 @@ fun AppNavigator(userService: UserService, tokenRepository:TokenRepository){
 
 @Composable
 fun NavGraph(navController: NavHostController,tokenRepository: TokenRepository, userService: UserService) {
-    NavHost(navController = navController, startDestination = "test") {
+    NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             // create viewModel and inject service
             // TODO: Implement factories later

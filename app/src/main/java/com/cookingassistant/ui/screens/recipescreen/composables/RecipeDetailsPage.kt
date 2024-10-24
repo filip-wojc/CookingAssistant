@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -34,6 +35,7 @@ fun RecipeDetailsPage(
     preparationTime : String,
     cookingTime : String,
     url : String,
+    ingredients : List<String>,
     size: Float = 0.9f,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 20.sp
@@ -45,71 +47,93 @@ fun RecipeDetailsPage(
             .padding(10.dp)
         ,
     ) {
-        Text(
-            text = "Details",
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp),
-            color = MaterialTheme.colorScheme.inversePrimary,
-            fontSize = 34.sp,
-            fontWeight = FontWeight.Black
-        )
-        HorizontalDivider(modifier = Modifier.align(Alignment.TopCenter).offset(y = 80.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.align(Alignment.Center)
+        Column(
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp)
         ) {
-            item {
+            Text(
+                text = "Details",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 34.sp,
+                fontWeight = FontWeight.Black
+            )
+            HorizontalDivider(Modifier.padding(bottom = 20.dp))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                item {
+                    Text(
+                        "Calories:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = modifier,
+                        fontSize = fontSize,
+                        textAlign = TextAlign.Right,
+                    )
+                }
+                item {
+                    Text(
+                        calories.toString(),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = modifier,
+                        fontSize = fontSize
+                    )
+                }
+                item {
+                    Text(
+                        "Preparation time:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = modifier,
+                        textAlign = TextAlign.Right,
+                        fontSize = fontSize
+                    )
+                }
+                item {
+                    Text(
+                        preparationTime,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = modifier,
+                        fontSize = fontSize
+                    )
+                }
+                item {
+                    Text(
+                        "Cooking time:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = modifier,
+                        textAlign = TextAlign.Right,
+                        fontSize = fontSize
+                    )
+                }
+                item {
+                    Text(
+                        cookingTime,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = modifier,
+                        fontSize = fontSize
+                    )
+                }
+            }
+        }
+        Column(
+            Modifier.align(Alignment.Center)
+        ) {
+            Text(text="Ingredients", color = MaterialTheme.colorScheme.onTertiaryContainer,
+                modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(),
+                fontSize = fontSize, textAlign = TextAlign.Center)
+            for(ingredient in ingredients) {
                 Text(
-                    "Calories:",
+                    text="◼ " + ingredient,
+                    modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.onBackground,
-                    modifier = modifier,
-                    fontSize = fontSize,
-                    textAlign = TextAlign.Right,
-                )
-            }
-            item {
-                Text(
-                    calories.toString(),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = modifier,
-                    fontSize = fontSize
-                )
-            }
-            item {
-                Text(
-                    "Preparation time:",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = modifier,
-                    textAlign = TextAlign.Right,
-                    fontSize = fontSize
-                )
-            }
-            item {
-                Text(
-                    preparationTime,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = modifier,
-                    fontSize = fontSize
-                )
-            }
-            item {
-                Text(
-                    "Cooking time:",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = modifier,
-                    textAlign = TextAlign.Right,
-                    fontSize = fontSize
-                )
-            }
-            item {
-                Text(
-                    cookingTime,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = modifier,
-                    fontSize = fontSize
+                    fontSize = 18.sp
                 )
             }
         }
+
+
         Column(
             Modifier.align(Alignment.BottomCenter)
         ) {

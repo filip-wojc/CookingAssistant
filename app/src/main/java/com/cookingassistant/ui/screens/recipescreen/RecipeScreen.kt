@@ -124,7 +124,7 @@ fun RecipeScreen(
 ) {
     val recipe by recipeScreenViewModel.recipe.collectAsState()
 
-    // each step on separate page + 1 frontpage + 1 details + 1 for ingredients
+    // each step on separate page + 1 frontpage + 1 details
     val pagesCount by remember { mutableStateOf(recipe.Steps.size + 3 - 1) }
     var currentPage by remember { mutableStateOf(0) }
     var offsetX by remember { mutableStateOf(0f) }
@@ -165,7 +165,7 @@ fun RecipeScreen(
                     RecipeScreenFrontPage(recipe.Name,recipe.ImageUrl,recipe.Description,recipe.Author,recipe.Category,recipe.Type,recipe.Difficulty)
                 }
                 1 -> {
-                    RecipeDetailsPage(recipe.Calories,recipe.PreparationTime,recipe.CookingTime,recipe.Url, modifier = Modifier.padding(vertical = 30.dp, horizontal = 5.dp))
+                    RecipeDetailsPage(recipe.Calories,recipe.PreparationTime,recipe.CookingTime,recipe.Url, recipe.Ingredients, modifier = Modifier.padding(vertical = 8.dp, horizontal = 5.dp))
                 }
             }
         }
