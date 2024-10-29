@@ -7,14 +7,17 @@ import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.DTO.RecipeGetDTO
 import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.services.RecipeService
+import com.cookingassistant.services.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HomeScreenViewModel(private val _recipeService: RecipeService):ViewModel() {
+class HomeScreenViewModel(private val _recipeService: RecipeService,private val _userService: UserService):ViewModel() {
     // TODO: DELETE THIS WHEN FINISHED TESTING
     private val _recipeImage = MutableStateFlow<Bitmap?>(null)
+    private val _userProfileImage = MutableStateFlow<Bitmap?>(null)
     val recipeImage: StateFlow<Bitmap?> get() = _recipeImage
+    val userProfileImage: StateFlow<Bitmap?> get() = _userProfileImage
 
 
     fun getAllNutrientsList(){
@@ -52,12 +55,20 @@ class HomeScreenViewModel(private val _recipeService: RecipeService):ViewModel()
             }
         }
     }
-
+// TODO : DELETE - test only
     fun fetchRecipeImage(recipeId:Int){
         viewModelScope.launch {
             val bitmap = _recipeService.getRecipeImageBitmap(recipeId)
             _recipeImage.value = bitmap
         }
+    }
+    // TODO : DELETE AFTER TEST
+    fun getProfilePictureImageBitmap(){
+        viewModelScope.launch{
+            val bitmap = _userService.getUserProfilePictureBitmap()
+            _userProfileImage.value = bitmap
+        }
+
     }
     fun getRecipeDetails(recipeId: Int){
         viewModelScope.launch {

@@ -30,6 +30,7 @@ import com.cookingassistant.util.ImageConverter
 @Composable
 fun HomeScreen(navController: NavController, homeScreenViewModel: HomeScreenViewModel){
     val recipeImage by homeScreenViewModel.recipeImage.collectAsState()
+    val userProfileImage by homeScreenViewModel.userProfileImage.collectAsState()
 
     TopAppBar {
         Column(
@@ -44,18 +45,18 @@ fun HomeScreen(navController: NavController, homeScreenViewModel: HomeScreenView
                 val imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/ja.jpg"
                 val imageConverter = ImageConverter()
                 val imageByteArray = imageConverter.convertImageToByteArray(imagePath)
+                homeScreenViewModel.getProfilePictureImageBitmap()
 
-                homeScreenViewModel.postRecipeWithImage()
                              }, modifier = Modifier.fillMaxWidth()) {
                 Text("Show Image")
             }
-            if (recipeImage != null) {
+            if (userProfileImage != null) {
                 AlertDialog(
                     onDismissRequest = { /* Handle dismiss */ },
-                    title = { Text(text = "Recipe Image") },
+                    title = { Text(text = "User Image") },
                     text = {
                         Image(
-                            bitmap = recipeImage!!.asImageBitmap(),
+                            bitmap = userProfileImage!!.asImageBitmap(),
                             contentDescription = "Recipe Image"
                         )
                     },

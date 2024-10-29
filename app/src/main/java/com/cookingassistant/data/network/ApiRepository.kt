@@ -26,6 +26,9 @@ interface ApiRepository{
     @POST("users/favorite/{recipeId}")
     suspend fun addRecipeToFavorites(@Path("recipeId") recipeId:Int):Response<Unit>
 
+    @GET("users/image")
+    suspend fun fetchUserProfilePicture():Response<ResponseBody>
+
     // // // RECIPE SERVICE FUNCTIONS // // //
     // TODO : Test
     @Multipart

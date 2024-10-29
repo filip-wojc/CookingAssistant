@@ -125,7 +125,7 @@ fun NavGraph(navController: NavHostController, userService: UserService,recipeSe
             val loginViewModel = LoginViewModel(userService, tokenRepository)
             LoginScreen(navController, loginViewModel) }
         composable("home") {
-            val homeViewModel = HomeScreenViewModel(recipeService)
+            val homeViewModel = HomeScreenViewModel(recipeService, userService)
             HomeScreen(navController, homeViewModel)
         }
 
