@@ -44,6 +44,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation(libs.retrofit) // api into interface
     implementation (libs.androidx.security.crypto) // token encryption
     implementation(libs.converter.gson) // For JSON parsing with Gson
@@ -53,6 +54,7 @@ dependencies {
     implementation("com.github.jens-muenker:fuzzywuzzy-kotlin:1.0.0")
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.constraintlayout)
     val nav_version = "2.8.2"
     implementation("androidx.compose.runtime:runtime:1.7.3")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.3")
