@@ -1,6 +1,8 @@
 package com.cookingassistant.data.DTO
 
 import android.graphics.Bitmap
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 data class Recipe(
     val name: String?,
@@ -17,6 +19,30 @@ data class Recipe(
     val nutrientNames: List<String?>,
     val nutrientQuantities: List<String?>,
     val nutrientUnits: List<String?>
+)
+
+data class RecipeSimpleDTO(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val ratings: Float,
+    val timeInMinutes: Int,
+    val difficulty: String,
+    val voteCount: Int,
+    val categoryName: String
+)
+
+data class RecipePageResponse(
+    val items: List<RecipeSimpleDTO>,
+    val totalPages: Int,
+    val itemsFrom: Int,
+    val itemsTo: Int,
+    val totalItemsCount: Int
+)
+
+data class RecipeNameDTO(
+    val id: Int,
+    val name: String
 )
 
 data class RecipePostDTO(
@@ -76,6 +102,15 @@ data class RecipeImage(
 data class ReviewPostDTO(
     val value: Int,
     val description: String?
+)
+
+data class ReviewGetDTO(
+    val id: Int,
+    val value: Int,
+    val description: String?,
+    val reviewAuthor: String?,
+    val dateCreated: String,
+    val dateModified: String?
 )
 
 
