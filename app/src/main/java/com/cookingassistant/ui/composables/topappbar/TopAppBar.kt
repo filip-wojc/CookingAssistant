@@ -184,17 +184,20 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
                 )
             },
             content = { padding ->
-                Spacer(Modifier.padding(padding))
-                content()
+                padding
+                Column {
+                    Spacer(Modifier.fillMaxWidth().height(50.dp))
+                    content()
+                }
             },
         )
         if(showResults) {
-            Box(Modifier.fillMaxWidth().padding(top = 75.dp)) {
+            Box(Modifier.fillMaxWidth().padding(top = 75.dp).offset(y=10.dp)) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(0.7f)
+                    modifier = Modifier.fillMaxWidth(0.68f)
                         .clip(RoundedCornerShape(bottomEnd = 20.dp, bottomStart = 20.dp))
-                        .background(MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.5f))
-                        .align(Alignment.Center).shadow(elevation = 2.dp)
+                        .background(MaterialTheme.colorScheme.surfaceBright.copy(alpha = 0.85f))
+                        .align(Alignment.Center)
                         .padding(top = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {

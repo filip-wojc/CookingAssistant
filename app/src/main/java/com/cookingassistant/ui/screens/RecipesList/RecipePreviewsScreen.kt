@@ -95,19 +95,19 @@ fun RecipesColumn(
     TopAppBar(searchQuery = "Soup") {
         LazyColumn(
             modifier = Modifier
-                .padding(top = 100.dp, start = 10.dp, end = 10.dp, bottom = 50.dp)
+
+                .padding(bottom = 50.dp)
                 .wrapContentWidth(Alignment.CenterHorizontally)
                 .fillMaxWidth()
         ) {
             items(recipesPreviewList) {item ->
                 Column(
                     Modifier.padding(10.dp)
-                        .height(400.dp)
-                        .clip(RoundedCornerShape(10))
+                        .height(300.dp)
                         .clickable {  }
                         .background(MaterialTheme.colorScheme.surfaceBright)
                         .wrapContentHeight(Alignment.CenterVertically)
-
+                        .padding(bottom = 10.dp)
                     ,
                     horizontalAlignment = Alignment.CenterHorizontally
 

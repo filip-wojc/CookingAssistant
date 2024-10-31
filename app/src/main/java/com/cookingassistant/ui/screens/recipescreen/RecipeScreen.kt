@@ -53,8 +53,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.cookingassistant.data.RecipeItem
+import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeDetailsPage
+import com.cookingassistant.ui.screens.recipescreen.composables.RecipeEndPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeScreenFrontPage
+import com.cookingassistant.ui.screens.recipescreen.composables.RecipeStepPage
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -128,79 +131,88 @@ fun RecipeScreen(
     val pagesCount by remember { mutableStateOf(recipe.Steps.size + 3 - 1) }
     var currentPage by remember { mutableStateOf(0) }
     var offsetX by remember { mutableStateOf(0f) }
+
     val sizeAnim1 by animateFloatAsState(
         targetValue = if (currentPage % 2 == 0) 1.0f else 0f
     )
     val sizeAnim2 by animateFloatAsState(
         targetValue = if (currentPage % 2 == 1) 1.0f else 0f
     )
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(vertical = 50.dp, horizontal = 5.dp)
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures(
-                    onHorizontalDrag = {change, dragAmount ->
-                        change.consume()
-                        offsetX = dragAmount
-                    },
-                    onDragStart = {offsetX = 0f},
-                    onDragEnd = {
-                        if (offsetX < -10f && currentPage < pagesCount)
-                            currentPage++
-                        else if(offsetX > 10f && currentPage != 0)
-                            currentPage--
-                    }
-                )
-            }
-    ) {
-
-        Column (Modifier
-            .fillMaxHeight(if(currentPage % 2 == 0) sizeAnim1 else sizeAnim2)
-            .align(Alignment.Center)
-        ){
-            when(currentPage) {
-                0 -> {
-                    RecipeScreenFrontPage(recipe.Name,recipe.ImageUrl,recipe.Description,recipe.Author,recipe.Category,recipe.Type,recipe.Difficulty)
+    TopAppBar {
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(vertical = 50.dp, horizontal = 5.dp)
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures(
+                        onHorizontalDrag = {change, dragAmount ->
+                            change.consume()
+                            offsetX = dragAmount
+                        },
+                        onDragStart = {offsetX = 0f},
+                        onDragEnd = {
+                            if (offsetX < -5f && currentPage < pagesCount)
+                                currentPage++
+                            else if(offsetX > 5f && currentPage != 0)
+                                currentPage--
+                        }
+                    )
                 }
-                1 -> {
-                    RecipeDetailsPage(recipe.Calories,recipe.PreparationTime,recipe.CookingTime,recipe.Url, recipe.Ingredients, modifier = Modifier.padding(vertical = 8.dp, horizontal = 5.dp))
-                }
-            }
-        }
-
-        Row (
-            modifier = Modifier.align(Alignment.BottomCenter)
-                .fillMaxHeight(0.1f)
-                .fillMaxWidth()
-            ,
-            horizontalArrangement = Arrangement.SpaceAround
         ) {
-            if(currentPage != 0) {
-                IconButton(
-                    onClick = {currentPage -= 1}
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardDoubleArrowLeft
-                        ,null,
-                        Modifier.size(50.dp),
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
+
+            Column (Modifier
+                .fillMaxHeight(if(currentPage % 2 == 0) sizeAnim1 else sizeAnim2)
+                .align(Alignment.Center)
+            ){
+                when(currentPage) {
+                    0 -> {
+                        RecipeScreenFrontPage(recipe.Name,recipe.ImageUrl,recipe.Description,recipe.Author,recipe.Category,recipe.Type,recipe.Difficulty)
+                    }
+                    1 -> {
+                        RecipeDetailsPage(recipe.Calories,recipe.PreparationTime,recipe.CookingTime,recipe.Url, recipe.Ingredients, modifier = Modifier.padding(vertical = 8.dp, horizontal = 5.dp))
+                    }
+                    in 2..<pagesCount -> {
+                        RecipeStepPage(stepNumber = currentPage-1, stepText = recipe.Steps[currentPage-2])
+                    }
+                    pagesCount -> {
+                        RecipeEndPage(recipeScreenViewModel)
+                    }
                 }
             }
-            if(currentPage >= 0 && currentPage < pagesCount) {
-                IconButton(
-                    onClick = {currentPage += 1}
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardDoubleArrowRight
-                        ,null,
-                        Modifier.size(50.dp),
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
+
+            Row (
+                modifier = Modifier.align(Alignment.BottomCenter)
+                    .fillMaxHeight(0.1f)
+                    .fillMaxWidth()
+                ,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                if(currentPage != 0) {
+                    IconButton(
+                        onClick = {currentPage -= 1}
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardDoubleArrowLeft
+                            ,null,
+                            Modifier.size(50.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
+                if(currentPage >= 0 && currentPage < pagesCount) {
+                    IconButton(
+                        onClick = {currentPage += 1}
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardDoubleArrowRight
+                            ,null,
+                            Modifier.size(50.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
         }
     }
+
 }

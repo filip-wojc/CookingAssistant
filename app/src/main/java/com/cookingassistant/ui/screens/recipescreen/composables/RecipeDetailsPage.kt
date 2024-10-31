@@ -137,18 +137,20 @@ fun RecipeDetailsPage(
         Column(
             Modifier.align(Alignment.BottomCenter)
         ) {
-            Text("Original recipe from:",color = MaterialTheme.colorScheme.onBackground, fontSize=fontSize)
+            Text("Original recipe from:",color = MaterialTheme.colorScheme.onBackground, fontSize=14.sp, textAlign = TextAlign.Center)
             SelectionContainer {
                 Text(
-                    text =buildAnnotatedString {
+                    text = buildAnnotatedString {
                         withLink(
                             LinkAnnotation.Url(url, TextLinkStyles(style= SpanStyle(color=MaterialTheme.colorScheme.primary)))
                         ) {
                             append(url)
                         }
                     },
+                    textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onBackground,
-                    fontSize=fontSize
+                    fontSize=14.sp,
+
                 )
             }
             Spacer(Modifier.padding(bottom = 20.dp))
