@@ -22,7 +22,7 @@ class UserService(private val apiRepository: ApiRepository) {
         return apiRepository.register(requestBody)
     }
     suspend fun getUserProfilePictureBitmap(): Bitmap?{
-        val response = apiRepository.fetchUserProfilePicture()
+        val response = apiRepository.getUserProfilePicture()
 
         if (response.isSuccessful && response.body() != null) {
             val inputStream: InputStream = response.body()!!.byteStream()

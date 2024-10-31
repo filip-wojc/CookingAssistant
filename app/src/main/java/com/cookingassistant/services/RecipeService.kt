@@ -63,7 +63,7 @@ class RecipeService(private val apiRepository: ApiRepository) {
         val imagePart = prepareFilePart("ImageData", imagePath)
 
         // Call the API
-        return apiRepository.createRecipe(
+        return apiRepository.postRecipe(
             namePart,
             descriptionPart,
             servesPart,
@@ -92,7 +92,7 @@ class RecipeService(private val apiRepository: ApiRepository) {
     }
 
     suspend fun addRecipeToFavorites(recipeId:Int):Response<Unit>{
-        val response = apiRepository.addRecipeToFavorites(recipeId)
+        val response = apiRepository.addRecipeToFavourites(recipeId)
         return response
     }
 
