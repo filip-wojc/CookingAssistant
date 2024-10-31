@@ -43,6 +43,8 @@ android {
     }
 }
 
+
+
 dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation(libs.retrofit) // api into interface
@@ -71,7 +73,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
+    testImplementation(libs.junit) // Testing
+    testImplementation(libs.mockk.mockk) // Testing
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
