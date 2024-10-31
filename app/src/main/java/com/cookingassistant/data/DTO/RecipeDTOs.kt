@@ -21,7 +21,7 @@ data class Recipe(
     val nutrientUnits: List<String?>
 )
 
-data class RecipeSimpleDTO(
+data class RecipeSimpleGetDTO(
     val id: Int,
     val name: String,
     val description: String,
@@ -33,7 +33,7 @@ data class RecipeSimpleDTO(
 )
 
 data class RecipePageResponse(
-    val items: List<RecipeSimpleDTO>,
+    val items: List<RecipeSimpleGetDTO>,
     val totalPages: Int,
     val itemsFrom: Int,
     val itemsTo: Int,
