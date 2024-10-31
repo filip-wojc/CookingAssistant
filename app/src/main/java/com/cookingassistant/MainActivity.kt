@@ -64,10 +64,17 @@ class MainActivity : ComponentActivity() {
         val recipeService = RecipeService(apiRepository)
         setContent {
             AppTheme {
-                AppNavigator(userService, tokenRepository) // inject services here
+                AppNavigator(userService,recipeService ,tokenRepository) // inject services here
+
             }
-            AppNavigator(userService,recipeService, tokenRepository) // inject services here
+
         }
+
+        //--FOR TESTING PURPOSES--//
+        //------TO BE REMOVED-----//
+        SearchEngine.loadHardcoded()
+        //------------------------//
+
     }
 
     private fun checkAndRequestPermission() {
@@ -109,10 +116,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        //--FOR TESTING PURPOSES--//
-        //------TO BE REMOVED-----//
-        SearchEngine.loadHardcoded()
-        //------------------------//
+
     }
 }
 
