@@ -22,7 +22,7 @@ class TokenRepository(context: Context)
     )
 
     // Function to save the token
-    fun saveToken(token: String) {
+    fun saveToken(token: String?) {
         sharedPreferences.edit()
             .putString("auth_token", token)
             .apply() // Use apply() to save in the background

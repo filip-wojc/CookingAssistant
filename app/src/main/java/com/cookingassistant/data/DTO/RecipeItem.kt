@@ -1,4 +1,4 @@
-package com.cookingassistant.data
+package com.cookingassistant.data.DTO
 
 //IMPORTANT:
 //RecipeItem class is used for containing ALL informations

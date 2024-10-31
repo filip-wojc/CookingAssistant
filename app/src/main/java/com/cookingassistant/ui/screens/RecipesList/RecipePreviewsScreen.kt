@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
-import com.cookingassistant.data.RecipeItemPreview
+import com.cookingassistant.data.DTO.RecipeItemPreview
 import com.cookingassistant.ui.composables.RatingToStars
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import kotlinx.coroutines.runBlocking
