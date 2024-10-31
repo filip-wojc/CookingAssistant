@@ -41,17 +41,31 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.all {
+            // Set JVM arguments here for unit tests
+            it.jvmArgs(
+                "--add-opens", "java.base/java.time=ALL-UNNAMED",
+                "--add-opens", "java.base/java.lang=ALL-UNNAMED"
+            )
+        }
+    }
 }
+
+
 
 dependencies {
 
     implementation(libs.retrofit) // api into interface
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation (libs.androidx.security.crypto) // token encryption
     implementation(libs.converter.gson) // For JSON parsing with Gson
     implementation(libs.okhttp) // networking
     implementation(libs.logging.interceptor) // Optional: for logging HTTP requests
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.espresso.core)
+    implementation("com.squareup.moshi:moshi:1.12.0") // DateTimeAdapter
+    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
     val nav_version = "2.8.2"
     implementation("androidx.compose.runtime:runtime:1.7.3")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.3")
