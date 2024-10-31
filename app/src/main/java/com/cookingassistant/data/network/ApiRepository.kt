@@ -15,11 +15,9 @@ import retrofit2.http.Path
 
 interface ApiRepository{
     // NUTRIENTS CONTROLLER
-    // TODO: TEST
     @GET("nutrients")
     suspend fun getAllNutrientsList():Response<List<String?>>
     // INGREDIENTS CONTROLLER
-    // TODO : TEST
     @GET("ingredients")
     suspend fun getAllIngredientsList():Response<List<String?>>
 
@@ -30,27 +28,27 @@ interface ApiRepository{
     @POST("users/register")
     suspend fun register(@Body registerRequest: RegisterRequest):Response<String?>
 
-    // TODO: Test
+
     @POST("users/favourite/{recipeId}")
     suspend fun addRecipeToFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
-    // TODO : IMPLEMENT
-    //@GET(users/favourite-recipes")
-    // suspend fun getFavouriteRecipes
-    // TODO : IMPLEMENT
-    //@DELETE("users/favourite-recipes/{recipeId}")
-    //suspend fun removeRecipeFromFavourites
+
+    @GET("users/favourite-recipes")
+    suspend fun getFavouriteRecipes():Response<RecipePageResponse>
+
+    @DELETE("users/favourite-recipes/{recipeId}")
+    suspend fun removeRecipeFromFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
 
     @GET("users/image")
     suspend fun getUserProfilePicture():Response<ResponseBody>
-    // TODO : IMPLEMENT
-    //@POST("users/image")
-    // suspend fun addProfilePicture
-    // TODO : Test
+
+    @Multipart
+    @POST("users/image")
+    suspend fun addProfilePicture(@Part image: MultipartBody.Part):Response<Unit>
+
     @DELETE("users/delete/{username}")
     suspend fun deleteAccount(@Path("username") username:String): Response<Unit>
 
     // RECIPE CONTROLLER
-    // TODO : Test
     @Multipart
     @POST("recipes")
     suspend fun postRecipe(
@@ -70,7 +68,6 @@ interface ApiRepository{
         @Part image: MultipartBody.Part
     ): Response<Unit>
 
-    // TODO : TEST
     @Multipart
     @PUT("recipes/{recipeId}")
     suspend fun modifyRecipe(
@@ -91,19 +88,15 @@ interface ApiRepository{
         @Part image: MultipartBody.Part
     ): Response<Unit>
 
-    // TODO : Test
     @DELETE("recipes/{recipeId}")
     suspend fun deleteRecipe(@Path("recipeId") recipeId: Int):Response<Unit>
 
-    // TODO : Test
     @GET("recipes/{recipeId}")
     suspend fun getRecipeDetails(@Path("recipeId") recipeId:Int):Response<RecipeGetDTO>
 
-    // TODO : Test
     @GET("recipes")
     suspend fun getAllRecipes():Response<RecipePageResponse>
 
-    // TODO : Test
     @GET("recipes/names")
     suspend fun getAllRecipeNames():Response<List<RecipeNameDTO>>
     
@@ -111,23 +104,23 @@ interface ApiRepository{
     suspend fun getRecipeImage(@Path("recipeId") recipeId:Int):Response<ResponseBody>
 
     // REVIEW CONTROLLER
-    // TODO : Test
+
     @POST("reviews/{recipeId}")
     suspend fun postReview(@Path("recipeId") recipeId: Int, @Body reviewPostDTO: ReviewPostDTO):Response<Unit>
 
-    // TODO : Test
+
     @POST("reviews/{recipeId}/modify")
     suspend fun modifyReview(@Path("recipeId") recipeId: Int, @Body reviewPostDTO: ReviewPostDTO):Response<Unit>
-    // TODO : Test
+
     @DELETE("reviews/{recipeId}/delete")
     suspend fun deleteReview(@Path("recipeId") recipeId: Int) :Response<Unit>
-    // TODO : Test
+
     @GET("reviews/{recipeId}/my-review")
     suspend fun getMyReview(@Path("recipeId") recipeId:Int):Response<ReviewGetDTO>
-    // TODO : Test
+
     @GET("reviews/{recipeId}")
     suspend fun getAllReviews(@Path("recipeId") recipeId: Int):Response<List<ReviewGetDTO>>
-    // TODO : Test
+
     @GET("reviews/{reviewId}/image")
     suspend fun getReviewImage(@Path("reviewId") reviewId: Int):Response<ResponseBody>
 
