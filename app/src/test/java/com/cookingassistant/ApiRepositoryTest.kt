@@ -33,7 +33,7 @@ class ApiRepositoryTest {
     @Before
     fun setUp(){
         tokenRepository = mockk()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZGF3aWQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJkYXdpZEB0ZXN0LmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3MzE1OTA0NTAsImlzcyI6Imh0dHA6Ly9jb29raW5nYXNzaXN0YW50LmNvbSIsImF1ZCI6Imh0dHA6Ly9jb29raW5nYXNzaXN0YW50LmNvbSJ9.KxhGVZqBm-n3IBgEGImQ3isvT28d7JmgKoEC_tf4mjU"
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6ImRhd2lkIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoiZGF3aWRAdGVzdC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzMxNjcyNjE0LCJpc3MiOiJodHRwOi8vY29va2luZ2Fzc2lzdGFudC5jb20iLCJhdWQiOiJodHRwOi8vY29va2luZ2Fzc2lzdGFudC5jb20ifQ.j4tWXId2xot4bm6AmCB6gu3WCp0_S42YEGaPfPXsNSU"
         every { tokenRepository.getToken() } returns token
 
         // Build the OkHttpClient with interceptors (including logging and auth)
@@ -90,6 +90,36 @@ class ApiRepositoryTest {
         assert(response.body()!!.isNotEmpty())
     }
 
+    // USER NOT FOUND +
+    // BAD REQUEST ( SAME RECIPE ) +
+    // NOT FOUND +
+    // Ok NoContent +
+    @Test
+    fun `test addRecipeToFavourites`() = runBlocking {
+        val recipeId = 20 // Use an actual recipe ID
+        val response = apiRepository.addRecipeToFavourites(recipeId)
+        assertTrue(response.isSuccessful)
+    }
+
+    // NOT FOUND - NOT WORKING
+    // 200 Ok +
+    @Test
+    fun `test getFavouriteRecipes`() = runBlocking {
+        val response = apiRepository.getFavouriteRecipes()
+        assertTrue(response.isSuccessful)
+        assertNotNull(response.body())
+    }
+
+    // 404 NOT FOUND RECIPE +
+    // 400 BAD REQUEST(recipe not in favorites) +
+    // 204 NO CONTENT +
+    @Test
+    fun `test removeRecipeFromFavourites`() = runBlocking{
+        val recipeId = 22
+        val response = apiRepository.removeRecipeFromFavourites(recipeId)
+        assertTrue(response.isSuccessful)
+    }
+
     // GIT
     @Test
     fun `test getUserProfilePicture`() = runBlocking {
@@ -97,22 +127,19 @@ class ApiRepositoryTest {
         assertTrue(response.isSuccessful)
         assertNotNull(response.body())
     }
-    // GIT
+    // 204 NO CONTENT +
     @Test
-    fun `test getAllRecipeNames`() = runBlocking {
-        val response = apiRepository.getAllRecipeNames()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assert(response.body()!!.isNotEmpty())
-    }
+    fun `test addProfilePicture`() = runBlocking {
+        val imageInputStream = javaClass.classLoader.getResourceAsStream("pomocy.jpg")
+            ?: throw IllegalStateException("Image file not found in resources")
 
-    @Test
-    fun `test addRecipeToFavourites`() = runBlocking {
-        val recipeId = 23 // Use an actual recipe ID
-        val response = apiRepository.addRecipeToFavourites(23)
+        // Create RequestBody directly from InputStream using Okio for multipart upload
+        val imageRequestBody = imageInputStream.source().buffer().readByteArray().toRequestBody("image/jpeg".toMediaTypeOrNull())
+        val imagePart = MultipartBody.Part.createFormData("imageData", "pomocy.jpg", imageRequestBody)
+
+        val response = apiRepository.addProfilePicture(imagePart)
         assertTrue(response.isSuccessful)
     }
-
 
     // GIT
     @Test
@@ -259,16 +286,6 @@ class ApiRepositoryTest {
         assertTrue(response.isSuccessful)
     }
 
-    // GIT
-    @Test
-    fun `test getRecipeDetails`() = runBlocking {
-        val recipeId = 35 // Replace with an actual recipe ID
-        val response = apiRepository.getRecipeDetails(recipeId)
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assertEquals(recipeId, response.body()?.id)
-    }
-
     // Forbidden GIT
     // Delete own GIT
     @Test
@@ -281,6 +298,16 @@ class ApiRepositoryTest {
 
     // GIT
     @Test
+    fun `test getRecipeDetails`() = runBlocking {
+        val recipeId = 35 // Replace with an actual recipe ID
+        val response = apiRepository.getRecipeDetails(recipeId)
+        assertTrue(response.isSuccessful)
+        assertNotNull(response.body())
+        assertEquals(recipeId, response.body()?.id)
+    }
+
+    // GIT
+    @Test
     fun `test getAllRecipes`() = runBlocking {
         val response = apiRepository.getAllRecipes()
         assert(response.isSuccessful)
@@ -288,6 +315,14 @@ class ApiRepositoryTest {
         assert(response.body()!!.items.isNotEmpty())
     }
 
+    // GIT
+    @Test
+    fun `test getAllRecipeNames`() = runBlocking {
+        val response = apiRepository.getAllRecipeNames()
+        assertTrue(response.isSuccessful)
+        assertNotNull(response.body())
+        assert(response.body()!!.isNotEmpty())
+    }
 
     // GIT
     @Test
@@ -360,4 +395,6 @@ class ApiRepositoryTest {
         assertTrue(response.isSuccessful)
         assertNotNull(response.body())
     }
+
+
 }
