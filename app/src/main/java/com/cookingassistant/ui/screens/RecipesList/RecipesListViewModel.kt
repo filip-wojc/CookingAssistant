@@ -1,7 +1,7 @@
 package com.cookingassistant.ui.screens.RecipesList
 
 import androidx.lifecycle.ViewModel
-import com.cookingassistant.data.DTO.RecipeItemPreview
+import com.cookingassistant.data.RecipeItemPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
