@@ -151,7 +151,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
             println("Ratings: ${recipe.ratings}")
             println("Time In Minutes: ${recipe.timeInMinutes}")
             println("Serves: ${recipe.serves}")
-            println("Difficulty: ${recipe.difficulty ?: "N/A"}")
+            println("Difficulty: ${recipe.difficultyName ?: "N/A"}")
             println("Vote Count: ${recipe.voteCount}")
             println("Category Name: ${recipe.categoryName}")
 
@@ -165,13 +165,13 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
             } ?: println("No Ingredients")
 
             // Print Nutrients
-            println("\nNutrients:")
-            recipe.nutrients?.forEachIndexed { index, nutrient ->
-                println("Nutrient #${index + 1}")
-                println("\tName: ${nutrient.nutrientName ?: "N/A"}")
-                println("\tQuantity: ${nutrient.quantity ?: "N/A"}")
-                println("\tUnit: ${nutrient.unit ?: "N/A"}")
-            } ?: println("No Nutrients")
+//            println("\nNutrients:")
+//            recipe.nutrients?.forEachIndexed { index, nutrient ->
+//                println("Nutrient #${index + 1}")
+//                println("\tName: ${nutrient.nutrientName ?: "N/A"}")
+//                println("\tQuantity: ${nutrient.quantity ?: "N/A"}")
+//                println("\tUnit: ${nutrient.unit ?: "N/A"}")
+//            } ?: println("No Nutrients")
 
             // Print Steps
             println("\nSteps:")

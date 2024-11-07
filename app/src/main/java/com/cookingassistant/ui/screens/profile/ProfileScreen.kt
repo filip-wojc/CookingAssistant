@@ -51,55 +51,54 @@ import coil3.compose.rememberAsyncImagePainter
 @Preview
 @Composable
 fun ProfileScreen() {
-    TopAppBar {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        profilImage()
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 20.dp, end = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            profilImage()
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 20.dp, end = 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = "Jan Kowalski", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "test@gmail.com", fontSize = 18.sp)
-                Spacer(modifier = Modifier.height(20.dp))
+            Text(text = "Jan Kowalski", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "test@gmail.com", fontSize = 18.sp)
+            Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    profilButton(
-                        onClick = {},
-                        text = "Favorite recipes",
-                        modifier = Modifier
-                            .height(80.dp)
-                            .weight(1f),
-                        color = Color(0xFF5F75E1)
-                    )
-                    profilButton(
-                        onClick = {},
-                        text = "Own recipes",
-                        modifier = Modifier
-                            .height(80.dp)
-                            .weight(1f),
-                        color = Color(0xFF5F75E1)
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                profilButton(onClick = {}, text = "Change Password", color = Color(0xFF9E72E1))
-                Spacer(modifier = Modifier.height(8.dp))
-                profilButton(onClick = {}, text = "Change E-mail", color = Color(0xFF9E72E1))
-                Spacer(modifier = Modifier.height(8.dp))
-                profilButton(onClick = {}, text = "Delete Account", color = Color(0xFFEC544C))
-                Spacer(modifier = Modifier.height(8.dp))
-                profilButton(onClick = {}, text = "Log out", color = Color(0xFF5F75E1))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                profilButton(
+                    onClick = {},
+                    text = "Favorite recipes",
+                    modifier = Modifier
+                        .height(80.dp)
+                        .weight(1f),
+                    color = Color(0xFF5F75E1)
+                )
+                profilButton(
+                    onClick = {},
+                    text = "Own recipes",
+                    modifier = Modifier
+                        .height(80.dp)
+                        .weight(1f),
+                    color = Color(0xFF5F75E1)
+                )
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            profilButton(onClick = {}, text = "Change Password", color = Color(0xFF9E72E1))
+            Spacer(modifier = Modifier.height(8.dp))
+            profilButton(onClick = {}, text = "Change E-mail", color = Color(0xFF9E72E1))
+            Spacer(modifier = Modifier.height(8.dp))
+            profilButton(onClick = {}, text = "Delete Account", color = Color(0xFFEC544C))
+            Spacer(modifier = Modifier.height(8.dp))
+            profilButton(onClick = {}, text = "Log out", color = Color(0xFF5F75E1))
         }
     }
 }
+
 
 @Composable
 private fun profilButton(

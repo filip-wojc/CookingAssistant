@@ -59,22 +59,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.cookingassistant.compose.AppTheme
 import com.cookingassistant.ui.composables.bottomBorder
 import kotlinx.coroutines.launch
 
-@Preview
-@Composable
-fun testBar(){
-    AppTheme(true) {
-        TopAppBar {  }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
+fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
               searchQuery: String = "",
+              navController: NavController,
               content: @Composable() () -> Unit
               ) {
 
@@ -202,11 +196,16 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel = viewModel(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     for (result in searchResults) {
-                        Text(text = result,
+                        Text(
+                            text = result.string,
                             color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.clickable {
-                                topAppBarviewModel.onSearchTextChanged(result)
+                                topAppBarviewModel.onSearchTextChanged(result.string)
+
                                 topAppBarviewModel.onResultsHide()
+                                if(topAppBarviewModel.onResultSubmited(result.index)) {
+                                    navController.navigate("recipeScreen")
+                                }
                             }
                                 .padding(vertical = 5.dp, horizontal = 5.dp)
                         )

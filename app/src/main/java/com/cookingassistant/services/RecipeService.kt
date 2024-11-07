@@ -3,6 +3,7 @@ package com.cookingassistant.services
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.cookingassistant.data.DTO.RecipeGetDTO
+import com.cookingassistant.data.DTO.RecipeNameDTO
 import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.data.DTO.ReviewPostDTO
 import com.cookingassistant.data.network.ApiRepository
@@ -24,6 +25,10 @@ class RecipeService(private val apiRepository: ApiRepository) {
 
     suspend fun getRecipeDetails(recipeId: Int):Response<RecipeGetDTO>{
         return apiRepository.getRecipeDetails(recipeId)
+    }
+
+    suspend fun getRecipeNames(): Response<List<RecipeNameDTO>> {
+        return apiRepository.getAllRecipeNames()
     }
 
     suspend fun getRecipeImageBitmap(recipeId: Int): Bitmap?{

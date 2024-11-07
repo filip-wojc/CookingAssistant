@@ -92,76 +92,76 @@ fun RecipesColumn(
 ) {
     val recipesPreviewList by viewModel.recipes.collectAsState()
 
-    TopAppBar(searchQuery = "Soup") {
-        LazyColumn(
-            modifier = Modifier
 
-                .padding(bottom = 50.dp)
-                .wrapContentWidth(Alignment.CenterHorizontally)
-                .fillMaxWidth()
-        ) {
-            items(recipesPreviewList) {item ->
-                Column(
-                    Modifier.padding(10.dp)
-                        .height(300.dp)
-                        .clickable {  }
-                        .background(MaterialTheme.colorScheme.surfaceBright)
-                        .wrapContentHeight(Alignment.CenterVertically)
-                        .padding(bottom = 10.dp)
-                    ,
-                    horizontalAlignment = Alignment.CenterHorizontally
+    LazyColumn(
+        modifier = Modifier
 
+            .padding(bottom = 50.dp)
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .fillMaxWidth()
+    ) {
+        items(recipesPreviewList) {item ->
+            Column(
+                Modifier.padding(10.dp)
+                    .height(300.dp)
+                    .clickable {  }
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+                    .wrapContentHeight(Alignment.CenterVertically)
+                    .padding(bottom = 10.dp)
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 10.dp)
+                        .height(80.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                    Text(
+                        text = item.title,
+                        fontWeight = FontWeight(500),
+                        fontSize = 18.sp,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 10.dp)
-                            .height(80.dp)
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        textAlign = TextAlign.Center,
+                        overflow = TextOverflow.Ellipsis,
+
+                        )
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 10.dp)
+                            .align(Alignment.CenterVertically)
                     ) {
                         Text(
-                            text = item.title,
-                            fontWeight = FontWeight(500),
-                            fontSize = 18.sp,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .weight(1f)
-                                .wrapContentHeight(align = Alignment.CenterVertically),
-                            textAlign = TextAlign.Center,
-                            overflow = TextOverflow.Ellipsis,
-
-                            )
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 10.dp)
-                                .align(Alignment.CenterVertically)
+                            text = "Difficulty: ${item.difficulty}",
+                            modifier = Modifier.verticalScroll(rememberScrollState()),
+                            fontSize = 15.sp
+                        )
+                        RatingToStars(item.rating,
+                            modifier = Modifier.size(20.dp).shadow(elevation = 4.dp)
                         ) {
                             Text(
-                                text = "Difficulty: ${item.difficulty}",
-                                modifier = Modifier.verticalScroll(rememberScrollState()),
+                                text = "Rating:",
                                 fontSize = 15.sp
                             )
-                            RatingToStars(item.rating,
-                                modifier = Modifier.size(20.dp).shadow(elevation = 4.dp)
-                            ) {
-                                Text(
-                                    text = "Rating:",
-                                    fontSize = 15.sp
-                                )
-                            }
                         }
                     }
-                    AsyncImage(
-                        modifier = Modifier.clip(RoundedCornerShape(10.dp)),
-                        model = item.imageUrl,
-                        contentDescription = null,
-                        contentScale = ContentScale.FillHeight,
-                    )
                 }
+                AsyncImage(
+                    modifier = Modifier.clip(RoundedCornerShape(10.dp)),
+                    model = item.imageUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight,
+                )
             }
         }
     }
+
 
 }

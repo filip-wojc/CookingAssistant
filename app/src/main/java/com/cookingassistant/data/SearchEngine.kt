@@ -1,20 +1,28 @@
 package com.cookingassistant.data
 
+import com.cookingassistant.data.DTO.RecipeNameDTO
 import com.frosch2010.fuzzywuzzy_kotlin.FuzzySearch
+import com.frosch2010.fuzzywuzzy_kotlin.model.ExtractedResult
 
 
 object SearchEngine {
-    private var knownRecipeNames : List<String> = mutableListOf()
+    private var knownRecipeNames : MutableList<String> = mutableListOf()
+    private var ids : MutableList<Int> = mutableListOf()
 
-    fun updateRecipeNames(newRecipeNames : List<String>) {
-        knownRecipeNames = newRecipeNames
+    fun updateRecipesList(idNames : List<RecipeNameDTO>) {
+        knownRecipeNames.clear()
+        ids.clear()
+        for (recipe in idNames) {
+            knownRecipeNames.add(recipe.name)
+            ids.add(recipe.id)
+        }
     }
 
-    fun suggestRecipeNames(query : String, limit : Int = 5) : List<String> {
+    fun suggestRecipeNames(query : String, limit : Int = 5) : List<ExtractedResult> {
         val found = FuzzySearch.extractTop(query = query, choices = knownRecipeNames, limit)
-        var result = mutableListOf<String>()
+        var result = mutableListOf<ExtractedResult>()
         for (f in found) {
-            result.add(f.string)
+            result.add(f)
         }
         return result
     }

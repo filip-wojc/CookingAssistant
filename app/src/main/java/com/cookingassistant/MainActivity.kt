@@ -29,10 +29,13 @@ import com.cookingassistant.ui.screens.registration.RegistrationScreen
 import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.compose.AppTheme
 import com.cookingassistant.data.SearchEngine
+import com.cookingassistant.ui.composables.topappbar.TopAppBar
+import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
 import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
 import com.cookingassistant.ui.screens.home.HomeScreenViewModel
+import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
+import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 
-import com.cookingassistant.ui.screens.recipescreen.TestRecipeScreen
 
 class MainActivity : ComponentActivity() {
     // Declare the permission request contract
@@ -69,12 +72,6 @@ class MainActivity : ComponentActivity() {
             }
 
         }
-
-        //--FOR TESTING PURPOSES--//
-        //------TO BE REMOVED-----//
-        SearchEngine.loadHardcoded()
-        //------------------------//
-
     }
 
     private fun checkAndRequestPermission() {
@@ -132,21 +129,30 @@ fun AppNavigator(userService: UserService, recipeService: RecipeService, tokenRe
 
 @Composable
 fun NavGraph(navController: NavHostController, userService: UserService,recipeService: RecipeService,tokenRepository: TokenRepository) {
-    NavHost(navController = navController, startDestination = "login") {
-        composable("login") {
-            // create viewModel and inject service
-            // TODO: Implement factories later
-            //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
-            val loginViewModel = LoginViewModel(userService, tokenRepository)
-            LoginScreen(navController, loginViewModel) }
-        composable("home") {
-            val homeViewModel = HomeScreenViewModel(recipeService, userService)
-            HomeScreen(navController, homeViewModel)
-        }
-        composable("test") {  TestRecipesColumn() } //For testing purposes
-        composable("registration"){
-            val registrationViewModel = RegistrationViewModel(userService)
-            RegistrationScreen(navController, registrationViewModel)
+    AppTheme {
+        val rsvm = RecipeScreenViewModel(recipeService,1)
+        TopAppBar(navController=navController, topAppBarviewModel = TopAppBarViewModel(recipeService, rsvm)) {
+            NavHost(navController = navController, startDestination = "login") {
+                composable("login") {
+                    // create viewModel and inject service
+                    // TODO: Implement factories later
+                    //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
+                    val loginViewModel = LoginViewModel(userService, tokenRepository)
+                    LoginScreen(navController, loginViewModel)
+                }
+                composable("home") {
+                    val homeViewModel = HomeScreenViewModel(recipeService, userService)
+                    HomeScreen(navController, homeViewModel)
+                }
+                composable("test") { TestRecipesColumn() } //For testing purposes
+                composable("registration") {
+                    val registrationViewModel = RegistrationViewModel(userService)
+                    RegistrationScreen(navController, registrationViewModel)
+                }
+                composable("recipeScreen") {
+                    RecipeScreen(rsvm)
+                }
+            }
         }
     }
 }

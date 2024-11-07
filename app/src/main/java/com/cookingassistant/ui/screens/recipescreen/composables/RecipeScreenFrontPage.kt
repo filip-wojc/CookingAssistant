@@ -1,5 +1,7 @@
 package com.cookingassistant.ui.screens.recipescreen.composables
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,29 +22,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.createBitmap
 import coil3.compose.AsyncImage
 
 @Composable
 fun RecipeScreenFrontPage(
     name : String,
-    imageUrl : String,
+    img : Bitmap,
     desc : String,
     author : String,
     category : String,
-    type : String,
+    occasion : String,
     difficulty : String,
     size: Float = 0.9f
 ) {
     Box(
         Modifier
-        .fillMaxHeight(size)
-        .fillMaxWidth()
-        .padding(10.dp)
+            .fillMaxHeight(size)
+            .fillMaxWidth()
+            .padding(10.dp)
         ,
     ) {
         Column (
@@ -78,20 +82,21 @@ fun RecipeScreenFrontPage(
                     Text(text="Category: ${category}", color = MaterialTheme.colorScheme.onBackground)
                 }
                 item {
-                    Text(text="Type: ${type}", color = MaterialTheme.colorScheme.onBackground)
+                    Text(text="Occasion: ${occasion}", color = MaterialTheme.colorScheme.onBackground)
                 }
             }
         }
 
-        AsyncImage(
-            modifier = Modifier.fillMaxHeight()
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(50))
-            ,
-            model = imageUrl,
-            contentScale = ContentScale.FillWidth,
-            contentDescription = null
-        )
+        if (img != createBitmap(1,1)) {
+            Image(
+                modifier = Modifier.fillMaxHeight()
+                    .align(Alignment.Center)
+                    .clip(RoundedCornerShape(50))
+                ,
+                bitmap = img.asImageBitmap(),
+                contentDescription = null
+            )
+        }
 
         Column(
             Modifier.align(Alignment.BottomCenter),

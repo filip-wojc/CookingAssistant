@@ -70,11 +70,12 @@ data class RecipeGetDTO(
     val ratings: Float,
     val timeInMinutes: Int,
     val serves: Int,
-    val difficulty: String?,
+    val difficultyName: String?,
     val voteCount: Int,
     val categoryName: String,
+    val occasionName: String,
+    val caloricity: Int,
     val ingredients: List<RecipeIngredientGetDTO>?,
-    val nutrients: List<RecipeNutrientGetDTO>?,
     val steps: List<StepGetDTO>?
 )
 

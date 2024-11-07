@@ -32,42 +32,42 @@ fun HomeScreen(navController: NavController, homeScreenViewModel: HomeScreenView
     val recipeImage by homeScreenViewModel.recipeImage.collectAsState()
     val userProfileImage by homeScreenViewModel.userProfileImage.collectAsState()
 
-    TopAppBar {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(text = "Welcome to the Home Screen", style = MaterialTheme.typography.headlineSmall)
 
-            Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Welcome to the Home Screen", style = MaterialTheme.typography.headlineSmall)
 
-            Button(onClick = {
-                val imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/ja.jpg"
-                val imageConverter = ImageConverter()
-                val imageByteArray = imageConverter.convertImageToByteArray(imagePath)
-                homeScreenViewModel.getProfilePictureImageBitmap()
+        Spacer(modifier = Modifier.height(16.dp))
 
-                             }, modifier = Modifier.fillMaxWidth()) {
-                Text("Show Image")
-            }
-            if (userProfileImage != null) {
-                AlertDialog(
-                    onDismissRequest = { /* Handle dismiss */ },
-                    title = { Text(text = "User Image") },
-                    text = {
-                        Image(
-                            bitmap = userProfileImage!!.asImageBitmap(),
-                            contentDescription = "Recipe Image"
-                        )
-                    },
-                    confirmButton = {
-                        Button(onClick = { /* Handle close */ }) {
-                            Text("Close")
-                        }
+        Button(onClick = {
+            val imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/ja.jpg"
+            val imageConverter = ImageConverter()
+            val imageByteArray = imageConverter.convertImageToByteArray(imagePath)
+            homeScreenViewModel.getProfilePictureImageBitmap()
+
+                         }, modifier = Modifier.fillMaxWidth()) {
+            Text("Show Image")
+        }
+        if (userProfileImage != null) {
+            AlertDialog(
+                onDismissRequest = { /* Handle dismiss */ },
+                title = { Text(text = "User Image") },
+                text = {
+                    Image(
+                        bitmap = userProfileImage!!.asImageBitmap(),
+                        contentDescription = "Recipe Image"
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = { /* Handle close */ }) {
+                        Text("Close")
                     }
-                )
-            }
+                }
+            )
         }
     }
 }
+
 

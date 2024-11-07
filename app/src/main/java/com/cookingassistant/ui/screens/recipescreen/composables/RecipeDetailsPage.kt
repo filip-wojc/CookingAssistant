@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -17,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -32,10 +30,10 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun RecipeDetailsPage(
     calories : Int,
-    preparationTime : String,
-    cookingTime : String,
+    totalTime : String,
     url : String,
     ingredients : List<String>,
+    serves : Int,
     size: Float = 0.9f,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 20.sp
@@ -83,7 +81,7 @@ fun RecipeDetailsPage(
                 }
                 item {
                     Text(
-                        "Preparation time:",
+                        "Time to complete:",
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = modifier,
                         textAlign = TextAlign.Right,
@@ -92,7 +90,7 @@ fun RecipeDetailsPage(
                 }
                 item {
                     Text(
-                        preparationTime,
+                        totalTime,
                         color = MaterialTheme.colorScheme.tertiary,
                         modifier = modifier,
                         fontSize = fontSize
@@ -100,7 +98,7 @@ fun RecipeDetailsPage(
                 }
                 item {
                     Text(
-                        "Cooking time:",
+                        "Serves number:",
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = modifier,
                         textAlign = TextAlign.Right,
@@ -109,7 +107,7 @@ fun RecipeDetailsPage(
                 }
                 item {
                     Text(
-                        cookingTime,
+                        text = serves.toString(),
                         color = MaterialTheme.colorScheme.tertiary,
                         modifier = modifier,
                         fontSize = fontSize
@@ -133,27 +131,28 @@ fun RecipeDetailsPage(
             }
         }
 
+        if(url != "") {
+            Column(
+                Modifier.align(Alignment.BottomCenter)
+            ) {
+                Text("Original recipe from:",color = MaterialTheme.colorScheme.onBackground, fontSize=14.sp, textAlign = TextAlign.Center)
+                SelectionContainer {
+                    Text(
+                        text = buildAnnotatedString {
+                            withLink(
+                                LinkAnnotation.Url(url, TextLinkStyles(style= SpanStyle(color=MaterialTheme.colorScheme.primary)))
+                            ) {
+                                append(url)
+                            }
+                        },
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize=14.sp,
 
-        Column(
-            Modifier.align(Alignment.BottomCenter)
-        ) {
-            Text("Original recipe from:",color = MaterialTheme.colorScheme.onBackground, fontSize=14.sp, textAlign = TextAlign.Center)
-            SelectionContainer {
-                Text(
-                    text = buildAnnotatedString {
-                        withLink(
-                            LinkAnnotation.Url(url, TextLinkStyles(style= SpanStyle(color=MaterialTheme.colorScheme.primary)))
-                        ) {
-                            append(url)
-                        }
-                    },
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize=14.sp,
-
-                )
+                        )
+                }
+                Spacer(Modifier.padding(bottom = 20.dp))
             }
-            Spacer(Modifier.padding(bottom = 20.dp))
         }
     }
 }
