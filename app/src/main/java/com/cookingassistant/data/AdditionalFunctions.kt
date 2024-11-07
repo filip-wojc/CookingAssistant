@@ -655,7 +655,14 @@ object AdditionalFunctions {
             val name = ingredient.ingredientName ?: ""
             val unit = ingredient.unit ?: ""
             val quanity = ingredient.quantity ?: ""
-            result.add("${name}: ${ingredient.quantity} ${ingredient.unit}")
+            if (unit.contains(' ')) { //external recipe
+                if(result.contains(unit)) {
+                    continue
+                }
+                result.add("${unit}")
+                continue
+            }
+            result.add("${quanity} ${unit} ${name}")
         }
         return result
     }
