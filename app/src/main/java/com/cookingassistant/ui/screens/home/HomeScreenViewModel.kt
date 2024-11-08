@@ -19,25 +19,6 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
     val recipeImage: StateFlow<Bitmap?> get() = _recipeImage
     val userProfileImage: StateFlow<Bitmap?> get() = _userProfileImage
 
-
-    fun getAllNutrientsList(){
-        viewModelScope.launch {
-            try {
-                // Call the suspend function from within a coroutine
-                val response = _recipeService.getAllNutrientsList()
-                // Handle the response here (e.g., update UI state)
-                if (response.isSuccessful) {
-                    val nutrientsList = response.body()
-                    // Handle nutrients list (for example, store it in a LiveData)
-                } else {
-                    // Handle error
-                }
-            } catch (e: Exception) {
-                // Handle any exception that occurs during the network call
-            }
-        }
-    }
-
     fun getAllIngredientsList(){
         viewModelScope.launch {
             try {
@@ -96,7 +77,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
     }
 
 
-
+/*
     // Test recipe post
     fun postRecipeWithImage(){
         // /storage/emulated/0/Download/ja.jpg
@@ -117,10 +98,9 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
                     ingredientNames = listOf("Flour", "Eggs", "Milk"),
                     ingredientQuantities = listOf("200", "3", "250"),
                     ingredientUnits = listOf("g", "pcs", "ml"),
+                    occasionId = 1,
+                    caloricity = 330,
                     steps = listOf("Mix the ingredients", "Bake for 30 minutes", "Let cool before serving"),
-                    nutrientNames = listOf("Calories", "Protein", "Carbohydrates"),
-                    nutrientQuantities = listOf("300", "10", "50"),
-                    nutrientUnits = listOf("kcal", "g", "g")
                 )
                 // Call the suspend function from within a coroutine
                 val response = _recipeService.addRecipe(testRecipe,imagePath)
@@ -139,7 +119,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
             }
         }
     }
-
+*/
 // TODO : REMOVE AFTER FINISHED TESTING
     private fun printRecipeDetails(recipe: RecipeGetDTO?) {
         if (recipe != null) {

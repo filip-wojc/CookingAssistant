@@ -15,9 +15,6 @@ import java.io.File
 import java.io.InputStream
 
 class RecipeService(private val apiRepository: ApiRepository) {
-    suspend fun getAllNutrientsList(): Response<List<String?>> {
-        return apiRepository.getAllNutrientsList()
-    }
 
     suspend fun getAllIngredientsList(): Response<List<String?>> {
         return apiRepository.getAllIngredientsList()
@@ -43,7 +40,7 @@ class RecipeService(private val apiRepository: ApiRepository) {
             null
         }
     }
-
+/*
     suspend fun addRecipe(recipe: RecipePostDTO, imagePath: String): Response<Unit> {
         // Prepare fields as RequestBody
         val namePart = RequestBody.create("text/plain".toMediaTypeOrNull(), recipe.name ?: "")
@@ -55,13 +52,11 @@ class RecipeService(private val apiRepository: ApiRepository) {
 
         // Prepare the list fields and convert them to List<MultipartBody.Part>
         // Convert lists to multipart with appropriate form key
+
         val ingredientNames = convertListToMultipart("IngredientNames", recipe.ingredientNames ?: emptyList())
         val ingredientQuantities = convertListToMultipart("IngredientQuantities", recipe.ingredientQuantities ?: emptyList())
         val ingredientUnits = convertListToMultipart("IngredientUnits", recipe.ingredientUnits ?: emptyList())
         val steps = convertListToMultipart("Steps", recipe.steps ?: emptyList())
-        val nutrientNames = convertListToMultipart("NutrientNames", recipe.nutrientNames ?: emptyList())
-        val nutrientQuantities = convertListToMultipart("NutrientQuantities", recipe.nutrientQuantities ?: emptyList())
-        val nutrientUnits = convertListToMultipart("NutrientUnits", recipe.nutrientUnits ?: emptyList())
 
 
         // Prepare image part
@@ -79,13 +74,10 @@ class RecipeService(private val apiRepository: ApiRepository) {
             ingredientQuantities,
             ingredientUnits,
             steps,
-            nutrientNames,
-            nutrientQuantities,
-            nutrientUnits,
             imagePart
         )
     }
-
+*/
     suspend fun deleteRecipe(recipeId:Int):Response<Unit>{
         val response = apiRepository.deleteRecipe(recipeId)
         return response

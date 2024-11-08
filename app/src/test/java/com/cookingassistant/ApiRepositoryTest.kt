@@ -33,7 +33,7 @@ class ApiRepositoryTest {
     @Before
     fun setUp(){
         tokenRepository = mockk()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6ImRhd2lkIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoiZGF3aWRAdGVzdC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzMxNjcyNjE0LCJpc3MiOiJodHRwOi8vY29va2luZ2Fzc2lzdGFudC5jb20iLCJhdWQiOiJodHRwOi8vY29va2luZ2Fzc2lzdGFudC5jb20ifQ.j4tWXId2xot4bm6AmCB6gu3WCp0_S42YEGaPfPXsNSU"
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiQ29va2luZ0Fzc2lzdGFudCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImZpbGlwQHRlc3QuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTczMjM3MTk0NywiaXNzIjoiaHR0cDovL2Nvb2tpbmdhc3Npc3RhbnQuY29tIiwiYXVkIjoiaHR0cDovL2Nvb2tpbmdhc3Npc3RhbnQuY29tIn0.Ea0sowHf0R2InQhnAM5fQrRqEgUZdyAL35tCYieq6Ps"
         every { tokenRepository.getToken() } returns token
 
         // Build the OkHttpClient with interceptors (including logging and auth)
@@ -52,7 +52,7 @@ class ApiRepositoryTest {
 
         // Build Retrofit with the OkHttpClient
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.111.51:5080/api/") // Replace with actual base URL
+            .baseUrl("http://localhost:5080/api/") // Replace with actual base URL
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -73,14 +73,6 @@ class ApiRepositoryTest {
         return MultipartBody.Part.createFormData(partName, file.name, requestFile)
     }
 
-    // GIT
-    @Test
-    fun `test getAllNutrientsList`() = runBlocking {
-        val response = apiRepository.getAllNutrientsList()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assert(response.body()!!.isNotEmpty())
-    }
     // GIT
     @Test
     fun `test getAllIngredientsList`() = runBlocking {
@@ -154,20 +146,19 @@ class ApiRepositoryTest {
     fun `test postRecipe`() = runBlocking {
         // Define test RecipePostDTO
         val recipe = RecipePostDTO(
-            name = "Test Recipe",
-            description = "This is a test recipe",
+            name = "Vegan Tacos",
+            description = "Tacos with plant-based ingredients",
             imageData = null,
-            serves = 2,
-            difficulty = "Easy",
+            serves = 4,
+            difficultyId = 1,
             timeInMinutes = 20,
-            categoryId = 1,
-            ingredientNames = listOf("Tomato", "Onion"),
-            ingredientQuantities = listOf("2", "1"),
-            ingredientUnits = listOf("pcs", "pcs"),
-            steps = listOf("Chop vegetables", "Cook"),
-            nutrientNames = listOf("Calories"),
-            nutrientQuantities = listOf("200"),
-            nutrientUnits = listOf("kcal")
+            categoryId = 14,
+            ingredientNames = listOf("Tortillas", "Black Beans", "Avocado", "Salsa"),
+            ingredientQuantities = listOf("4", "150", "1", "50"),
+            ingredientUnits = listOf("pcs", "g", "pcs", "g"),
+            occasionId = 6,
+            caloricity = 350,
+            steps = listOf("Prepare Ingredients", "Assemble Tacos", "Serve")
         )
 
         // Load the image from resources as InputStream
@@ -182,18 +173,17 @@ class ApiRepositoryTest {
         val namePart = recipe.name.toRequestBody("text/plain".toMediaTypeOrNull())
         val descriptionPart = recipe.description?.toRequestBody("text/plain".toMediaTypeOrNull())
         val servesPart = recipe.serves.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        val difficultyPart = recipe.difficulty?.toRequestBody("text/plain".toMediaTypeOrNull())
+        val difficultyIdPart = recipe.difficultyId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
         val timeInMinutesPart = recipe.timeInMinutes.toString().toRequestBody("text/plain".toMediaTypeOrNull())
         val categoryIdPart = recipe.categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-
         // Convert lists to multipart with appropriate form key
         val ingredientNames = convertListToMultipart("IngredientNames", recipe.ingredientNames)
         val ingredientQuantities = convertListToMultipart("IngredientQuantities", recipe.ingredientQuantities)
         val ingredientUnits = convertListToMultipart("IngredientUnits", recipe.ingredientUnits)
+        val occasionIdPart = recipe.occasionId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+        val caloricityPart = recipe.caloricity.toString().toRequestBody("text/plain".toMediaTypeOrNull())
         val steps = convertListToMultipart("Steps", recipe.steps)
-        val nutrientNames = convertListToMultipart("NutrientNames", recipe.nutrientNames)
-        val nutrientQuantities = convertListToMultipart("NutrientQuantities", recipe.nutrientQuantities)
-        val nutrientUnits = convertListToMultipart("NutrientUnits", recipe.nutrientUnits)
+
 
 
         // Call the API
@@ -201,16 +191,15 @@ class ApiRepositoryTest {
             namePart,
             descriptionPart,
             servesPart,
-            difficultyPart,
+            difficultyIdPart,
             timeInMinutesPart,
             categoryIdPart,
+            occasionIdPart,
+            caloricityPart,
             ingredientNames,
             ingredientQuantities,
             ingredientUnits,
             steps,
-            nutrientNames,
-            nutrientQuantities,
-            nutrientUnits,
             imagePart
         )
 
@@ -224,23 +213,22 @@ class ApiRepositoryTest {
     fun `test modifyRecipe`() = runBlocking {
         val recipe = RecipePostDTO(
             name = "Test Recipe",
-            description = "Poggers1",
+            description = "This is a test recipe",
             imageData = null,
             serves = 2,
-            difficulty = "Easy",
+            difficultyId = 1,
             timeInMinutes = 20,
             categoryId = 1,
-            ingredientNames = listOf("Chuj1", "Chuj2"),
+            ingredientNames = listOf("Tomato", "Onion"),
             ingredientQuantities = listOf("2", "1"),
             ingredientUnits = listOf("pcs", "pcs"),
-            steps = listOf("Chop vegetables", "Cook"),
-            nutrientNames = listOf("Calories2"),
-            nutrientQuantities = listOf("200"),
-            nutrientUnits = listOf("kcal")
+            occasionId = 1,
+            caloricity = 330,
+            steps = listOf("ChopVegetables", "Cook"),
         )
 
         // Load the image from resources as InputStream
-        val imageInputStream = javaClass.classLoader.getResourceAsStream("pomocy.jpg")
+        val imageInputStream = javaClass.classLoader.getResourceAsStream("polsl.jpg")
             ?: throw IllegalStateException("Image file not found in resources")
 
         // Create RequestBody directly from InputStream using Okio for multipart upload
@@ -251,35 +239,32 @@ class ApiRepositoryTest {
         val namePart = recipe.name.toRequestBody("text/plain".toMediaTypeOrNull())
         val descriptionPart = recipe.description?.toRequestBody("text/plain".toMediaTypeOrNull())
         val servesPart = recipe.serves.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        val difficultyPart = recipe.difficulty?.toRequestBody("text/plain".toMediaTypeOrNull())
+        val difficultyIdPart = recipe.difficultyId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
         val timeInMinutesPart = recipe.timeInMinutes.toString().toRequestBody("text/plain".toMediaTypeOrNull())
         val categoryIdPart = recipe.categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-
         // Convert lists to multipart with appropriate form key
         val ingredientNames = convertListToMultipart("IngredientNames", recipe.ingredientNames)
         val ingredientQuantities = convertListToMultipart("IngredientQuantities", recipe.ingredientQuantities)
         val ingredientUnits = convertListToMultipart("IngredientUnits", recipe.ingredientUnits)
+        val occasionIdPart = recipe.occasionId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+        val caloricityPart = recipe.caloricity.toString().toRequestBody("text/plain".toMediaTypeOrNull())
         val steps = convertListToMultipart("Steps", recipe.steps)
-        val nutrientNames = convertListToMultipart("NutrientNames", recipe.nutrientNames)
-        val nutrientQuantities = convertListToMultipart("NutrientQuantities", recipe.nutrientQuantities)
-        val nutrientUnits = convertListToMultipart("NutrientUnits", recipe.nutrientUnits)
 
         // Call the API
         val response = apiRepository.modifyRecipe(
-            36,
+            4,
             namePart,
             descriptionPart,
             servesPart,
-            difficultyPart,
+            difficultyIdPart,
             timeInMinutesPart,
             categoryIdPart,
+            occasionIdPart,
+            caloricityPart,
             ingredientNames,
             ingredientQuantities,
             ingredientUnits,
             steps,
-            nutrientNames,
-            nutrientQuantities,
-            nutrientUnits,
             imagePart
         )
 

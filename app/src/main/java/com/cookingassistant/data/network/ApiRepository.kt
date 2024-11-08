@@ -14,14 +14,22 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ApiRepository{
-    // NUTRIENTS CONTROLLER
-    @GET("nutrients")
-    suspend fun getAllNutrientsList():Response<List<String?>>
-    // INGREDIENTS CONTROLLER
-    @GET("ingredients")
+
+    // ##### RESOURCE CONTROLLER ###############################################
+    // #
+    // #
+    @GET("resources/ingredients")
     suspend fun getAllIngredientsList():Response<List<String?>>
 
-    // USER CONTROLLER
+    @GET("resources/difficulties")
+
+    // #
+    // #
+    // #########################################################################
+
+    // ##### USER CONTROLLER ###################################################
+    // #
+    // #
     @POST("users/login")
     suspend fun logIn(@Body loginRequest: LoginRequest):Response<LoginResponse>
 
@@ -47,24 +55,28 @@ interface ApiRepository{
 
     @DELETE("users/delete/{username}")
     suspend fun deleteAccount(@Path("username") username:String): Response<Unit>
+    // #
+    // #
+    // #########################################################################
 
-    // RECIPE CONTROLLER
+    // ##### RECIPE CONTROLLER #################################################
+    // #
+    // #
     @Multipart
     @POST("recipes")
     suspend fun postRecipe(
         @Part("Name") name: RequestBody,
         @Part("Description") description: RequestBody?,
         @Part("Serves") serves: RequestBody,
-        @Part("Difficulty") difficulty: RequestBody?,
+        @Part("DifficultyId") difficultyId: RequestBody?,
         @Part("TimeInMinutes") timeInMinutes: RequestBody,
         @Part("CategoryId") categoryId: RequestBody,
+        @Part("OccasionId") occasionId:RequestBody,
+        @Part("Caloricity") caloricity:RequestBody,
         @Part ingredientNames: List<MultipartBody.Part>,
         @Part ingredientQuantities: List<MultipartBody.Part>,
         @Part ingredientUnits: List<MultipartBody.Part>,
         @Part steps: List<MultipartBody.Part>,
-        @Part nutrientNames: List<MultipartBody.Part>,
-        @Part nutrientQuantities: List<MultipartBody.Part>,
-        @Part nutrientUnits: List<MultipartBody.Part>,
         @Part image: MultipartBody.Part
     ): Response<Unit>
 
@@ -75,16 +87,15 @@ interface ApiRepository{
         @Part("Name") name: RequestBody,
         @Part("Description") description: RequestBody?,
         @Part("Serves") serves: RequestBody,
-        @Part("Difficulty") difficulty: RequestBody?,
+        @Part("DifficultyId") difficultyId: RequestBody?,
         @Part("TimeInMinutes") timeInMinutes: RequestBody,
         @Part("CategoryId") categoryId: RequestBody,
+        @Part("OccasionId") occasionId:RequestBody,
+        @Part("Caloricity") caloricity:RequestBody,
         @Part ingredientNames: List<MultipartBody.Part>,
         @Part ingredientQuantities: List<MultipartBody.Part>,
         @Part ingredientUnits: List<MultipartBody.Part>,
         @Part steps: List<MultipartBody.Part>,
-        @Part nutrientNames: List<MultipartBody.Part>,
-        @Part nutrientQuantities: List<MultipartBody.Part>,
-        @Part nutrientUnits: List<MultipartBody.Part>,
         @Part image: MultipartBody.Part
     ): Response<Unit>
 
@@ -102,9 +113,13 @@ interface ApiRepository{
     
     @GET("recipes/image/{recipeId}")
     suspend fun getRecipeImage(@Path("recipeId") recipeId:Int):Response<ResponseBody>
+    // #
+    // #
+    // #########################################################################
 
-    // REVIEW CONTROLLER
-
+    // ###### REVIEW CONTROLLER ################################################
+    // #
+    // #
     @POST("reviews/{recipeId}")
     suspend fun postReview(@Path("recipeId") recipeId: Int, @Body reviewPostDTO: ReviewPostDTO):Response<Unit>
 
@@ -123,6 +138,8 @@ interface ApiRepository{
 
     @GET("reviews/{reviewId}/image")
     suspend fun getReviewImage(@Path("reviewId") reviewId: Int):Response<ResponseBody>
-
+    // #
+    // #
+    // #########################################################################
 
 }
