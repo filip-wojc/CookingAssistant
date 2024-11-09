@@ -14,3 +14,9 @@ data class LoginRequest(
 data class LoginResponse(
     val token: String
 )
+
+data class UserPasswordChangeDTO(
+    val oldPassword: String?,
+    val newPassword: String?,
+    val newPasswordConfirm: String?,
+)

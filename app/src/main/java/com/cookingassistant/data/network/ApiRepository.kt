@@ -21,13 +21,23 @@ interface ApiRepository{
     @GET("resources/ingredients")
     suspend fun getAllIngredientsList():Response<List<String?>>
 
+    // TODO: TEST
     @GET("resources/difficulties")
+    suspend fun getAllDifficultiesList():Response<List<DifficultiesGetDTO>>
 
+    // TODO: TEST
+    @GET("resources/occasions")
+    suspend fun getAllOccasionsList():Response<List<OccasionsGetDTO>>
+
+    // TODO: TEST
+    @GET("resources/categories")
+    suspend fun getAllCategoriesList():Response<List<CategoriesGetDTO>>
     // #
     // #
     // #########################################################################
 
-    // ##### USER CONTROLLER ###################################################
+
+    // ##### AUTH CONTROLLER ###################################################
     // #
     // #
     @POST("users/login")
@@ -35,16 +45,26 @@ interface ApiRepository{
 
     @POST("users/register")
     suspend fun register(@Body registerRequest: RegisterRequest):Response<String?>
+    // #
+    // #
+    // #########################################################################
 
 
+    // ##### USER CONTROLLER ###################################################
+    // #
+    // #
     @POST("users/favourite/{recipeId}")
     suspend fun addRecipeToFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
+
+    @DELETE("users/favourite-recipes/{recipeId}")
+    suspend fun removeRecipeFromFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
 
     @GET("users/favourite-recipes")
     suspend fun getFavouriteRecipes():Response<RecipePageResponse>
 
-    @DELETE("users/favourite-recipes/{recipeId}")
-    suspend fun removeRecipeFromFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
+    // TODO: TEST
+    @GET("users/favourite-recipes/{recipeId}/is-favourite")
+    suspend fun checkIfRecipeInFavourites(@Path("recipeId") recipeId: Int):Response<ResponseBody>
 
     @GET("users/image")
     suspend fun getUserProfilePicture():Response<ResponseBody>
@@ -53,11 +73,21 @@ interface ApiRepository{
     @POST("users/image")
     suspend fun addProfilePicture(@Part image: MultipartBody.Part):Response<Unit>
 
+    // TODO: TEST
+    // TODO: ADD TO SERVICE
+    @PUT("users/change-password")
+    suspend fun changePassword()
+
+    // TODO: TEST
     @DELETE("users/delete/{username}")
-    suspend fun deleteAccount(@Path("username") username:String): Response<Unit>
+    suspend fun deleteAccount(
+        @Path("username") username:String,
+        @Body password: RequestBody
+    ): Response<Unit>
     // #
     // #
     // #########################################################################
+
 
     // ##### RECIPE CONTROLLER #################################################
     // #
@@ -116,6 +146,7 @@ interface ApiRepository{
     // #
     // #
     // #########################################################################
+
 
     // ###### REVIEW CONTROLLER ################################################
     // #
