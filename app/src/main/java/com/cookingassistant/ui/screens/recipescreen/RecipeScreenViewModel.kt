@@ -39,22 +39,23 @@ class RecipeScreenViewModel(private val _service: RecipeService, private val _re
     private val _recipeImg = MutableStateFlow(value=createBitmap(1,1))
     val recipeImg : StateFlow<Bitmap> = _recipeImg
 
-    init {
+    fun loadRecipe(id : Int) {
         viewModelScope.launch {
             try {
-                val response = _service.getRecipeDetails(_recipeId)
+                Log.i("RecipeScreenViewModel", "recipe details request sent")
+                val response = _service.getRecipeDetails(id)
                 if(response.isSuccessful) {
                     _recipe.value = response.body() ?: _recipe.value
                 }
             } catch (e: Exception) {
                 Log.e("RecipeScreenViewModel", "recipe couldnt be loaded")
             }
-
         }
     }
 
     fun loadRecipe(recipe : RecipeGetDTO) {
         _recipe.value = recipe
+        loadImage()
     }
 
     fun getIntRatings() {
@@ -100,7 +101,7 @@ class RecipeScreenViewModel(private val _service: RecipeService, private val _re
     }
 
     fun onFavoriteChanged(isFavorite: Boolean) {
-        //todo send to database
+        //todo send to database remove from favorites
         viewModelScope.launch {
             try {
                 _service.addRecipeToFavorites(_recipe.value.id)

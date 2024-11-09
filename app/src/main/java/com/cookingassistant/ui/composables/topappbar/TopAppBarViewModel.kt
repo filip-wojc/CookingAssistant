@@ -1,9 +1,11 @@
 package com.cookingassistant.ui.composables.topappbar
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.cookingassistant.data.SearchEngine
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
@@ -15,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.lang.Thread.State
 
-class TopAppBarViewModel(private val _service : RecipeService, private val _recipeScreenViewModel : RecipeScreenViewModel) : ViewModel() {
+class TopAppBarViewModel(private val _service : RecipeService, private val _recipeScreenViewModel : RecipeScreenViewModel, private val _navController: NavHostController) : ViewModel() {
     private val _quickSearchText = MutableStateFlow("")
     private val _quickSearchResults = MutableStateFlow(listOf<ExtractedResult>())
     private  val _showSearchResults = MutableStateFlow(false)
@@ -25,11 +27,29 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
     val ShowSearchResults : StateFlow<Boolean> = _showSearchResults
 
     init {
+        _quickSearchResults.value = listOf<ExtractedResult>(ExtractedResult("Propositions are loading...",0,-1))
         viewModelScope.launch {
             try {
                 val status = _service.getRecipeNames()
                 if (status.body() != null) {
                     SearchEngine.updateRecipesList(status.body()!!)
+                } else {
+                    Log.e("TopAppBarViewModel", "_service.getRecipeNames().body is empty", )
+                }
+            } catch (e: Exception) {
+                Log.e("TopAppBarViewModel", e.message ?: "couldnt get message names", )
+            }
+        }
+    }
+
+    fun updateRecipesList() {
+        viewModelScope.launch {
+            try {
+                val status = _service.getRecipeNames()
+                if (status.body() != null) {
+                    SearchEngine.updateRecipesList(status.body()!!)
+                } else {
+                    Log.e("TopAppBarViewModel", "_service.getRecipeNames().body is empty", )
                 }
             } catch (e: Exception) {
                 Log.e("TopAppBarViewModel", e.message ?: "couldnt get message names", )
@@ -53,23 +73,20 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
         _showSearchResults.value = false;
     }
 
-    fun onResultSubmited(id : Int) : Boolean {
-        var isSuccess = false
+    fun onResultSubmited(id : Int) {
         viewModelScope.launch {
             try {
                 val response = _service.getRecipeDetails(id)
                 if(response.isSuccessful) {
                     if(response.body() != null) {
                         _recipeScreenViewModel.loadRecipe(response.body()!!)
-                        isSuccess = true
+                        _navController.navigate("recipeScreen")
                     }
                 }
-                isSuccess = false
             } catch(e: Exception) {
-                isSuccess = false
+                Log.e("onResultSubmited", e.message ?: "failed to submit result")
             }
         }
-        return(isSuccess)
     }
 
     private fun _proposeResults(newText: String) {

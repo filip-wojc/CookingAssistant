@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +44,7 @@ fun RecipeScreenFrontPage(
     difficulty : String,
     size: Float = 0.9f
 ) {
-    Box(
+    Column(
         Modifier
             .fillMaxHeight(size)
             .fillMaxWidth()
@@ -50,70 +52,85 @@ fun RecipeScreenFrontPage(
         ,
     ) {
         Column (
-            Modifier.align(Alignment.TopCenter),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+                .wrapContentWidth(Alignment.CenterHorizontally)
         ) {
             Text(
                 fontWeight = FontWeight.Bold,
-                text=name,
+                text = name,
                 fontSize = 26.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.padding(vertical = 20.dp))
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                item {
-                    Text(text="Author: ${author}", color = MaterialTheme.colorScheme.onBackground)
-                    Spacer(Modifier.height(20.dp).fillMaxWidth())
-                }
-                item {
-                    Text(text="Difficulty: ${difficulty}", color = MaterialTheme.colorScheme.onBackground)
-                    Spacer(Modifier.height(20.dp).fillMaxWidth())
-                }
-                item{
-                    HorizontalDivider(thickness = 5.dp, modifier = Modifier.padding(vertical = 10.dp))
-                }
-                item{
-                    HorizontalDivider(thickness = 5.dp, modifier = Modifier.padding(vertical = 10.dp))
-                }
-                item {
-                    Text(text="Category: ${category}", color = MaterialTheme.colorScheme.onBackground)
-                }
-                item {
-                    Text(text="Occasion: ${occasion}", color = MaterialTheme.colorScheme.onBackground)
-                }
+        }
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            item {
+                Text(text="Author: ${author}", color = MaterialTheme.colorScheme.onBackground,  textAlign = TextAlign.Center)
+                Spacer(Modifier.height(20.dp).fillMaxWidth())
+            }
+            item {
+                Text(text="Difficulty: ${difficulty}", color = MaterialTheme.colorScheme.onBackground,  textAlign = TextAlign.Center)
+                Spacer(Modifier.height(20.dp).fillMaxWidth())
+            }
+            item{
+                HorizontalDivider(thickness = 5.dp, modifier = Modifier.padding(vertical = 10.dp))
+            }
+            item{
+                HorizontalDivider(thickness = 5.dp, modifier = Modifier.padding(vertical = 10.dp))
+            }
+            item {
+                Text(text="Category: ${category}", color = MaterialTheme.colorScheme.onBackground,  textAlign = TextAlign.Center)
+            }
+            item {
+                Text(text="Occasion: ${occasion}", color = MaterialTheme.colorScheme.onBackground,  textAlign = TextAlign.Center)
             }
         }
 
-        if (img != createBitmap(1,1)) {
-            Image(
-                modifier = Modifier.fillMaxHeight()
-                    .align(Alignment.Center)
-                    .clip(RoundedCornerShape(50))
-                ,
-                bitmap = img.asImageBitmap(),
-                contentDescription = null
-            )
-        }
-
-        Column(
-            Modifier.align(Alignment.BottomCenter),
-            horizontalAlignment = Alignment.CenterHorizontally
+        LazyColumn(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(top = 12.dp)
         ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.tertiary)
-                    .padding(5.dp)
-            ) {
-                Text(
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Justify,
-                    text = desc,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
+            item {
+                if (img != createBitmap(1,1)) {
+                    Image(
+                        modifier = Modifier
+                            .height(300.dp)
+                            .clip(RoundedCornerShape(10))
+                        ,
+                        bitmap = img.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillHeight
+                    )
+                }
+            }
+
+            item {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(vertical = 10.dp)
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.tertiary)
+                            .padding(5.dp)
+                    ) {
+                        Text(
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Justify,
+                            text = desc,
+                            color = MaterialTheme.colorScheme.onTertiary
+                        )
+                    }
+                }
             }
         }
     }

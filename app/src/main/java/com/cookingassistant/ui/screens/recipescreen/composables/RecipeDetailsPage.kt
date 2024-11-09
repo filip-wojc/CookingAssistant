@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -31,14 +34,13 @@ import androidx.compose.ui.unit.sp
 fun RecipeDetailsPage(
     calories : Int,
     totalTime : String,
-    url : String,
     ingredients : List<String>,
     serves : Int,
     size: Float = 0.9f,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 20.sp
 ) {
-    Box(
+    Column (
         Modifier
             .fillMaxHeight(size)
             .fillMaxWidth()
@@ -46,7 +48,8 @@ fun RecipeDetailsPage(
         ,
     ) {
         Column(
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Details",
@@ -115,43 +118,22 @@ fun RecipeDetailsPage(
                 }
             }
         }
-        Column(
-            Modifier.align(Alignment.Center)
+
+        Text(text="Ingredients", color = MaterialTheme.colorScheme.onTertiaryContainer,
+            modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(),
+            fontSize = fontSize, textAlign = TextAlign.Center)
+
+        LazyColumn(
+            Modifier.wrapContentWidth(Alignment.CenterHorizontally).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text="Ingredients", color = MaterialTheme.colorScheme.onTertiaryContainer,
-                modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(),
-                fontSize = fontSize, textAlign = TextAlign.Center)
-            for(ingredient in ingredients) {
+            items(ingredients) { ingredient ->
                 Text(
                     text="◼ " + ingredient,
                     modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 18.sp
                 )
-            }
-        }
-
-        if(url != "") {
-            Column(
-                Modifier.align(Alignment.BottomCenter)
-            ) {
-                Text("Original recipe from:",color = MaterialTheme.colorScheme.onBackground, fontSize=14.sp, textAlign = TextAlign.Center)
-                SelectionContainer {
-                    Text(
-                        text = buildAnnotatedString {
-                            withLink(
-                                LinkAnnotation.Url(url, TextLinkStyles(style= SpanStyle(color=MaterialTheme.colorScheme.primary)))
-                            ) {
-                                append(url)
-                            }
-                        },
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize=14.sp,
-
-                        )
-                }
-                Spacer(Modifier.padding(bottom = 20.dp))
             }
         }
     }

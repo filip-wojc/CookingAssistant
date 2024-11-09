@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.cookingassistant.compose.AppTheme
+import com.cookingassistant.data.SearchEngine
 import com.cookingassistant.ui.composables.bottomBorder
 import kotlinx.coroutines.launch
 
@@ -68,7 +69,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
               searchQuery: String = "",
-              navController: NavController,
               content: @Composable() () -> Unit
               ) {
 
@@ -83,7 +83,6 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
     //---------//
     //Left menu//
     //---------//
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -200,12 +199,10 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                             text = result.string,
                             color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.clickable {
+                                if(result.index == -1) return@clickable;
                                 topAppBarviewModel.onSearchTextChanged(result.string)
-
                                 topAppBarviewModel.onResultsHide()
-                                if(topAppBarviewModel.onResultSubmited(result.index)) {
-                                    navController.navigate("recipeScreen")
-                                }
+                                topAppBarviewModel.onResultSubmited(SearchEngine.getIndex(result.index))
                             }
                                 .padding(vertical = 5.dp, horizontal = 5.dp)
                         )
