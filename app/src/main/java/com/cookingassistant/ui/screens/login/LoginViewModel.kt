@@ -1,15 +1,14 @@
 package com.cookingassistant.ui.screens.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.TokenRepository
-import com.cookingassistant.services.UserService
+import com.cookingassistant.services.AuthService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val _service: UserService,private val tokenRepository: TokenRepository) : ViewModel() {
+class LoginViewModel(private val _service: AuthService, private val tokenRepository: TokenRepository) : ViewModel() {
 
     private val _ingredientsList = MutableStateFlow<List<Pair<String,Int>>?>(null)
     val ingredientsList:StateFlow<List<Pair<String,Int>>?> = _ingredientsList

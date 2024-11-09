@@ -1,7 +1,6 @@
 package com.cookingassistant
 
 import android.content.pm.PackageManager
-import android.media.session.MediaSession.Token
 import com.cookingassistant.ui.screens.home.HomeScreen
 import com.cookingassistant.ui.screens.login.LoginScreen
 import android.os.Bundle
@@ -13,9 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import android.Manifest
 import android.os.Build
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,12 +20,11 @@ import androidx.navigation.compose.rememberNavController
 import com.cookingassistant.data.TokenRepository
 import com.cookingassistant.data.network.RetrofitClient
 import com.cookingassistant.services.RecipeService
-import com.cookingassistant.services.UserService
+import com.cookingassistant.services.AuthService
 import com.cookingassistant.ui.screens.home.LoginViewModel
 import com.cookingassistant.ui.screens.registration.RegistrationScreen
 import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.compose.AppTheme
-import com.cookingassistant.data.SearchEngine
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
 import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
@@ -63,7 +59,7 @@ class MainActivity : ComponentActivity() {
         val tokenRepository = TokenRepository(applicationContext)
         val apiRepository = RetrofitClient(tokenRepository).retrofit
         // Create services
-        val userService = UserService(apiRepository)
+        val userService = AuthService(apiRepository)
         val recipeService = RecipeService(apiRepository)
         setContent {
             AppTheme {
@@ -119,16 +115,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 // modify this code to inject services
-fun AppNavigator(userService: UserService, recipeService: RecipeService, tokenRepository:TokenRepository){
+fun AppNavigator(authService: AuthService, recipeService: RecipeService, tokenRepository:TokenRepository){
     val navController = rememberNavController()
     NavGraph(navController = navController,
-        userService = userService,
+        authService = authService,
         recipeService = recipeService,
         tokenRepository = tokenRepository)
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, userService: UserService,recipeService: RecipeService,tokenRepository: TokenRepository) {
+fun NavGraph(navController: NavHostController, authService: AuthService, recipeService: RecipeService, tokenRepository: TokenRepository) {
     AppTheme {
         val rsvm = RecipeScreenViewModel(recipeService,1)
         TopAppBar(navController=navController, topAppBarviewModel = TopAppBarViewModel(recipeService, rsvm)) {
@@ -137,16 +133,16 @@ fun NavGraph(navController: NavHostController, userService: UserService,recipeSe
                     // create viewModel and inject service
                     // TODO: Implement factories later
                     //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
-                    val loginViewModel = LoginViewModel(userService, tokenRepository)
+                    val loginViewModel = LoginViewModel(authService, tokenRepository)
                     LoginScreen(navController, loginViewModel)
                 }
                 composable("home") {
-                    val homeViewModel = HomeScreenViewModel(recipeService, userService)
+                    val homeViewModel = HomeScreenViewModel(recipeService, authService)
                     HomeScreen(navController, homeViewModel)
                 }
                 composable("test") { TestRecipesColumn() } //For testing purposes
                 composable("registration") {
-                    val registrationViewModel = RegistrationViewModel(userService)
+                    val registrationViewModel = RegistrationViewModel(authService)
                     RegistrationScreen(navController, registrationViewModel)
                 }
                 composable("recipeScreen") {
