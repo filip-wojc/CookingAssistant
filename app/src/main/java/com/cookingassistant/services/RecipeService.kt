@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.cookingassistant.data.DTO.RecipeGetDTO
 import com.cookingassistant.data.DTO.RecipeNameDTO
-import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.data.DTO.ReviewPostDTO
 import com.cookingassistant.data.network.ApiRepository
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -14,22 +13,22 @@ import retrofit2.Response
 import java.io.File
 import java.io.InputStream
 
-class RecipeService(private val apiRepository: ApiRepository) {
+class RecipeService(private val _apiRepository: ApiRepository) {
 
     suspend fun getAllIngredientsList(): Response<List<String?>> {
-        return apiRepository.getAllIngredientsList()
+        return _apiRepository.getAllIngredientsList()
     }
 
     suspend fun getRecipeDetails(recipeId: Int):Response<RecipeGetDTO>{
-        return apiRepository.getRecipeDetails(recipeId)
+        return _apiRepository.getRecipeDetails(recipeId)
     }
 
     suspend fun getRecipeNames(): Response<List<RecipeNameDTO>> {
-        return apiRepository.getAllRecipeNames()
+        return _apiRepository.getAllRecipeNames()
     }
 
     suspend fun getRecipeImageBitmap(recipeId: Int): Bitmap?{
-        val response = apiRepository.getRecipeImage(recipeId)
+        val response = _apiRepository.getRecipeImage(recipeId)
 
         return if (response.isSuccessful && response.body() != null) {
             val inputStream: InputStream = response.body()!!.byteStream()
@@ -79,17 +78,17 @@ class RecipeService(private val apiRepository: ApiRepository) {
     }
 */
     suspend fun deleteRecipe(recipeId:Int):Response<Unit>{
-        val response = apiRepository.deleteRecipe(recipeId)
+        val response = _apiRepository.deleteRecipe(recipeId)
         return response
     }
 
     suspend fun addReview(recipeId: Int, review: ReviewPostDTO):Response<Unit>{
-        val response = apiRepository.postReview(recipeId, review)
+        val response = _apiRepository.postReview(recipeId, review)
         return response
     }
 
     suspend fun addRecipeToFavorites(recipeId:Int):Response<Unit>{
-        val response = apiRepository.addRecipeToFavourites(recipeId)
+        val response = _apiRepository.addRecipeToFavourites(recipeId)
         return response
     }
 
