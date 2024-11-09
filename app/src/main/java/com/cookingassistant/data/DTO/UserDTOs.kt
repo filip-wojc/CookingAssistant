@@ -12,7 +12,8 @@ data class LoginRequest(
 )
 
 data class LoginResponse(
-    val token: String
+    val token: String,
+    val username: String
 )
 
 data class UserPasswordChangeDTO(

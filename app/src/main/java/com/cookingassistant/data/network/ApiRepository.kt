@@ -12,6 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiRepository{
 
@@ -21,15 +22,12 @@ interface ApiRepository{
     @GET("resources/ingredients")
     suspend fun getAllIngredientsList():Response<List<String?>>
 
-    // TODO: TEST
     @GET("resources/difficulties")
     suspend fun getAllDifficultiesList():Response<List<DifficultiesGetDTO>>
 
-    // TODO: TEST
     @GET("resources/occasions")
     suspend fun getAllOccasionsList():Response<List<OccasionsGetDTO>>
 
-    // TODO: TEST
     @GET("resources/categories")
     suspend fun getAllCategoriesList():Response<List<CategoriesGetDTO>>
     // #
@@ -62,7 +60,6 @@ interface ApiRepository{
     @GET("users/favourite-recipes")
     suspend fun getFavouriteRecipes():Response<RecipePageResponse>
 
-    // TODO: TEST
     @GET("users/favourite-recipes/{recipeId}/is-favourite")
     suspend fun checkIfRecipeInFavourites(@Path("recipeId") recipeId: Int):Response<ResponseBody>
 
@@ -73,10 +70,9 @@ interface ApiRepository{
     @POST("users/image")
     suspend fun addProfilePicture(@Part image: MultipartBody.Part):Response<Unit>
 
-    // TODO: TEST
     // TODO: ADD TO SERVICE
     @PUT("users/change-password")
-    suspend fun changePassword()
+    suspend fun changePassword(@Body passwordChangeDTO: UserPasswordChangeDTO): Response<Unit>
 
     // TODO: TEST
     @DELETE("users/delete/{username}")
@@ -136,7 +132,17 @@ interface ApiRepository{
     suspend fun getRecipeDetails(@Path("recipeId") recipeId:Int):Response<RecipeGetDTO>
 
     @GET("recipes")
-    suspend fun getAllRecipes():Response<RecipePageResponse>
+    suspend fun getAllRecipes(
+        @Query("SearchPhrase") searchPhrase: String? = null,
+        @Query("IngredientsSearch") ingredientsSearch: String? = null,
+        @Query("SortBy") sortBy: String? = null, //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity
+        @Query("SortDirection") sortDirection: String? = null, // "Ascending" or "Descending"
+        @Query("FilterByDifficulty") filterByDifficulty: String? = null,
+        @Query("FilterByCategoryName") filterByCategoryName: String? = null,
+        @Query("FilterByOccasion") filterByOccasion: String? = null,
+        @Query("PageNumber") pageNumber: Int? = null,
+        @Query("PageSize") pageSize: Int? = null
+    ): Response<RecipePageResponse>
 
     @GET("recipes/names")
     suspend fun getAllRecipeNames():Response<List<RecipeNameDTO>>
@@ -155,7 +161,7 @@ interface ApiRepository{
     suspend fun postReview(@Path("recipeId") recipeId: Int, @Body reviewPostDTO: ReviewPostDTO):Response<Unit>
 
 
-    @POST("reviews/{recipeId}/modify")
+    @PUT("reviews/{recipeId}/modify")
     suspend fun modifyReview(@Path("recipeId") recipeId: Int, @Body reviewPostDTO: ReviewPostDTO):Response<Unit>
 
     @DELETE("reviews/{recipeId}/delete")
