@@ -1,11 +1,8 @@
 package com.cookingassistant.ui.screens.home
-import com.cookingassistant.util.ImageConverter
 import android.graphics.Bitmap
-import android.os.Environment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.DTO.RecipeGetDTO
-import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.services.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,14 +40,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
             _recipeImage.value = bitmap
         }
     }
-    // TODO : DELETE AFTER TEST
-    fun getProfilePictureImageBitmap(){
-        viewModelScope.launch{
-            val bitmap = _userService.getUserProfilePictureBitmap()
-            _userProfileImage.value = bitmap
-        }
 
-    }
     fun getRecipeDetails(recipeId: Int){
         viewModelScope.launch {
             try {

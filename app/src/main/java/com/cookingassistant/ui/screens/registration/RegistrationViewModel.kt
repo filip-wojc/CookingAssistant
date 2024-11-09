@@ -2,12 +2,12 @@ package com.cookingassistant.ui.screens.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cookingassistant.services.UserService
+import com.cookingassistant.services.AuthService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class RegistrationViewModel(private val _service: UserService) : ViewModel() {
+class RegistrationViewModel(private val _service: AuthService) : ViewModel() {
 
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
