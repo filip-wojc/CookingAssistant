@@ -1,11 +1,8 @@
 package com.cookingassistant.ui.screens.home
-import com.cookingassistant.util.ImageConverter
 import android.graphics.Bitmap
-import android.os.Environment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.DTO.RecipeGetDTO
-import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.services.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,25 +15,6 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
     private val _userProfileImage = MutableStateFlow<Bitmap?>(null)
     val recipeImage: StateFlow<Bitmap?> get() = _recipeImage
     val userProfileImage: StateFlow<Bitmap?> get() = _userProfileImage
-
-
-    fun getAllNutrientsList(){
-        viewModelScope.launch {
-            try {
-                // Call the suspend function from within a coroutine
-                val response = _recipeService.getAllNutrientsList()
-                // Handle the response here (e.g., update UI state)
-                if (response.isSuccessful) {
-                    val nutrientsList = response.body()
-                    // Handle nutrients list (for example, store it in a LiveData)
-                } else {
-                    // Handle error
-                }
-            } catch (e: Exception) {
-                // Handle any exception that occurs during the network call
-            }
-        }
-    }
 
     fun getAllIngredientsList(){
         viewModelScope.launch {
@@ -62,14 +40,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
             _recipeImage.value = bitmap
         }
     }
-    // TODO : DELETE AFTER TEST
-    fun getProfilePictureImageBitmap(){
-        viewModelScope.launch{
-            val bitmap = _userService.getUserProfilePictureBitmap()
-            _userProfileImage.value = bitmap
-        }
 
-    }
     fun getRecipeDetails(recipeId: Int){
         viewModelScope.launch {
             try {
@@ -96,7 +67,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
     }
 
 
-
+/*
     // Test recipe post
     fun postRecipeWithImage(){
         // /storage/emulated/0/Download/ja.jpg
@@ -117,10 +88,9 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
                     ingredientNames = listOf("Flour", "Eggs", "Milk"),
                     ingredientQuantities = listOf("200", "3", "250"),
                     ingredientUnits = listOf("g", "pcs", "ml"),
+                    occasionId = 1,
+                    caloricity = 330,
                     steps = listOf("Mix the ingredients", "Bake for 30 minutes", "Let cool before serving"),
-                    nutrientNames = listOf("Calories", "Protein", "Carbohydrates"),
-                    nutrientQuantities = listOf("300", "10", "50"),
-                    nutrientUnits = listOf("kcal", "g", "g")
                 )
                 // Call the suspend function from within a coroutine
                 val response = _recipeService.addRecipe(testRecipe,imagePath)
@@ -139,7 +109,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
             }
         }
     }
-
+*/
 // TODO : REMOVE AFTER FINISHED TESTING
     private fun printRecipeDetails(recipe: RecipeGetDTO?) {
         if (recipe != null) {

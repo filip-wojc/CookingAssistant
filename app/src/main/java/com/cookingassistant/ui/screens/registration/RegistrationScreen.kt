@@ -65,11 +65,12 @@ fun RegistrationScreen(navController: NavController, registrationViewModel: Regi
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Login button
+        // Register Button
         Button(
             onClick = {
-                navController.navigate("login")
-                //registrationViewModel.registerUser()
+                registrationViewModel.registerUser()
+                if(isRegistrationSuccessful)
+                    navController.navigate("login")
             },
             modifier = Modifier.fillMaxWidth()
         ) {

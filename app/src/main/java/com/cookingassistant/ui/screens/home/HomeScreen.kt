@@ -45,7 +45,7 @@ fun HomeScreen(navController: NavController, homeScreenViewModel: HomeScreenView
             val imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/ja.jpg"
             val imageConverter = ImageConverter()
             val imageByteArray = imageConverter.convertImageToByteArray(imagePath)
-            homeScreenViewModel.getProfilePictureImageBitmap()
+
 
                          }, modifier = Modifier.fillMaxWidth()) {
             Text("Show Image")

@@ -115,8 +115,9 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             // Login button
             Button(
                 onClick = {
-                    //loginViewModel.login()
-                    navController.navigate("home")
+                    loginViewModel.login()
+                    if(isLoginSuccessful)
+                        navController.navigate("home")
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

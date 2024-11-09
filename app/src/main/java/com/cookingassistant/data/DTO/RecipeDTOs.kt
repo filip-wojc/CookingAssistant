@@ -1,24 +1,26 @@
 package com.cookingassistant.data.DTO
-
 import android.graphics.Bitmap
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
 
 data class Recipe(
+    val id: Int,
     val name: String?,
     val description: String?,
+    val CreatedDate: String,
+    val ModificationDate: String?,
+    val authorName: String,
     val image: Bitmap?,
+    val ratings: Double?,
+    val VoteCount: Int,
+    val timeInMinutes: Int?,
     val serves: Int,
     val difficulty: String?,
-    val timeInMinutes: Int?,
+    val category: String,
     val categoryId: Int,
+    val occasion:String,
     val ingredientNames: List<String?>,
     val ingredientQuantities: List<String?>,
     val ingredientUnits: List<String?>,
     val steps: List<String?>,
-    val nutrientNames: List<String?>,
-    val nutrientQuantities: List<String?>,
-    val nutrientUnits: List<String?>
 )
 
 data class RecipeSimpleGetDTO(
@@ -27,8 +29,10 @@ data class RecipeSimpleGetDTO(
     val description: String,
     val ratings: Float,
     val timeInMinutes: Int,
-    val difficulty: String,
+    val difficultyName: String,
     val voteCount: Int,
+    val caloricity: Int,
+    val occasionName: String,
     val categoryName: String
 )
 
@@ -50,16 +54,15 @@ data class RecipePostDTO(
     val description: String?,
     val imageData: ByteArray?,
     val serves: Int?,
-    val difficulty: String?,
+    val difficultyId: Int,
     val timeInMinutes: Int?,
     val categoryId: Int,
+    val occasionId: Int,
+    val caloricity: Int,
     val ingredientNames: List<String?>,
     val ingredientQuantities: List<String?>,
     val ingredientUnits: List<String?>,
     val steps: List<String?>,
-    val nutrientNames: List<String?>,
-    val nutrientQuantities: List<String?>,
-    val nutrientUnits: List<String?>
 )
 
 data class RecipeGetDTO(
@@ -85,34 +88,12 @@ data class RecipeIngredientGetDTO(
     val unit:String?
 )
 
-data class RecipeNutrientGetDTO(
-    val nutrientName:String?,
-    val quantity: String?,
-    val unit:String?
-)
-
 data class StepGetDTO(
     val stepNumber:Int,
     val description:String?
 )
 
-data class RecipeImage(
-    val imageData:ByteArray?
-)
 
-data class ReviewPostDTO(
-    val value: Int,
-    val description: String?
-)
-
-data class ReviewGetDTO(
-    val id: Int,
-    val value: Int,
-    val description: String?,
-    val reviewAuthor: String?,
-    val dateCreated: String,
-    val dateModified: String?
-)
 
 
 

@@ -12,31 +12,56 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiRepository{
-    // NUTRIENTS CONTROLLER
-    @GET("nutrients")
-    suspend fun getAllNutrientsList():Response<List<String?>>
-    // INGREDIENTS CONTROLLER
-    @GET("ingredients")
+
+    // ##### RESOURCE CONTROLLER ###############################################
+    // #
+    // #
+    @GET("resources/ingredients")
     suspend fun getAllIngredientsList():Response<List<String?>>
 
-    // USER CONTROLLER
+    @GET("resources/difficulties")
+    suspend fun getAllDifficultiesList():Response<List<DifficultiesGetDTO>>
+
+    @GET("resources/occasions")
+    suspend fun getAllOccasionsList():Response<List<OccasionsGetDTO>>
+
+    @GET("resources/categories")
+    suspend fun getAllCategoriesList():Response<List<CategoriesGetDTO>>
+    // #
+    // #
+    // #########################################################################
+
+
+    // ##### AUTH CONTROLLER ###################################################
+    // #
+    // #
     @POST("users/login")
     suspend fun logIn(@Body loginRequest: LoginRequest):Response<LoginResponse>
 
     @POST("users/register")
     suspend fun register(@Body registerRequest: RegisterRequest):Response<String?>
+    // #
+    // #
+    // #########################################################################
 
 
+    // ##### USER CONTROLLER ###################################################
+    // #
+    // #
     @POST("users/favourite/{recipeId}")
     suspend fun addRecipeToFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
+
+    @DELETE("users/favourite-recipes/{recipeId}")
+    suspend fun removeRecipeFromFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
 
     @GET("users/favourite-recipes")
     suspend fun getFavouriteRecipes():Response<RecipePageResponse>
 
-    @DELETE("users/favourite-recipes/{recipeId}")
-    suspend fun removeRecipeFromFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
+    @GET("users/favourite-recipes/{recipeId}/is-favourite")
+    suspend fun checkIfRecipeInFavourites(@Path("recipeId") recipeId: Int):Response<ResponseBody>
 
     @GET("users/image")
     suspend fun getUserProfilePicture():Response<ResponseBody>
@@ -45,26 +70,39 @@ interface ApiRepository{
     @POST("users/image")
     suspend fun addProfilePicture(@Part image: MultipartBody.Part):Response<Unit>
 
-    @DELETE("users/delete/{username}")
-    suspend fun deleteAccount(@Path("username") username:String): Response<Unit>
+    // TODO: ADD TO SERVICE
+    @PUT("users/change-password")
+    suspend fun changePassword(@Body passwordChangeDTO: UserPasswordChangeDTO): Response<Unit>
 
-    // RECIPE CONTROLLER
+    // TODO: TEST
+    @DELETE("users/delete/{username}")
+    suspend fun deleteAccount(
+        @Path("username") username:String,
+        @Body password: RequestBody
+    ): Response<Unit>
+    // #
+    // #
+    // #########################################################################
+
+
+    // ##### RECIPE CONTROLLER #################################################
+    // #
+    // #
     @Multipart
     @POST("recipes")
     suspend fun postRecipe(
         @Part("Name") name: RequestBody,
         @Part("Description") description: RequestBody?,
         @Part("Serves") serves: RequestBody,
-        @Part("Difficulty") difficulty: RequestBody?,
+        @Part("DifficultyId") difficultyId: RequestBody?,
         @Part("TimeInMinutes") timeInMinutes: RequestBody,
         @Part("CategoryId") categoryId: RequestBody,
+        @Part("OccasionId") occasionId:RequestBody,
+        @Part("Caloricity") caloricity:RequestBody,
         @Part ingredientNames: List<MultipartBody.Part>,
         @Part ingredientQuantities: List<MultipartBody.Part>,
         @Part ingredientUnits: List<MultipartBody.Part>,
         @Part steps: List<MultipartBody.Part>,
-        @Part nutrientNames: List<MultipartBody.Part>,
-        @Part nutrientQuantities: List<MultipartBody.Part>,
-        @Part nutrientUnits: List<MultipartBody.Part>,
         @Part image: MultipartBody.Part
     ): Response<Unit>
 
@@ -75,16 +113,15 @@ interface ApiRepository{
         @Part("Name") name: RequestBody,
         @Part("Description") description: RequestBody?,
         @Part("Serves") serves: RequestBody,
-        @Part("Difficulty") difficulty: RequestBody?,
+        @Part("DifficultyId") difficultyId: RequestBody?,
         @Part("TimeInMinutes") timeInMinutes: RequestBody,
         @Part("CategoryId") categoryId: RequestBody,
+        @Part("OccasionId") occasionId:RequestBody,
+        @Part("Caloricity") caloricity:RequestBody,
         @Part ingredientNames: List<MultipartBody.Part>,
         @Part ingredientQuantities: List<MultipartBody.Part>,
         @Part ingredientUnits: List<MultipartBody.Part>,
         @Part steps: List<MultipartBody.Part>,
-        @Part nutrientNames: List<MultipartBody.Part>,
-        @Part nutrientQuantities: List<MultipartBody.Part>,
-        @Part nutrientUnits: List<MultipartBody.Part>,
         @Part image: MultipartBody.Part
     ): Response<Unit>
 
@@ -95,21 +132,36 @@ interface ApiRepository{
     suspend fun getRecipeDetails(@Path("recipeId") recipeId:Int):Response<RecipeGetDTO>
 
     @GET("recipes")
-    suspend fun getAllRecipes():Response<RecipePageResponse>
+    suspend fun getAllRecipes(
+        @Query("SearchPhrase") searchPhrase: String? = null,
+        @Query("IngredientsSearch") ingredientsSearch: String? = null,
+        @Query("SortBy") sortBy: String? = null, //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity
+        @Query("SortDirection") sortDirection: String? = null, // "Ascending" or "Descending"
+        @Query("FilterByDifficulty") filterByDifficulty: String? = null,
+        @Query("FilterByCategoryName") filterByCategoryName: String? = null,
+        @Query("FilterByOccasion") filterByOccasion: String? = null,
+        @Query("PageNumber") pageNumber: Int? = null,
+        @Query("PageSize") pageSize: Int? = null
+    ): Response<RecipePageResponse>
 
     @GET("recipes/names")
     suspend fun getAllRecipeNames():Response<List<RecipeNameDTO>>
     
     @GET("recipes/image/{recipeId}")
     suspend fun getRecipeImage(@Path("recipeId") recipeId:Int):Response<ResponseBody>
+    // #
+    // #
+    // #########################################################################
 
-    // REVIEW CONTROLLER
 
+    // ###### REVIEW CONTROLLER ################################################
+    // #
+    // #
     @POST("reviews/{recipeId}")
     suspend fun postReview(@Path("recipeId") recipeId: Int, @Body reviewPostDTO: ReviewPostDTO):Response<Unit>
 
 
-    @POST("reviews/{recipeId}/modify")
+    @PUT("reviews/{recipeId}/modify")
     suspend fun modifyReview(@Path("recipeId") recipeId: Int, @Body reviewPostDTO: ReviewPostDTO):Response<Unit>
 
     @DELETE("reviews/{recipeId}/delete")
@@ -123,6 +175,8 @@ interface ApiRepository{
 
     @GET("reviews/{reviewId}/image")
     suspend fun getReviewImage(@Path("reviewId") reviewId: Int):Response<ResponseBody>
-
+    // #
+    // #
+    // #########################################################################
 
 }

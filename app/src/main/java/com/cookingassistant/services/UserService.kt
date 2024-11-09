@@ -2,27 +2,54 @@ package com.cookingassistant.services
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.cookingassistant.data.DTO.LoginRequest
-import com.cookingassistant.data.DTO.LoginResponse
-import com.cookingassistant.data.DTO.RegisterRequest
-import com.cookingassistant.data.TokenRepository
 import com.cookingassistant.data.network.ApiRepository
-import okhttp3.ResponseBody
-import retrofit2.Response
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.InputStream
 
-class UserService(private val apiRepository: ApiRepository) {
-    suspend fun logInUser(email: String, password:String): Response<LoginResponse> {
-        val requestBody = LoginRequest(email = email, password = password)
-        return apiRepository.logIn(requestBody)
+class UserService(private val _apiRepository: ApiRepository) {
+    // TODO: TEST
+    // TODO: ADD RESPONSE HANDLING
+    suspend fun addRecipeToUserFavourites(recipeId:Int){
+        val response = _apiRepository.addRecipeToFavourites(recipeId)
+
     }
-    suspend fun registerUser(username: String, email: String, password: String): Response<String?>
-    {
-        val requestBody = RegisterRequest(username, email, password)
-        return apiRepository.register(requestBody)
+
+    // TODO: TEST
+    // TODO: ADD RESPONSE HANDLING
+    suspend fun removeRecipeFromUserFavourites(recipeId: Int){
+        val response = _apiRepository.removeRecipeFromFavourites(recipeId)
+
     }
+
+    // TODO: TEST
+    // TODO: ADD RESPONSE HANDLING
+
+    suspend fun getUserFavouriteRecipes(){
+        val response = _apiRepository.getFavouriteRecipes()
+
+    }
+
+    // TODO: TEST
+    // TODO: ADD RESPONSE HANDLING
+    suspend fun checkIfRecipeInUserFavourites(recipeId: Int){
+        _apiRepository.checkIfRecipeInFavourites(recipeId)
+    }
+
+    // TODO: TEST
+    // TODO: ADD RESPONSE HANDLING
+    suspend fun addUserProfilePicture(imageStream: InputStream, mimeType: String){
+        val imageRequestBody = imageStream.readBytes()
+            .toRequestBody("image/jpeg".toMediaTypeOrNull())
+        val imagePart = MultipartBody.Part.createFormData("imageData", "profile.${mimeType.substringAfter("/")}", imageRequestBody)
+
+        val response = _apiRepository.addProfilePicture(imagePart)
+    }
+    // TODO: TEST
+    // TODO: ADD RESPONSE HANDLING
     suspend fun getUserProfilePictureBitmap(): Bitmap?{
-        val response = apiRepository.getUserProfilePicture()
+        val response = _apiRepository.getUserProfilePicture()
 
         if (response.isSuccessful && response.body() != null) {
             val inputStream: InputStream = response.body()!!.byteStream()
@@ -33,4 +60,13 @@ class UserService(private val apiRepository: ApiRepository) {
             return null
         }
     }
+
+    // TODO: TEST
+    // TODO: ADD RESPONSE HANDLING
+    suspend fun deleteUserAccount(username: String, password: String){
+        val passwordBody = password.toRequestBody()
+        val response = _apiRepository.deleteAccount(username, passwordBody)
+    }
+
+
 }
