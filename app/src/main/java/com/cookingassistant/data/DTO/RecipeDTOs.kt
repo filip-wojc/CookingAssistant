@@ -82,6 +82,18 @@ data class RecipeGetDTO(
     val steps: List<StepGetDTO>?
 )
 
+data class RecipeQuery(
+    val SearchPhrase: String? = null ,
+    val Ingredients: List<String>? = null,
+    val SortBy: String? = null,
+    val SortDirection: String? = null,
+    val Difficulty: String? = null,
+    val Category: String? = null,
+    val Occasion: String? = null,
+    val PageNumber: Int = 1,
+    val PageSize: Int = 10
+)
+
 data class RecipeIngredientGetDTO(
     val ingredientName:String?,
     val quantity:String?,
