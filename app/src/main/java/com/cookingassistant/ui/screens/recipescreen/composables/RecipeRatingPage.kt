@@ -1,5 +1,6 @@
 package com.cookingassistant.ui.screens.recipescreen.composables
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,12 +23,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cookingassistant.R
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun RecipeRatingPage(
@@ -44,7 +48,7 @@ fun RecipeRatingPage(
     val ratingSelection by recipeScreenViewModel.userRating.collectAsState()
     val userComment by recipeScreenViewModel.userComment.collectAsState()
     val maxCommentLength = 150
-
+    val context = LocalContext.current
     Box(
         Modifier
             .fillMaxHeight(size)
@@ -96,7 +100,14 @@ fun RecipeRatingPage(
                     )
                 }
             )
-            Button(onClick = {recipeScreenViewModel.onRatingSubmited(ratingSelection, userComment)}, enabled = ratingSelection != 0, modifier = Modifier
+            Button (
+            onClick = {
+                        recipeScreenViewModel.onRatingSubmited(ratingSelection, userComment)
+                        val t = Toast.makeText(context, recipeScreenViewModel.ratingResponse, Toast.LENGTH_LONG)
+                        t.show()
+                },
+                enabled = ratingSelection != 0,
+                modifier = Modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(0.8f)
             ) {

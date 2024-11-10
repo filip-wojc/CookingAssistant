@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HideSource
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -56,6 +58,7 @@ import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -114,12 +117,10 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
 
                 when(selectedTool) {
                     "ShoppingList" -> {
-                      
+
                     }
                     else -> topAppBarviewModel.onDeselctTool()
                 }
-
-
             }
         }
     ) {
@@ -158,7 +159,12 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                                 Icon(
                                     Icons.Filled.Search, contentDescription = "Search",
                                 )
-                            }
+                            },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = {
+                                    //todo RecipePreviewsScreen
+                                }
+                            )
                         )
 
                     },

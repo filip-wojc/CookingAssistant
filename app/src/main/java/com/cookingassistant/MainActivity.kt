@@ -131,7 +131,7 @@ fun AppNavigator(authService: AuthService,userService: UserService, recipeServic
 @Composable
 fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,recipeService: RecipeService, tokenRepository: TokenRepository) {
     AppTheme {
-        val rsvm = RecipeScreenViewModel(recipeService,1)
+        val rsvm = RecipeScreenViewModel(recipeService,userService)
         val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController)
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {

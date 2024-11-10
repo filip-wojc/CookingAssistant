@@ -6,6 +6,8 @@ import com.cookingassistant.data.network.ApiRepository
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody
 import java.io.InputStream
 
 class UserService(private val _apiRepository: ApiRepository) {
@@ -33,8 +35,8 @@ class UserService(private val _apiRepository: ApiRepository) {
 
     // TODO: TEST
     // TODO: ADD RESPONSE HANDLING
-    suspend fun checkIfRecipeInUserFavourites(recipeId: Int){
-        _apiRepository.checkIfRecipeInFavourites(recipeId)
+    suspend fun checkIfRecipeInUserFavourites(recipeId: Int) : Boolean? {
+        return _apiRepository.checkIfRecipeInFavourites(recipeId).body()
     }
 
     // TODO: TEST
