@@ -401,7 +401,26 @@ class ApiRepositoryTest {
     // GIT
     @Test
     fun `test getAllRecipes`() = runBlocking {
-        val response = apiRepository.getAllRecipes()
+        val phrase: String? = "soup" // part of recipe name
+        val ingredientsSearch: List<String>? = listOf("carrot", "chicken") // list of ingredients or null
+        val sortBy: String? = null //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity or null
+        val direction: String? = null // "Ascending" or "Descending" or
+        val difficulty: String? = "easy" // "easy", "medium", "hard"
+        val category: String? = null // get phrase from getAllCategoriesList()
+        val occasion: String? = null // get phrase from getAllOccasionsList()
+        val pageNumber: Int = 1 // page number to display
+        val pageSize: Int = 10 // items per page
+        val response = apiRepository.getAllRecipes(
+            SearchPhrase = phrase,
+            IngredientsSearch = ingredientsSearch,
+            SortBy = sortBy,
+            SortDirection = direction,
+            FilterByDifficulty = difficulty,
+            FilterByCategoryName = category,
+            FilterByOccasion = occasion,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        )
         assert(response.isSuccessful)
         assertNotNull(response.body())
         assert(response.body()!!.items.isNotEmpty())
@@ -490,15 +509,14 @@ class ApiRepositoryTest {
         //assertTrue(response.isSuccessful)
     }
 
-    /*
+
     // GIT
     @Test
     fun `test deleteAccount`() = runBlocking {
-        val username = "Darknesso" // Replace with an actual username if required
         val passwordRequestBody = "Test123".toRequestBody()
-        val response = apiRepository.deleteAccount(username, passwordRequestBody)
+        val response = apiRepository.deleteAccount(passwordRequestBody)
         assertTrue(response.isSuccessful)
     }
-*/
+
 
 }

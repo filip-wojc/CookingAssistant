@@ -63,9 +63,9 @@ class UserService(private val _apiRepository: ApiRepository) {
 
     // TODO: TEST
     // TODO: ADD RESPONSE HANDLING
-    suspend fun deleteUserAccount(username: String, password: String){
+    suspend fun deleteUserAccount(password: String){
         val passwordBody = password.toRequestBody()
-        val response = _apiRepository.deleteAccount(username, passwordBody)
+        val response = _apiRepository.deleteAccount(passwordBody)
     }
 
 

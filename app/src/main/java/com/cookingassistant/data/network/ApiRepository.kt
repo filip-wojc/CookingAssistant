@@ -75,9 +75,8 @@ interface ApiRepository{
     suspend fun changePassword(@Body passwordChangeDTO: UserPasswordChangeDTO): Response<Unit>
 
     // TODO: TEST
-    @DELETE("users/delete/{username}")
+    @DELETE("users/delete")
     suspend fun deleteAccount(
-        @Path("username") username:String,
         @Body password: RequestBody
     ): Response<Unit>
     // #
@@ -133,15 +132,15 @@ interface ApiRepository{
 
     @GET("recipes")
     suspend fun getAllRecipes(
-        @Query("SearchPhrase") searchPhrase: String? = null,
-        @Query("IngredientsSearch") ingredientsSearch: String? = null,
-        @Query("SortBy") sortBy: String? = null, //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity
-        @Query("SortDirection") sortDirection: String? = null, // "Ascending" or "Descending"
-        @Query("FilterByDifficulty") filterByDifficulty: String? = null,
-        @Query("FilterByCategoryName") filterByCategoryName: String? = null,
-        @Query("FilterByOccasion") filterByOccasion: String? = null,
-        @Query("PageNumber") pageNumber: Int? = null,
-        @Query("PageSize") pageSize: Int? = null
+        @Query("SearchPhrase") SearchPhrase: String? = null,
+        @Query("IngredientsSearch") IngredientsSearch: List<String>?  = null,
+        @Query("SortBy") SortBy: String? = null, //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity
+        @Query("SortDirection") SortDirection: String? = null, // "Ascending" or "Descending"
+        @Query("FilterByDifficulty") FilterByDifficulty: String? = null,
+        @Query("FilterByCategoryName") FilterByCategoryName: String? = null,
+        @Query("FilterByOccasion") FilterByOccasion: String? = null,
+        @Query("PageNumber") PageNumber: Int? = null,
+        @Query("PageSize") PageSize: Int? = null
     ): Response<RecipePageResponse>
 
     @GET("recipes/names")
