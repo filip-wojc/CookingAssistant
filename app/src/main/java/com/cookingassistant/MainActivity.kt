@@ -148,8 +148,9 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
                 }
             }
             composable("test") {//For testing purposes
-                ShoppingProducts.loadProducts(LocalContext.current)
-                ShoppingList()
+
+//                ShoppingProducts.loadProducts(LocalContext.current)
+//                ShoppingList()
             }
             composable("registration") {
                 val registrationViewModel = RegistrationViewModel(authService)
