@@ -130,28 +130,28 @@ fun AppNavigator(authService: AuthService,userService: UserService, recipeServic
 fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,recipeService: RecipeService, tokenRepository: TokenRepository) {
     AppTheme {
         val rsvm = RecipeScreenViewModel(recipeService,1)
-        TopAppBar(navController=navController, topAppBarviewModel = TopAppBarViewModel(recipeService, rsvm)) {
-            NavHost(navController = navController, startDestination = "login") {
-                composable("login") {
-                    // create viewModel and inject service
-                    // TODO: Implement factories later
-                    //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
-                    val loginViewModel = LoginViewModel(authService, tokenRepository)
-                    LoginScreen(navController, loginViewModel)
-                }
-
-                composable("registration") {
-                    val registrationViewModel = RegistrationViewModel(authService)
-                    RegistrationScreen(navController, registrationViewModel)
-                }
-
-                composable("home") {
-                    val homeViewModel = HomeScreenViewModel(recipeService, userService)
+        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController)
+        NavHost(navController = navController, startDestination = "login") {
+            composable("login") {
+                // create viewModel and inject service
+                // TODO: Implement factories later
+                //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
+                val loginViewModel = LoginViewModel(authService, tokenRepository)
+                LoginScreen(navController, loginViewModel)
+            }
+            composable("home") {
+                val homeViewModel = HomeScreenViewModel(recipeService, userService)
+                TopAppBar(topAppBarviewModel = topBarViewModel) {
                     HomeScreen(navController, homeViewModel)
                 }
-                composable("test") { TestRecipesColumn() } //For testing purposes
-
-                composable("recipeScreen") {
+            }
+            composable("test") { TestRecipesColumn() } //For testing purposes
+            composable("registration") {
+                val registrationViewModel = RegistrationViewModel(authService)
+                RegistrationScreen(navController, registrationViewModel)
+            }
+            composable("recipeScreen") {
+                TopAppBar(topAppBarviewModel = topBarViewModel) {
                     RecipeScreen(rsvm)
                 }
             }

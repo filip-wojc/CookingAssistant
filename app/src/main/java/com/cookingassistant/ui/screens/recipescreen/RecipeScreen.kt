@@ -7,17 +7,27 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddComment
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.AddComment
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,12 +36,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.cookingassistant.data.AdditionalFunctions
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeDetailsPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeEndPage
+import com.cookingassistant.ui.screens.recipescreen.composables.RecipeRatingPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeScreenFrontPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeStepPage
 
@@ -41,17 +53,19 @@ fun RecipeScreen(
 ) {
     val recipe by recipeScreenViewModel.recipe.collectAsState()
     val img by recipeScreenViewModel.recipeImg.collectAsState()
+    val favorite by recipeScreenViewModel.markedFavorite.collectAsState()
 
     // each step on separate page + 1 frontpage + 1 details
     val pagesCount by remember { mutableStateOf((recipe.steps?.size ?: 0) + 3 - 1) }
     var currentPage by remember { mutableStateOf(0) }
     var offsetX by remember { mutableStateOf(0f) }
+    var savedPage by remember { mutableStateOf(0) }
 
     val sizeAnim1 by animateFloatAsState(
-        targetValue = if (currentPage % 2 == 0) 1.0f else 0f
+        targetValue = if (currentPage % 2 == 0) 0.94f else 0f
     )
     val sizeAnim2 by animateFloatAsState(
-        targetValue = if (currentPage % 2 == 1) 1.0f else 0f
+        targetValue = if (currentPage % 2 == 1) 0.94f else 0f
     )
 
     Box(
@@ -68,8 +82,13 @@ fun RecipeScreen(
                     onDragEnd = {
                         if (offsetX < -5f && currentPage < pagesCount)
                             currentPage++
-                        else if(offsetX > 5f && currentPage != 0)
-                            currentPage--
+                        else if(offsetX > 5f && currentPage != 0) {
+                            if(currentPage == pagesCount + 1 ) {
+                                currentPage = savedPage
+                            } else {
+                                currentPage--
+                            }
+                        }
                     }
                 )
             }
@@ -78,13 +97,14 @@ fun RecipeScreen(
             .fillMaxHeight(if(currentPage % 2 == 0) sizeAnim1 else sizeAnim2)
             .align(Alignment.Center)
         ){
+            Spacer(Modifier.fillMaxWidth().height(1.dp).padding(top=35.dp))
             when(currentPage) {
                 0 -> {
                     RecipeScreenFrontPage(recipe.name,img,recipe.description,recipe.authorName,recipe.categoryName,recipe.occasionName, recipe.difficultyName ?: "not known")
                 }
                 1 -> {
                     RecipeDetailsPage(recipe.caloricity, AdditionalFunctions.fancyTime(recipe.timeInMinutes),
-                        AdditionalFunctions.tryGetCredit(recipe.id), AdditionalFunctions.fancyIngredients(recipe.ingredients), recipe.serves, modifier = Modifier.padding(vertical = 8.dp, horizontal = 5.dp))
+                        AdditionalFunctions.fancyIngredients(recipe.ingredients), recipe.serves, modifier = Modifier.padding(vertical = 8.dp, horizontal = 5.dp))
                 }
                 in 2..<pagesCount -> {
                     RecipeStepPage(stepNumber = currentPage-1,
@@ -92,6 +112,36 @@ fun RecipeScreen(
                 }
                 pagesCount -> {
                     RecipeEndPage(recipeScreenViewModel)
+                }
+                pagesCount+1 -> {
+                    RecipeRatingPage(recipeScreenViewModel)
+                }
+            }
+        }
+
+        Row ( Modifier
+            .align(Alignment.TopEnd)
+        ) {
+            IconButton(onClick = {recipeScreenViewModel.onFavoriteChanged(!favorite)}
+
+            ) {
+                if(favorite) {
+                    Icon(imageVector = Icons.Filled.Favorite, contentDescription = "mark favorite", tint = Color.Red)
+                } else {
+                    Icon(imageVector = Icons.Outlined.FavoriteBorder, contentDescription = "remove form favorites")
+                }
+            }
+            if(currentPage != pagesCount + 1) {
+                IconButton(
+                    onClick = {
+                        savedPage = currentPage
+                        currentPage = pagesCount + 1
+                              },
+                ) {
+                    Icon(
+                        Icons.Outlined.AddComment,
+                        contentDescription = "rate recipe"
+                    )
                 }
             }
         }
@@ -105,7 +155,13 @@ fun RecipeScreen(
         ) {
             if(currentPage != 0) {
                 IconButton(
-                    onClick = {currentPage -= 1}
+                    onClick = {
+                        if(currentPage == pagesCount + 1) {
+                            currentPage = savedPage
+                        } else {
+                            currentPage -= 1
+                        }
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.KeyboardDoubleArrowLeft

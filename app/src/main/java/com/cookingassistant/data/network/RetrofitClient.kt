@@ -11,7 +11,7 @@ import java.time.OffsetDateTime
 
 
 class RetrofitClient(private val tokenRepository: TokenRepository){
-    private val BASE_URL = "http://192.168.111.51:5080/api/"
+    private val BASE_URL = "http://192.168.100.14:5080/api/"
 
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -26,7 +26,7 @@ class RetrofitClient(private val tokenRepository: TokenRepository){
         .addInterceptor(authInterceptor)
 
         .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(20, TimeUnit.SECONDS)
         .build()
 
 

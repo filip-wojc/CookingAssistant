@@ -65,7 +65,6 @@ fun RecipeEndPage(
      size : Float = 0.9f
 ) {
     val ratingSelection by recipeScreenViewModel.userRating.collectAsState()
-    val favorite by recipeScreenViewModel.markedFavorite.collectAsState()
     val userComment by recipeScreenViewModel.userComment.collectAsState()
     val maxCommentLength = 150
 
@@ -75,20 +74,19 @@ fun RecipeEndPage(
             .fillMaxWidth()
     ) {
        Box(Modifier
-           .align(Alignment.TopCenter)
+           .align(Alignment.Center)
            .fillMaxWidth()
-           .fillMaxHeight(0.33f)) {
+           .fillMaxHeight(0.9f)) {
            Image(
                painter = painterResource(R.drawable.projectlogo2kcircular),
                contentDescription = "Cooking assistant app",
                modifier = Modifier.fillMaxWidth()
-                   .background(MaterialTheme.colorScheme.tertiaryContainer)
-
            )
            Icon(imageVector = Icons.Filled.Check,
                contentDescription = "Bravo",
                modifier = Modifier
                    .fillMaxSize(1f)
+                   .offset(y = -40.dp)
                ,
                tint = MaterialTheme.colorScheme.tertiary
            )
@@ -97,92 +95,9 @@ fun RecipeEndPage(
                color= MaterialTheme.colorScheme.tertiary,
                modifier = Modifier.align(Alignment.BottomCenter),
                textAlign = TextAlign.Center,
-               fontSize = 24.sp,
+               fontSize = 40.sp,
                fontWeight = FontWeight.Bold
            )
        }
-
-        Column (
-            Modifier
-                .align(Alignment.Center)
-                .padding(top = 40.dp)
-                .wrapContentWidth(Alignment.CenterHorizontally),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Rate the recipe:", color = MaterialTheme.colorScheme.onBackground, fontSize = 20.sp)
-            Row(modifier = Modifier.padding(bottom = 10.dp))
-            {
-                for (i in 1..ratingSelection) {
-                    IconButton(
-                        onClick = {if(ratingSelection != i) {recipeScreenViewModel.onUserRatingChanged(i)} else{recipeScreenViewModel.onUserRatingChanged(0)} },
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.5f))
-
-                    ) {
-                        Icon(imageVector = Icons.Filled.Star, contentDescription = "Rating star", tint = Color.Yellow,
-                        )
-                    }
-                }
-                for(i in ratingSelection+1..5) {
-                    IconButton(
-                        onClick = {recipeScreenViewModel.onUserRatingChanged(i)},
-                    ) {
-                        Icon(imageVector = Icons.Outlined.StarRate, contentDescription = "Rating star", tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                        )
-                    }
-                }
-            }
-
-            TextField(
-                value = userComment,
-                onValueChange = {if (it.length <= maxCommentLength) recipeScreenViewModel.onUserCommentChanged(it)},
-                maxLines = 3,
-                modifier = Modifier.fillMaxWidth(0.8f),
-                label = { Text("Additional comment") },
-                supportingText = {
-                    Text(
-                        text = "${userComment.length} / ${maxCommentLength}",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End,
-                    )
-                }
-            )
-            Button(onClick = {recipeScreenViewModel.onRatingSubmited(ratingSelection, userComment)}, enabled = ratingSelection != 0, modifier = Modifier
-                .padding(top = 20.dp)
-                .fillMaxWidth(0.8f)
-            ) {
-                Text("Submit rating", fontSize = 20.sp)
-            }
-        }
-
-        Button(onClick = {recipeScreenViewModel.onFavoriteChanged(!favorite)},
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 10.dp)
-                .height(50.dp)
-        ) {
-            if(favorite) {
-                Icon(imageVector = Icons.Filled.Favorite, contentDescription = "mark favorite button", tint = Color.Red)
-                Text(
-                    text = "ADDED TO FAVORITES!",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            } else {
-                Icon(imageVector = Icons.Outlined.FavoriteBorder, contentDescription = "mark favorite button")
-                Text(
-                    text = "ADD TO FAVORITES",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
-
-            if(favorite) {
-                Icon(imageVector = Icons.Filled.Favorite, contentDescription = "mark favorite button", tint = Color.Red)
-            } else {
-                Icon(imageVector = Icons.Outlined.FavoriteBorder, contentDescription = "mark favorite button")
-            }
-        }
     }
 }
