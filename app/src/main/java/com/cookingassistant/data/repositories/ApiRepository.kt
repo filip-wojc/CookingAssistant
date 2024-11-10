@@ -1,4 +1,4 @@
-package com.cookingassistant.data.network
+package com.cookingassistant.data.repositories
 import com.cookingassistant.data.DTO.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

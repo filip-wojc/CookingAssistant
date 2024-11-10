@@ -1,4 +1,4 @@
-package com.cookingassistant.data
+package com.cookingassistant.data.repositories
 
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
