@@ -141,9 +141,9 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
         }
 
         // Show result (either token or error message) in a dialog
-        if (loginResult != null) {
+        if (loginResult != null && isDialogVisible) {
             AlertDialog(
-                onDismissRequest = { /* Dismiss the dialog */ },
+                onDismissRequest = { loginViewModel.hideResultDialog() },
                 title = { Text("Login Result") },
                 text = { Text(loginResult ?: "") },
                 confirmButton = {
