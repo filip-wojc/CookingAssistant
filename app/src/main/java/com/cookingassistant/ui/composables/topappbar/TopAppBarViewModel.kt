@@ -20,11 +20,13 @@ import java.lang.Thread.State
 class TopAppBarViewModel(private val _service : RecipeService, private val _recipeScreenViewModel : RecipeScreenViewModel, private val _navController: NavHostController) : ViewModel() {
     private val _quickSearchText = MutableStateFlow("")
     private val _quickSearchResults = MutableStateFlow(listOf<ExtractedResult>())
-    private  val _showSearchResults = MutableStateFlow(false)
+    private val _showSearchResults = MutableStateFlow(false)
+    private val _selectedTool = MutableStateFlow("")
 
     val QuickSearchText : StateFlow<String> = _quickSearchText
     val QuickSearchResults : StateFlow<List<ExtractedResult>> = _quickSearchResults
     val ShowSearchResults : StateFlow<Boolean> = _showSearchResults
+    val SelectedTool: StateFlow<String> = _selectedTool
 
     init {
         _quickSearchResults.value = listOf<ExtractedResult>(ExtractedResult("Propositions are loading...",0,-1))
@@ -93,5 +95,13 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
         viewModelScope.launch(Dispatchers.IO) {
             _quickSearchResults.value = SearchEngine.suggestRecipeNames(newText)
         }
+    }
+
+    fun onDeselctTool() {
+        _selectedTool.value = ""
+    }
+
+    fun onSelectTool(tool : String) {
+        _selectedTool.value = tool
     }
 }

@@ -52,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
@@ -62,6 +63,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.cookingassistant.compose.AppTheme
 import com.cookingassistant.data.SearchEngine
+import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.bottomBorder
 import kotlinx.coroutines.launch
 
@@ -77,6 +79,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
     val searchText by topAppBarviewModel.QuickSearchText.collectAsState()
     val searchResults by topAppBarviewModel.QuickSearchResults.collectAsState()
     val showResults by topAppBarviewModel.ShowSearchResults.collectAsState()
+    val selectedTool by topAppBarviewModel.SelectedTool.collectAsState()
 
     topAppBarviewModel.onSearchTextChanged(searchQuery)
 
@@ -104,10 +107,18 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
 
                 HorizontalDivider()
                 NavigationDrawerItem(
-                    label = { Text(text = "Drawer Item", fontSize = 18.sp) },
+                    label = { Text(text = "Shopping list", fontSize = 18.sp) },
                     selected = false,
-                    onClick = { /*TODO*/ }
+                    onClick = { topAppBarviewModel.onSelectTool("ShoppingList") }
                 )
+
+                when(selectedTool) {
+                    "ShoppingList" -> {
+                      
+                    }
+                    else -> topAppBarviewModel.onDeselctTool()
+                }
+
 
             }
         }

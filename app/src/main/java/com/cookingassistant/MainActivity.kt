@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import android.Manifest
 import android.os.Build
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,7 +26,9 @@ import com.cookingassistant.ui.screens.home.LoginViewModel
 import com.cookingassistant.ui.screens.registration.RegistrationScreen
 import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.compose.AppTheme
+import com.cookingassistant.data.ShoppingProducts
 import com.cookingassistant.services.UserService
+import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
 import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
@@ -66,7 +69,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 AppNavigator(authService,userService,recipeService ,tokenRepository) // inject services here
-
             }
 
         }
@@ -145,7 +147,10 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
                     HomeScreen(navController, homeViewModel)
                 }
             }
-            composable("test") { TestRecipesColumn() } //For testing purposes
+            composable("test") {//For testing purposes
+                ShoppingProducts.loadProducts(LocalContext.current)
+                ShoppingList()
+            }
             composable("registration") {
                 val registrationViewModel = RegistrationViewModel(authService)
                 RegistrationScreen(navController, registrationViewModel)
