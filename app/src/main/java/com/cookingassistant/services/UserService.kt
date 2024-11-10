@@ -2,12 +2,10 @@ package com.cookingassistant.services
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.cookingassistant.data.network.ApiRepository
+import com.cookingassistant.data.repositories.ApiRepository
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import okhttp3.ResponseBody
 import java.io.InputStream
 
 class UserService(private val _apiRepository: ApiRepository) {

@@ -1,13 +1,10 @@
 package com.cookingassistant.services
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import com.cookingassistant.data.DTO.LoginRequest
 import com.cookingassistant.data.DTO.LoginResponse
 import com.cookingassistant.data.DTO.RegisterRequest
-import com.cookingassistant.data.network.ApiRepository
+import com.cookingassistant.data.repositories.ApiRepository
 import retrofit2.Response
-import java.io.InputStream
 
 class AuthService(private val _apiRepository: ApiRepository) {
 

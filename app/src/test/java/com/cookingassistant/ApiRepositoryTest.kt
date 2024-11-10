@@ -1,10 +1,9 @@
 package com.cookingassistant
-import android.os.Environment
-import android.util.Log
-import com.cookingassistant.data.network.ApiRepository
+import com.cookingassistant.data.repositories.ApiRepository
 import com.cookingassistant.data.DTO.*
+import com.cookingassistant.data.Models.Result
 import com.cookingassistant.data.Models.ApiErrorResponse
-import com.cookingassistant.data.TokenRepository
+import com.cookingassistant.data.repositories.TokenRepository
 import com.cookingassistant.data.network.AuthInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -14,11 +13,9 @@ import io.mockk.mockk
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import com.cookingassistant.services.RecipeService
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -71,6 +68,7 @@ class ApiRepositoryTest {
         apiRepository = retrofit.create(ApiRepository::class.java)
     }
 
+
     private fun convertListToMultipart(key: String, parts: List<String?>): List<MultipartBody.Part> {
         return parts.mapIndexed { index, value ->
             MultipartBody.Part.createFormData(key, null, RequestBody.create("text/plain".toMediaTypeOrNull(), value ?: ""))
@@ -83,7 +81,7 @@ class ApiRepositoryTest {
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData(partName, file.name, requestFile)
     }
-/*
+
     // ################################################################################
     // ################################## TESTS #######################################
     // ################################################################################
@@ -116,7 +114,7 @@ class ApiRepositoryTest {
         }
         assertTrue(response.isSuccessful)
     }
-*/
+
     @Test
     fun `test logIn`() = runBlocking {
         val logInRequest = LoginRequest(
@@ -401,25 +399,29 @@ class ApiRepositoryTest {
     // GIT
     @Test
     fun `test getAllRecipes`() = runBlocking {
-        val phrase: String? = "soup" // part of recipe name
-        val ingredientsSearch: List<String>? = listOf("carrot", "chicken") // list of ingredients or null
-        val sortBy: String? = null //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity or null
-        val direction: String? = null // "Ascending" or "Descending" or
-        val difficulty: String? = "easy" // "easy", "medium", "hard"
-        val category: String? = null // get phrase from getAllCategoriesList()
-        val occasion: String? = null // get phrase from getAllOccasionsList()
-        val pageNumber: Int = 1 // page number to display
-        val pageSize: Int = 10 // items per page
+
+        val rq = RecipeQuery(
+            SearchPhrase = "soup", // phrase or null
+            Ingredients = listOf("carrot","chicken"), // list or null
+            SortBy = null, // can skip if null ( i'll skip the next one) //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity or null
+            // SortDirection is here ( skipped because null ) // "Ascending" or "Descending" or null
+            Difficulty = "easy", // // "easy", "medium", "hard"
+            Category = null // // get categories from getAllCategoriesList()
+            // Occasion skipped because null // get occasions from getAllOccasionsList()
+            // PageNumber 1 by default ( skipped )
+            // PageSize 10 by default (skipped)
+        )
+
         val response = apiRepository.getAllRecipes(
-            SearchPhrase = phrase,
-            IngredientsSearch = ingredientsSearch,
-            SortBy = sortBy,
-            SortDirection = direction,
-            FilterByDifficulty = difficulty,
-            FilterByCategoryName = category,
-            FilterByOccasion = occasion,
-            PageNumber = pageNumber,
-            PageSize = pageSize
+            SearchPhrase = rq.SearchPhrase,
+            IngredientsSearch = rq.Ingredients,
+            SortBy = rq.SortBy,
+            SortDirection = rq.SortDirection,
+            FilterByDifficulty = rq.Difficulty,
+            FilterByCategoryName = rq.Category,
+            FilterByOccasion = rq.Occasion,
+            PageNumber = rq.PageNumber,
+            PageSize = rq.PageSize
         )
         assert(response.isSuccessful)
         assertNotNull(response.body())

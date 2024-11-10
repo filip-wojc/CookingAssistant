@@ -18,7 +18,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.cookingassistant.data.TokenRepository
+import com.cookingassistant.data.repositories.TokenRepository
 import com.cookingassistant.data.network.RetrofitClient
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.services.AuthService
@@ -31,7 +31,6 @@ import com.cookingassistant.services.UserService
 import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
-import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
 import com.cookingassistant.ui.screens.home.HomeScreenViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
@@ -119,7 +118,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 // modify this code to inject services
-fun AppNavigator(authService: AuthService,userService: UserService, recipeService: RecipeService, tokenRepository:TokenRepository){
+fun AppNavigator(authService: AuthService,userService: UserService, recipeService: RecipeService, tokenRepository: TokenRepository){
     val navController = rememberNavController()
     NavGraph(navController = navController,
         authService = authService,
