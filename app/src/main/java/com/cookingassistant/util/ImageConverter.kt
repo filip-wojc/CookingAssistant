@@ -1,4 +1,6 @@
 package com.cookingassistant.util
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -23,5 +25,9 @@ class ImageConverter() {
             e.printStackTrace()
             return null
         }
+    }
+
+    fun convertByteArrayToBitmap(byteArray: ByteArray): Bitmap?{
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 }
