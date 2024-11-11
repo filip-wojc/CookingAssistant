@@ -33,8 +33,8 @@ class ApiResponseParser {
             }
 
             // If detailed errors are null, handle error body as a simple string message
-            val message = detailedErrors?.let { "ERROR: ${response.message()}" }
-                ?: "ERROR: ${errorJson ?: response.message()}"
+            val message = detailedErrors?.let { response.message() }
+                ?: (errorJson ?: response.message())
 
             Result.Error(
                 message = message,
