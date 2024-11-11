@@ -15,7 +15,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
     private val _userProfileImage = MutableStateFlow<Bitmap?>(null)
     val recipeImage: StateFlow<Bitmap?> get() = _recipeImage
     val userProfileImage: StateFlow<Bitmap?> get() = _userProfileImage
-
+/*
     fun getAllIngredientsList(){
         viewModelScope.launch {
             try {
@@ -33,6 +33,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
             }
         }
     }
+    */
 // TODO : DELETE - test only
     fun fetchRecipeImage(recipeId:Int){
         viewModelScope.launch {
@@ -41,6 +42,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
         }
     }
 
+    /*
     fun getRecipeDetails(recipeId: Int){
         viewModelScope.launch {
             try {
@@ -65,7 +67,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
             }
         }
     }
-
+*/
 
 /*
     // Test recipe post

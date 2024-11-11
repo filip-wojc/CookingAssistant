@@ -1,28 +1,22 @@
 package com.cookingassistant.ui.screens.recipescreen
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.util.Log
-import android.widget.Toast
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cookingassistant.R
-import com.cookingassistant.data.DTO.Recipe
 import com.cookingassistant.data.DTO.RecipeGetDTO
-import com.cookingassistant.data.DTO.ReviewGetDTO
+import com.cookingassistant.data.Models.Result
 import com.cookingassistant.data.DTO.ReviewPostDTO
-import com.cookingassistant.data.RecipeItem
 import com.cookingassistant.services.RecipeService
+import com.cookingassistant.services.ReviewService
 import com.cookingassistant.services.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-class RecipeScreenViewModel(private val _service: RecipeService, private val _userService : UserService) : ViewModel() {
+class RecipeScreenViewModel(private val _recipeService: RecipeService, private val _userService : UserService, private val _reviewService: ReviewService) : ViewModel() {
     private val _recipePlaceHolder = RecipeGetDTO(1,"","","",0f,
         0,0, null, 0, "","",0,listOf(),
         listOf())
@@ -42,7 +36,7 @@ class RecipeScreenViewModel(private val _service: RecipeService, private val _us
     val recipeImg : StateFlow<Bitmap> = _recipeImg
 
     var ratingResponse = ""
-
+/*
     fun loadRecipe(id : Int) {
         viewModelScope.launch {
             try {
@@ -56,15 +50,23 @@ class RecipeScreenViewModel(private val _service: RecipeService, private val _us
             }
         }
     }
-
+*/
     fun loadRecipe(recipe : RecipeGetDTO) {
         _recipe.value = recipe
         loadImage()
         viewModelScope.launch {
             try {
-                _markedFavorite.value = _userService.checkIfRecipeInUserFavourites(recipe.id) ?: false
+                val result = _userService.checkIfRecipeInUserFavourites(recipe.id)
+                if(result is Result.Success) {
+                    _markedFavorite.value = result.data?: false
+                }
+                else if (result is Result.Error){
+                    _markedFavorite.value = false
+                    Log.e("RecipeScreenViewModel", "result is error when checking if recipe is in favourites")
+                }
+
             } catch (e:Exception) {
-                Log.e("RecipeScreenViewModel", "failed to check if recipe is in favorites")
+                Log.e("RecipeScreenViewModel", "failed to check if recipe is in favorites: ${e.message}")
             }
         }
     }
@@ -76,7 +78,7 @@ class RecipeScreenViewModel(private val _service: RecipeService, private val _us
     fun loadImage() {
         viewModelScope.launch {
             try {
-                _recipeImg.value = _service.getRecipeImageBitmap(_recipe.value.id) ?: _recipeImg.value
+                _recipeImg.value = _recipeService.getRecipeImageBitmap(_recipe.value.id) ?: _recipeImg.value
             } catch (e: Exception) {
                 Log.e("RecipeScreenViewModel", "recipe image couldnt be loaded")
             }
@@ -91,20 +93,25 @@ class RecipeScreenViewModel(private val _service: RecipeService, private val _us
         _userRating.value = newRating
     }
 
-    fun onRatingSubmited(newRatingScore: Int, comment: String) {
+    fun onRatingSubmitted(newRatingScore: Int, comment: String) {
         if(newRatingScore == 0) {
             return
             //dont submit rating score 0!
         }
         viewModelScope.launch {
             try {
-                val response = _service.addReview(_recipe.value.id, ReviewPostDTO(_userRating.value, if(_userComment.value=="") null else _userComment.value))
-                if(response.isSuccessful) {
-                    ratingResponse = "Rating successfuly submited"
+                val result = _reviewService.addReview(_recipe.value.id, ReviewPostDTO(_userRating.value, if(_userComment.value=="") null else _userComment.value))
+                if(result is Result.Success) {
+                    ratingResponse = "Rating successfully submitted"
                     _userComment.value = ""
                     _userRating.value = 0
-                } else {
-                    ratingResponse = "You can't rate your own recipe"
+                }
+                else if (result is Result.Error) {
+                    ratingResponse = "Can't submit review"
+                    Log.e("onRatingSubmitted","result is error: ${result.message}")
+                }
+                else {
+                    ratingResponse = "Unexpected server error"
                 }
             }
             catch (e: Exception) {
