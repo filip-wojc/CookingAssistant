@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import android.Manifest
 import android.os.Build
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -28,12 +29,15 @@ import com.cookingassistant.compose.AppTheme
 import com.cookingassistant.data.objects.ScreenControlManager
 import com.cookingassistant.services.ReviewService
 import com.cookingassistant.services.UserService
+import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
 import com.cookingassistant.ui.screens.home.HomeScreenViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
+import com.cookingassistant.ui.screens.reviews.ReviewList
+import com.cookingassistant.ui.screens.reviews.ReviewViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -121,6 +125,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+
     }
 }
 
@@ -158,6 +164,11 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
             }
             composable("test") {//For testing purposes
 
+                //val reviewViewModel = ReviewViewModel(reviewService)
+                //ReviewList(reviewViewModel, 14)
+
+//                ShoppingProducts.loadProducts(LocalContext.current)
+//                ShoppingList()
             }
             composable("registration") {
                 val registrationViewModel = RegistrationViewModel(authService)

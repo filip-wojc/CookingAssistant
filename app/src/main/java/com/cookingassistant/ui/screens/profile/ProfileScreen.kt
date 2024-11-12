@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import coil3.compose.rememberAsyncImagePainter
 
+@Preview
 @Composable
 fun ProfileScreen() {
     Column(
