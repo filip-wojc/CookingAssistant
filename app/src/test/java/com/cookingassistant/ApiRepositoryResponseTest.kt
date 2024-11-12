@@ -26,20 +26,21 @@ import okio.buffer
 import okio.source
 import java.io.File
 import com.cookingassistant.util.ApiResponseParser
+import com.cookingassistant.util.RequestBodyFormatter
 
 class ApiRepositoryResponseTest {
-    private val defaultUsername = "TestUser1"
-    private val defaultEmail = "testemail123@email.com"
+    private val defaultUsername = "Darknesso123"
+    private val defaultEmail = "testemail44@email.com"
     private val defaultPassword = "Test123"
     private val defaultNewPassword = "Test1234"
     private val defaultRecipeId = 34
     private val defaultFavouriteRecipeId = 800
     private var defaultReviewId = 1
-    private var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlRlc3RVc2VyMSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InRlc3RlbWFpbDEyM0BlbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzMyNjQzMDMwLCJpc3MiOiJodHRwOi8vY29va2luZ2Fzc2lzdGFudC5jb20iLCJhdWQiOiJodHRwOi8vY29va2luZ2Fzc2lzdGFudC5jb20ifQ.gOXHAljeGwacpUHFcFlYTdg9YnoC0B1S0g4Y4_FtHuE"
-
+    private var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE1IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkRhcmtuZXNzbzEyMyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InRlc3RlbWFpbDQ0QGVtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3MzI3MzE3MzEsImlzcyI6Imh0dHA6Ly9jb29raW5nYXNzaXN0YW50LmNvbSIsImF1ZCI6Imh0dHA6Ly9jb29raW5nYXNzaXN0YW50LmNvbSJ9.cBpsTOqvZnG6XoI05bVG7vFoD0Oe4fygQXC7haOsIhk"
     private lateinit var apiRepository: ApiRepository
     private lateinit var tokenRepository: TokenRepository
     private lateinit var apiResponseParser: ApiResponseParser
+    private lateinit var _formatter: RequestBodyFormatter
 
     @Before
     fun setUp(){
@@ -70,6 +71,7 @@ class ApiRepositoryResponseTest {
 
         apiRepository = retrofit.create(ApiRepository::class.java)
         apiResponseParser = ApiResponseParser()
+        _formatter = RequestBodyFormatter()
 
     }
 
@@ -392,7 +394,7 @@ class ApiRepositoryResponseTest {
             serves = 4,
             difficultyId = 1,
             timeInMinutes = 20,
-            categoryId = 1,
+            categoryId = 14,
             ingredientNames = listOf("Tortillas", "Black Beans", "Avocado", "Salsa"),
             ingredientQuantities = listOf("4", "150", "1", "50"),
             ingredientUnits = listOf("pcs", "g", "pcs", "g"),
@@ -401,32 +403,37 @@ class ApiRepositoryResponseTest {
             steps = listOf("Prepare Ingredients", "Assemble Tacos", "Serve")
         )
 
+
+
+        // Prepare text fields as RequestBody
+        // Use RequestBodyFormatter for each part
+        val namePart = _formatter.fromString(recipe.name)
+        val descriptionPart = _formatter.fromString(recipe.description)
+        val servesPart = _formatter.fromInt(recipe.serves)
+        val difficultyIdPart = _formatter.fromInt(recipe.difficultyId)
+        val timeInMinutesPart = _formatter.fromInt(recipe.timeInMinutes)
+        val categoryIdPart = _formatter.fromInt(recipe.categoryId)
+        val occasionIdPart = _formatter.fromInt(recipe.occasionId)
+        val caloricityPart = _formatter.fromInt(recipe.caloricity)
+
+        // convert lists
+        val ingredientNames = _formatter.fromList("IngredientNames", recipe.ingredientNames)
+        val ingredientQuantities = _formatter.fromList("IngredientQuantities", recipe.ingredientQuantities)
+        val ingredientUnits = _formatter.fromList("IngredientUnits", recipe.ingredientUnits)
+        val steps = _formatter.fromList("Steps", recipe.steps)
+
         // Load the image from resources as InputStream
         val imageInputStream = javaClass.classLoader.getResourceAsStream("polsl.jpg")
             ?: throw IllegalStateException("Image file not found in resources")
 
-        // Create RequestBody directly from InputStream using Okio for multipart upload
-        val imageRequestBody = imageInputStream.source().buffer().readByteArray().toRequestBody("image/jpeg".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData("ImageData", "polsl.jpg", imageRequestBody)
+        recipe.imageData = imageInputStream.source().buffer().readByteArray()
 
-        // Prepare text fields as RequestBody
-        val namePart = recipe.name.toRequestBody("text/plain".toMediaTypeOrNull())
-        val descriptionPart = recipe.description?.toRequestBody("text/plain".toMediaTypeOrNull())
-        val servesPart = recipe.serves.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        val difficultyIdPart = recipe.difficultyId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        val timeInMinutesPart = recipe.timeInMinutes.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        val categoryIdPart = recipe.categoryId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        // Convert lists to multipart with appropriate form key
-        val ingredientNames = convertListToMultipart("IngredientNames", recipe.ingredientNames)
-        val ingredientQuantities = convertListToMultipart("IngredientQuantities", recipe.ingredientQuantities)
-        val ingredientUnits = convertListToMultipart("IngredientUnits", recipe.ingredientUnits)
-        val occasionIdPart = recipe.occasionId.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        val caloricityPart = recipe.caloricity.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        val steps = convertListToMultipart("Steps", recipe.steps)
+        // convert image data if available
+        val imagePart = recipe.imageData.let {
+            _formatter.fromByteArray(it, "recipe_image.jpg")
+        } ?: MultipartBody.Part.createFormData("ImageData", "", "".toRequestBody("image/jpeg".toMediaTypeOrNull()))
 
-
-
-        // Call the API
+        // api call
         val response = apiRepository.postRecipe(
             namePart,
             descriptionPart,
@@ -442,7 +449,6 @@ class ApiRepositoryResponseTest {
             steps,
             imagePart
         )
-
 
         val result = apiResponseParser.wrapResponse(response)
 
