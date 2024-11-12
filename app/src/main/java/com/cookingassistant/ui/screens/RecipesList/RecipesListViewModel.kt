@@ -117,9 +117,13 @@ class RecipesListViewModel(
                 for (r in recipes.value) {
                     var bitmap : Bitmap? = null
                     try {
-                        var result = _service.getRecipeImageBitmap(r.id)
-                        if (result is Result.Success) {
-                            bitmap = result.data
+                        val result = _service.getRecipeImageBitmap(r.id)
+                        if(result is Result.Success && result.data != null)
+                            bitmap=result.data
+                        else if(result is Result.Error){
+                            Log.e("_onLoadQuery", "Failed to get image: ${result.message}")
+                            // TODO : ADD DEFAULT IMAGE IF FAILED
+                            // bitmap = placeholder
                         }
                     }
                     catch (e: Exception) {
