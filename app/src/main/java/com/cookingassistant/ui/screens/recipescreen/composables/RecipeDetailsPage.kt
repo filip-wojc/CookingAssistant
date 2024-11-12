@@ -55,7 +55,7 @@ fun RecipeDetailsPage(
                 text = "Details",
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.inversePrimary,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Black
             )

@@ -15,7 +15,7 @@ import java.io.InputStream
 
 class RecipeService(private val _apiRepository: ApiRepository) {
 
-    suspend fun getAllIngredientsList(): Response<List<String?>> {
+    suspend fun getAllIngredientsList(): Response<List<String>> {
         return _apiRepository.getAllIngredientsList()
     }
 

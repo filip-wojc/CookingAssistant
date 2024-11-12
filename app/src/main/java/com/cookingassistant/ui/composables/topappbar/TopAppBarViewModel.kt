@@ -1,21 +1,18 @@
 package com.cookingassistant.ui.composables.topappbar
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.cookingassistant.data.BackButtonManager
 import com.cookingassistant.data.SearchEngine
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
-import com.frosch2010.fuzzywuzzy_kotlin.FuzzySearch
 import com.frosch2010.fuzzywuzzy_kotlin.model.ExtractedResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.lang.Thread.State
 
 class TopAppBarViewModel(private val _service : RecipeService, private val _recipeScreenViewModel : RecipeScreenViewModel, private val _navController: NavHostController) : ViewModel() {
     private val _quickSearchText = MutableStateFlow("")
@@ -39,7 +36,20 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
                     Log.e("TopAppBarViewModel", "_service.getRecipeNames().body is empty", )
                 }
             } catch (e: Exception) {
-                Log.e("TopAppBarViewModel", e.message ?: "couldnt get message names", )
+                Log.e("TopAppBarViewModel", e.message ?: "couldn't get message names", )
+            }
+        }
+
+        viewModelScope.launch {
+            try {
+                val status = _service.getAllIngredientsList()
+                if (status.body() != null) {
+                    SearchEngine.updateIngredientsList(status.body()!!)
+                } else {
+                    Log.e("TopAppBarViewModel", "_service.getAllIngredientsList().body is empty", )
+                }
+            } catch (e: Exception) {
+                Log.e("TopAppBarViewModel", e.message ?: "couldn't get ingredients", )
             }
         }
     }
@@ -82,7 +92,11 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
                 if(response.isSuccessful) {
                     if(response.body() != null) {
                         _recipeScreenViewModel.loadRecipe(response.body()!!)
+                        if(_navController.currentDestination?.route == "recipeScreen") {
+                            _navController.popBackStack()
+                        }
                         _navController.navigate("recipeScreen")
+                        onDeselctTool()
                     }
                 }
             } catch(e: Exception) {
@@ -99,9 +113,11 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
 
     fun onDeselctTool() {
         _selectedTool.value = ""
+        BackButtonManager.activeTool = ""
     }
 
     fun onSelectTool(tool : String) {
+        BackButtonManager.activeTool=tool
         _selectedTool.value = tool
     }
 }

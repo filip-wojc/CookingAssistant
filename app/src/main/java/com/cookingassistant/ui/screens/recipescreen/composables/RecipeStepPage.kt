@@ -37,7 +37,7 @@ fun RecipeStepPage(
                 Text(
                     text = "Step " + stepNumber.toString(),
                     fontSize = 50.sp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
             }

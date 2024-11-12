@@ -61,7 +61,7 @@ fun RecipeScreenFrontPage(
                 fontWeight = FontWeight.Bold,
                 text = name,
                 fontSize = 26.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )

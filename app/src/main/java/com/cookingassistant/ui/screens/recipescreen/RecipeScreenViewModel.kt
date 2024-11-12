@@ -58,6 +58,8 @@ class RecipeScreenViewModel(private val _service: RecipeService, private val _us
     }
 
     fun loadRecipe(recipe : RecipeGetDTO) {
+        _userComment.value = ""
+        _userRating.value = 0
         _recipe.value = recipe
         loadImage()
         viewModelScope.launch {

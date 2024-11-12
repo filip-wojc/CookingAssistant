@@ -3,7 +3,6 @@ package com.cookingassistant.data
 import com.cookingassistant.data.DTO.RecipeIngredientGetDTO
 
 object AdditionalFunctions {
-
     fun fancyTime(uglyTime : Int) : String {
         val minutes = uglyTime % 60
         val hours = (uglyTime - minutes) / 60

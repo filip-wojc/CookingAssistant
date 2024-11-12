@@ -57,6 +57,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,8 +67,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.cookingassistant.compose.AppTheme
 import com.cookingassistant.data.SearchEngine
+import com.cookingassistant.data.ShoppingProduct
+import com.cookingassistant.data.ShoppingProducts
 import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.bottomBorder
+import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,10 +100,10 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer)
                 ) {
                     Text(
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
                         fontSize = 40.sp,
                         text = "TOOLS",
                         modifier = Modifier
@@ -112,15 +116,45 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                 NavigationDrawerItem(
                     label = { Text(text = "Shopping list", fontSize = 18.sp) },
                     selected = false,
-                    onClick = { topAppBarviewModel.onSelectTool("ShoppingList") }
-                )
-
-                when(selectedTool) {
-                    "ShoppingList" -> {
-
+                    onClick = {
+                        if(selectedTool == "ShoppingList") {
+                            topAppBarviewModel.onDeselctTool()
+                            scope.launch {
+                                drawerState.apply {
+                                    close()
+                                }
+                            }
+                        } else {
+                            topAppBarviewModel.onSelectTool("ShoppingList")
+                            scope.launch {
+                                drawerState.apply {
+                                    close()
+                                }
+                            }
+                        }
                     }
-                    else -> topAppBarviewModel.onDeselctTool()
-                }
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Advanced search", fontSize = 18.sp) },
+                    selected = false,
+                    onClick = {
+                        if(selectedTool == "AdvancedSearch") {
+                            topAppBarviewModel.onDeselctTool()
+                            scope.launch {
+                                drawerState.apply {
+                                    close()
+                                }
+                            }
+                        } else {
+                            scope.launch {
+                                drawerState.apply {
+                                    close()
+                                }
+                            }
+                            topAppBarviewModel.onSelectTool("AdvancedSearch")
+                        }
+                    }
+                )
             }
         }
     ) {
@@ -134,11 +168,11 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                 HorizontalDivider(modifier = Modifier
                     .height(100.dp)
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceContainer)
+                    .background(MaterialTheme.colorScheme.tertiaryContainer)
                 )
                 CenterAlignedTopAppBar(
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.surfaceContainer)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer)
                     ,
                     colors = TopAppBarColors(containerColor = Color.Transparent,
                         actionIconContentColor = TopAppBarDefaults.topAppBarColors().actionIconContentColor,
@@ -149,8 +183,8 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                     scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
                     title = {
                         OutlinedTextField(
-                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer),
-                            textStyle = TextStyle.Default.copy(fontSize = 16.sp, color = MaterialTheme.colorScheme.onSecondaryContainer),
+                            modifier = Modifier.background(MaterialTheme.colorScheme.tertiaryContainer),
+                            textStyle = TextStyle.Default.copy(fontSize = 16.sp, color = MaterialTheme.colorScheme.onTertiaryContainer),
                             singleLine = true,
                             value = searchText,
                             onValueChange = {topAppBarviewModel.onSearchTextChanged(it)},
@@ -196,8 +230,17 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
             content = { padding ->
                 padding
                 Column {
-                    Spacer(Modifier.fillMaxWidth().height(50.dp))
-                    content()
+                    Spacer(Modifier.fillMaxWidth().padding(top=60.dp))
+                    when(selectedTool) {
+                        "" -> {content()}
+                        "ShoppingList" -> {
+                            ShoppingProducts.loadProducts(LocalContext.current)
+                            ShoppingList()
+                        }
+                        "AdvancedSearch" -> {
+                            FilterScreen()
+                        }
+                    }
                 }
             },
         )

@@ -59,7 +59,7 @@ fun ShoppingList(shoppingListViewModel: ShoppingListViewModel = viewModel()) {
     )
     {
         Row(
-            modifier = Modifier.padding(vertical = 40.dp)
+            modifier = Modifier.padding(top= 60.dp, bottom = 20.dp)
 
         ) {
             TextField(

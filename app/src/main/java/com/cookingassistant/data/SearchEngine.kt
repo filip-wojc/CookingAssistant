@@ -7,6 +7,7 @@ import com.frosch2010.fuzzywuzzy_kotlin.model.ExtractedResult
 
 object SearchEngine {
     private var knownRecipeNames : MutableList<String> = mutableListOf()
+    private var knownIngredients : MutableList<String> = mutableListOf()
     private var ids : MutableList<Int> = mutableListOf()
 
     fun getIndex(id : Int) : Int {
@@ -20,6 +21,15 @@ object SearchEngine {
             knownRecipeNames.add(recipe.name)
             ids.add(recipe.id)
         }
+    }
+
+    fun updateIngredientsList(list: List<String>) {
+        knownIngredients = list.toMutableList()
+    }
+
+    fun suggetIngredient(query: String) : String {
+
+        return FuzzySearch.extractOne(query=query, choices = knownIngredients).string
     }
 
     fun suggestRecipeNames(query : String, limit : Int = 5) : List<ExtractedResult> {
