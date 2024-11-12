@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import android.Manifest
 import android.os.Build
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -26,15 +25,12 @@ import com.cookingassistant.ui.screens.home.LoginViewModel
 import com.cookingassistant.ui.screens.registration.RegistrationScreen
 import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.compose.AppTheme
-import com.cookingassistant.data.BackButtonManager
-import com.cookingassistant.data.ShoppingProducts
+import com.cookingassistant.data.objects.ScreenControlManager
 import com.cookingassistant.services.ReviewService
 import com.cookingassistant.services.UserService
-import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
-import com.cookingassistant.ui.screens.RecipesList.TestRecipesColumn
 import com.cookingassistant.ui.screens.home.HomeScreenViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
@@ -75,15 +71,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        // Check if AdditionalFunctions.ActiveWindow is an empty string
-        if (BackButtonManager.activeTool == "") {
-            // Default behavior of the back button
-            super.onBackPressed()
+    override fun onBackPressed() { //Deprecated but wbo asked?
+        if (ScreenControlManager.activeTool == "") {
+            if(ScreenControlManager.hasLoggedIn && ScreenControlManager.topAppBarViewModel.onAppTryExit()) {
+                moveTaskToBack(true)
+            } else {
+                super.onBackPressed()
+            }
         } else {
-            // Custom behavior when ActiveWindow is not empty
-            BackButtonManager.topAppBarViewModel.onDeselctTool()
-            BackButtonManager.activeTool = ""
+            ScreenControlManager.topAppBarViewModel.onDeselctTool()
         }
     }
 
@@ -145,7 +141,7 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
     AppTheme(darkTheme = true) {
         val rsvm = RecipeScreenViewModel(recipeService,userService, reviewService)
         val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController)
-        BackButtonManager.topAppBarViewModel=topBarViewModel
+        ScreenControlManager.topAppBarViewModel=topBarViewModel
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 // create viewModel and inject service

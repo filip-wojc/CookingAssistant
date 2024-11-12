@@ -1,18 +1,18 @@
-package com.cookingassistant.data
+package com.cookingassistant.data.objects
 
 import com.cookingassistant.data.DTO.RecipeIngredientGetDTO
 
-object AdditionalFunctions {
-    fun fancyTime(uglyTime : Int) : String {
-        val minutes = uglyTime % 60
-        val hours = (uglyTime - minutes) / 60
+object TextFormatting {
+    fun formatTime(timeInt : Int) : String {
+        val minutes = timeInt % 60
+        val hours = (timeInt - minutes) / 60
         if (hours == 0) {
             return("${minutes}m")
         }
         return("${hours.toInt()}h ${minutes}m")
     }
 
-    fun fancyIngredients(ingredients : List<RecipeIngredientGetDTO>?) : List<String> {
+    fun formatIngredients(ingredients : List<RecipeIngredientGetDTO>?) : List<String> {
         if (ingredients == null) {
             return listOf()
         }

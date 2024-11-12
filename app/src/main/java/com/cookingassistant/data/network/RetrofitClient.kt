@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 
 class RetrofitClient(private val tokenRepository: TokenRepository){
-    private val BASE_URL = "http://192.168.111.51:5080/api/"
+    private val BASE_URL = "http://192.168.100.14:5080/api/"
 
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

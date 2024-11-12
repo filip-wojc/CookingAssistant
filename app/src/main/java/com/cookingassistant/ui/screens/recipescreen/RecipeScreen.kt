@@ -15,19 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddComment
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.AddComment
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,8 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.cookingassistant.data.AdditionalFunctions
-import com.cookingassistant.ui.composables.topappbar.TopAppBar
+import com.cookingassistant.data.objects.TextFormatting
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeDetailsPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeEndPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeRatingPage
@@ -103,8 +97,8 @@ fun RecipeScreen(
                     RecipeScreenFrontPage(recipe.name,img,recipe.description,recipe.authorName,recipe.categoryName,recipe.occasionName, recipe.difficultyName ?: "not known")
                 }
                 1 -> {
-                    RecipeDetailsPage(recipe.caloricity, AdditionalFunctions.fancyTime(recipe.timeInMinutes),
-                        AdditionalFunctions.fancyIngredients(recipe.ingredients), recipe.serves, modifier = Modifier.padding(vertical = 8.dp, horizontal = 5.dp))
+                    RecipeDetailsPage(recipe.caloricity, TextFormatting.formatTime(recipe.timeInMinutes),
+                        TextFormatting.formatIngredients(recipe.ingredients), recipe.serves, modifier = Modifier.padding(vertical = 8.dp, horizontal = 5.dp))
                 }
                 in 2..<pagesCount -> {
                     RecipeStepPage(stepNumber = currentPage-1,

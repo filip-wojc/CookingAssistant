@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.repositories.TokenRepository
 import com.cookingassistant.services.AuthService
 import com.cookingassistant.data.Models.Result
+import com.cookingassistant.data.objects.ScreenControlManager
+import com.cookingassistant.data.objects.SearchEngine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -63,6 +65,11 @@ class LoginViewModel(private val _service: AuthService, private val tokenReposit
                     _isLoginSuccessful.value = true
                     _loginResult.value = "Login successful" // Update with token if successful
 
+                    ScreenControlManager.hasLoggedIn = true
+                    if(SearchEngine.loadedApiResources < 2) {
+                        SearchEngine.loadedApiResources = 0
+                        ScreenControlManager.topAppBarViewModel.updateLists()
+                    }
                 }
                 else if (result is Result.Error ) {
                     _isLoginSuccessful.value = false

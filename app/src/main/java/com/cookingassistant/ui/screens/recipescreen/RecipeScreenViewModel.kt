@@ -73,10 +73,6 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService, private v
         }
     }
 
-    fun getIntRatings() {
-        _recipe.value.ratings.roundToInt()
-    }
-
     fun loadImage() {
         viewModelScope.launch {
             try {
