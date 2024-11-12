@@ -36,21 +36,28 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService, private v
     val recipeImg : StateFlow<Bitmap> = _recipeImg
 
     var ratingResponse = ""
-/*
+
     fun loadRecipe(id : Int) {
         viewModelScope.launch {
+            var success = false
             try {
-                Log.i("RecipeScreenViewModel", "recipe details request sent")
-                val response = _service.getRecipeDetails(id)
-                if(response.isSuccessful) {
-                    _recipe.value = response.body() ?: _recipe.value
+                val result = _recipeService.getRecipeDetails(id)
+                if(result is Result.Success) {
+                    _recipe.value = result.data ?: recipe.value
+                    success = true
+                }
+                else if (result is Result.Error) {
+                    Log.e("RecipeScreenViewModel", result.message)
                 }
             } catch (e: Exception) {
                 Log.e("RecipeScreenViewModel", "recipe couldnt be loaded")
             }
+            if(success) {
+                loadRecipe(_recipe.value)
+            }
         }
     }
-*/
+
     fun loadRecipe(recipe : RecipeGetDTO) {
         _userComment.value = ""
         _userRating.value = 0

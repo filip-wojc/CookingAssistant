@@ -3,6 +3,7 @@ package com.cookingassistant.ui.screens.FilterScreen
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.cookingassistant.data.DTO.CategoriesGetDTO
 import com.cookingassistant.data.DTO.DifficultiesGetDTO
 import com.cookingassistant.data.DTO.OccasionsGetDTO
@@ -11,12 +12,19 @@ import com.cookingassistant.data.DTO.idNameClassType
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.data.objects.SearchEngine
 import com.cookingassistant.services.RecipeService
+import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
+import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class FilterScreenViewModel(private val _service : RecipeService) : ViewModel() {
+class FilterScreenViewModel(
+    private val _service : RecipeService,
+    private val _navController : NavHostController,
+    private val _recipeListViewModel : RecipesListViewModel,
+    private val _topAppBarViewModel : TopAppBarViewModel
+) : ViewModel() {
     private val _filterByOccasion: MutableStateFlow<String?> = MutableStateFlow(null)
     private val _filterByCategory: MutableStateFlow<String?> = MutableStateFlow(null)
     private val _filterByDifficulty: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -124,7 +132,6 @@ class FilterScreenViewModel(private val _service : RecipeService) : ViewModel() 
     }
 
     fun onSubmitSearch() {
-        //todo
         val query = RecipeQuery (
             searchQuery.value,
             if(selectedIngredients.value.size == 0) null else selectedIngredients.value,
@@ -134,7 +141,11 @@ class FilterScreenViewModel(private val _service : RecipeService) : ViewModel() 
             _filterByCategory.value,
             _filterByOccasion.value
         )
-        Log.i("FilterScreenViewModel",query.toString())
+        _recipeListViewModel.loadQuery(query)
+        if(_navController.currentDestination?.route != "recipeList") {
+            _navController.navigate("recipeList")
+        }
+        _topAppBarViewModel.onDeselctTool()
     }
 
     private fun _onSortByChange(sort : String) {

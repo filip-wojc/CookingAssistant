@@ -5,9 +5,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.cookingassistant.data.DTO.RecipeQuery
 import com.cookingassistant.data.objects.ScreenControlManager
 import com.cookingassistant.data.objects.SearchEngine
 import com.cookingassistant.services.RecipeService
+import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 import com.frosch2010.fuzzywuzzy_kotlin.model.ExtractedResult
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +17,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class TopAppBarViewModel(private val _service : RecipeService, private val _recipeScreenViewModel : RecipeScreenViewModel, private val _navController: NavHostController) : ViewModel() {
+class TopAppBarViewModel (
+    private val _service : RecipeService,
+    val recipeScreenViewModel : RecipeScreenViewModel,
+    val navController: NavHostController,
+    val recipeListViewModel: RecipesListViewModel
+) : ViewModel()
+{
     private val _quickSearchText = MutableStateFlow("")
     private val _quickSearchResults = MutableStateFlow(listOf<ExtractedResult>())
     private val _showSearchResults = MutableStateFlow(false)
@@ -32,6 +40,14 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
 
     init {
         updateLists()
+    }
+
+    fun onQuickSearch() {
+        val rq = RecipeQuery(SearchPhrase = _quickSearchText.value)
+        if(navController.currentDestination?.route != "recipeList") {
+            navController.navigate("recipeList")
+        }
+        recipeListViewModel.loadQuery(rq)
     }
 
     fun updateLists() {
@@ -102,11 +118,11 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
                 val result = _service.getRecipeDetails(id)
                 if(result is Result.Success) {
                     if(result.data != null) {
-                        _recipeScreenViewModel.loadRecipe(result.data)
-                        if(_navController.currentDestination?.route == "recipeScreen") {
-                            _navController.popBackStack()
+                        recipeScreenViewModel.loadRecipe(result.data)
+                        if(navController.currentDestination?.route == "recipeScreen") {
+                            navController.popBackStack()
                         }
-                        _navController.navigate("recipeScreen")
+                        navController.navigate("recipeScreen")
                         onDeselctTool()
                     }
                 }
@@ -140,7 +156,7 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
     }
 
     fun onAppTryExit() : Boolean {
-        if(_navController.currentDestination?.route == "home") {
+        if(navController.currentDestination?.route == "home") {
             return true
         }
         return false

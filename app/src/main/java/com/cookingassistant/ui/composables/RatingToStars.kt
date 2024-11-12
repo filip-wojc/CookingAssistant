@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun RatingToStars(rating : Int,
                   modifier : Modifier = Modifier,
+                  color : Color,
                   content: @Composable() () -> Unit
 ) {
     var i = 0
@@ -22,6 +23,7 @@ fun RatingToStars(rating : Int,
         content()
         if(rating == 0 ) {
             Text(" not rated yet.",
+                color = color,
                 fontSize = 15.sp)
         } else {
             for (i in 0..<rating) {
@@ -29,6 +31,7 @@ fun RatingToStars(rating : Int,
                     Icons.Filled.Star,
                     contentDescription = "star",
                     modifier = modifier,
+                    tint = color
                 )
             }
         }
