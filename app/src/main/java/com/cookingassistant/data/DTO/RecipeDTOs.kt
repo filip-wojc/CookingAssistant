@@ -52,7 +52,7 @@ data class RecipeNameDTO(
 data class RecipePostDTO(
     val name: String,
     val description: String?,
-    val imageData: ByteArray?,
+    var imageData: ByteArray?,
     val serves: Int?,
     val difficultyId: Int,
     val timeInMinutes: Int?,

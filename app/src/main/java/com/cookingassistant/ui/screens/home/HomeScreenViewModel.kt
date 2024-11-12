@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.DTO.RecipeGetDTO
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.services.UserService
+import com.cookingassistant.data.Models.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -37,8 +38,16 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,private val 
 // TODO : DELETE - test only
     fun fetchRecipeImage(recipeId:Int){
         viewModelScope.launch {
-            val bitmap = _recipeService.getRecipeImageBitmap(recipeId)
-            _recipeImage.value = bitmap
+            val result:Result<Bitmap?> = _recipeService.getRecipeImageBitmap(recipeId)
+
+            if (result is Result.Success && result.data != null){
+                val bitmap:Bitmap = result.data
+                _recipeImage.value = bitmap
+            }
+
+            else if(result is Result.Error){
+                _recipeImage.value = null
+        }
         }
     }
 

@@ -76,7 +76,17 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService, private v
     fun loadImage() {
         viewModelScope.launch {
             try {
-                _recipeImg.value = _recipeService.getRecipeImageBitmap(_recipe.value.id) ?: _recipeImg.value
+                val result = _recipeService.getRecipeImageBitmap(_recipe.value.id)
+                if(result is Result.Success && result.data != null)
+                    _recipeImg.value = result.data
+                else if (result is Result.Error){
+                    // TODO: ADD PLACEHOLDER IMAGE
+                    Log.e("LoadImage()","Response error: ${result.message}")
+                    result.detailedErrors?.forEach { field, messages ->
+                        messages.forEach { message -> Log.e("Response error", "$field: $message") }
+                    }
+                }
+
             } catch (e: Exception) {
                 Log.e("RecipeScreenViewModel", "recipe image couldnt be loaded")
             }
