@@ -86,7 +86,11 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
     val searchResults by topAppBarviewModel.QuickSearchResults.collectAsState()
     val showResults by topAppBarviewModel.ShowSearchResults.collectAsState()
     val selectedTool by topAppBarviewModel.SelectedTool.collectAsState()
-    val viewModel by remember { mutableStateOf(FilterScreenViewModel(topAppBarviewModel.getService())) }
+    val viewModel by remember {
+        mutableStateOf(FilterScreenViewModel(topAppBarviewModel.getService(),topAppBarviewModel.navController, topAppBarviewModel.recipeListViewModel,
+            topAppBarviewModel
+        ))
+    }
 
     topAppBarviewModel.onSearchTextChanged(searchQuery)
 
@@ -100,10 +104,10 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
                 ) {
                     Text(
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         fontSize = 40.sp,
                         text = "TOOLS",
                         modifier = Modifier
@@ -170,11 +174,11 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                 HorizontalDivider(modifier = Modifier
                     .height(100.dp)
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.tertiaryContainer)
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
                 )
                 CenterAlignedTopAppBar(
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
                     ,
                     colors = TopAppBarColors(containerColor = Color.Transparent,
                         actionIconContentColor = TopAppBarDefaults.topAppBarColors().actionIconContentColor,
@@ -185,8 +189,8 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                     scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
                     title = {
                         OutlinedTextField(
-                            modifier = Modifier.background(MaterialTheme.colorScheme.tertiaryContainer),
-                            textStyle = TextStyle.Default.copy(fontSize = 16.sp, color = MaterialTheme.colorScheme.onTertiaryContainer),
+                            modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer),
+                            textStyle = TextStyle.Default.copy(fontSize = 16.sp, color = MaterialTheme.colorScheme.onSecondaryContainer),
                             singleLine = true,
                             value = searchText,
                             onValueChange = {topAppBarviewModel.onSearchTextChanged(it)},
@@ -198,7 +202,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                             },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = {
-                                    //todo RecipePreviewsScreen
+                                    topAppBarviewModel.onQuickSearch()
                                 }
                             )
                         )
@@ -216,7 +220,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                             },
                         )
                         {
-                            Icon(Icons.Filled.Menu, contentDescription = "Left side menu",tint= MaterialTheme.colorScheme.onTertiaryContainer)
+                            Icon(Icons.Filled.Menu, contentDescription = "Left side menu",tint= MaterialTheme.colorScheme.onSecondaryContainer)
                         }
                     },
 
@@ -224,7 +228,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                         IconButton(onClick = { /* Handle action */ },
 
                         ) {
-                            Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.onTertiaryContainer)
+                            Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.onSecondaryContainer)
                         }
                     }
                 )

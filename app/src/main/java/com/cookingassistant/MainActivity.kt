@@ -33,6 +33,8 @@ import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
+import com.cookingassistant.ui.screens.RecipesList.RecipeList
+import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
 import com.cookingassistant.ui.screens.home.HomeScreenViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
@@ -146,7 +148,8 @@ fun AppNavigator(authService: AuthService,userService: UserService,reviewService
 fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository) {
     AppTheme(true) {
         val rsvm = RecipeScreenViewModel(recipeService,userService, reviewService)
-        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController)
+        val recipeListViewModel = RecipesListViewModel(recipeService,rsvm,navController)
+        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel)
         ScreenControlManager.topAppBarViewModel=topBarViewModel
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
@@ -163,12 +166,13 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
                 }
             }
             composable("test") {//For testing purposes
-
                 //val reviewViewModel = ReviewViewModel(reviewService)
                 //ReviewList(reviewViewModel, 14)
-
-//                ShoppingProducts.loadProducts(LocalContext.current)
-//                ShoppingList()
+            }
+            composable("recipeList") {
+                TopAppBar(topAppBarviewModel = topBarViewModel) {
+                    RecipeList(recipeListViewModel)
+                }
             }
             composable("registration") {
                 val registrationViewModel = RegistrationViewModel(authService)

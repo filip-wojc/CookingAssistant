@@ -26,7 +26,7 @@ data class Recipe(
 data class RecipeSimpleGetDTO(
     val id: Int,
     val name: String,
-    val description: String,
+
     val ratings: Float,
     val timeInMinutes: Int,
     val difficultyName: String,
