@@ -1,8 +1,10 @@
 package com.cookingassistant.ui.screens.registration
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookingassistant.services.AuthService
+import com.cookingassistant.data.Models.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -50,14 +52,24 @@ class RegistrationViewModel(private val _service: AuthService) : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true // Start loading
             try {
-                val response = _service.registerUser(username.value, email.value, password.value)
-                if (response.isSuccessful) {
+                val result = _service.registerUser(username.value, email.value, password.value)
+                if (result is Result.Success) {
                     _isRegistrationSucessful.value = true
                     _registrationResult.value = "Registration Successful"
-                } else {
-                    val errorBody = response.errorBody()?.string()
+                }
+
+                else if (result is Result.Error){
+
                     _isRegistrationSucessful.value = false
-                    _registrationResult.value = errorBody ?: "Registration failed: ${response.message()}" // Update with error message
+                    _registrationResult.value = "Registration failed: ${result.message}" // Update with error message
+                    result.detailedErrors?.forEach { field, messages ->
+                        messages.forEach { message ->
+                            Log.d("registration","$field: $message")
+                        }
+                    }
+                } else {
+                    _isRegistrationSucessful.value = false
+                    _registrationResult.value = "Registration failed unexpectedly"
                 }
 
             } catch (e: Exception) {

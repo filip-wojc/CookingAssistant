@@ -1,11 +1,16 @@
 package com.cookingassistant.services
-
+import com.cookingassistant.data.DTO.RecipeQuery
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.cookingassistant.data.DTO.CategoriesGetDTO
+import com.cookingassistant.data.DTO.DifficultiesGetDTO
+import com.cookingassistant.data.DTO.OccasionsGetDTO
+import com.cookingassistant.util.ApiResponseParser
 import com.cookingassistant.data.DTO.RecipeGetDTO
 import com.cookingassistant.data.DTO.RecipeNameDTO
-import com.cookingassistant.data.DTO.ReviewPostDTO
-import com.cookingassistant.data.network.ApiRepository
+import com.cookingassistant.data.DTO.RecipePageResponse
+import com.cookingassistant.data.repositories.ApiRepository
+import com.cookingassistant.data.Models.Result
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -15,16 +20,80 @@ import java.io.InputStream
 
 class RecipeService(private val _apiRepository: ApiRepository) {
 
-    suspend fun getAllIngredientsList(): Response<List<String>> {
-        return _apiRepository.getAllIngredientsList()
+    private val _apiResponseParser = ApiResponseParser()
+
+    // TODO : TEST
+    // TODO : ADD EXCEPTION HANDLING
+    suspend fun getAllIngredientsList(): Result<List<String>?> {
+        val response =  _apiRepository.getAllIngredientsList()
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
     }
 
-    suspend fun getRecipeDetails(recipeId: Int):Response<RecipeGetDTO>{
-        return _apiRepository.getRecipeDetails(recipeId)
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun getAllOccasionsList(): Result<List<OccasionsGetDTO>?>{
+        val response = _apiRepository.getAllOccasionsList()
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
     }
 
-    suspend fun getRecipeNames(): Response<List<RecipeNameDTO>> {
-        return _apiRepository.getAllRecipeNames()
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun getAllDifficultiesList(): Result<List<DifficultiesGetDTO>?>{
+        val response = _apiRepository.getAllDifficultiesList()
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
+    }
+
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun getAllCategoriesList(): Result<List<CategoriesGetDTO>?> {
+        val response = _apiRepository.getAllCategoriesList()
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
+    }
+
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun findAllMatchingRecipes(rq: RecipeQuery): Result<RecipePageResponse?>{
+        val response = _apiRepository.getAllRecipes(
+            SearchPhrase = rq.SearchPhrase,
+            IngredientsSearch = rq.Ingredients,
+            SortBy = rq.SortBy,
+            SortDirection = rq.SortDirection,
+            FilterByDifficulty = rq.Difficulty,
+            FilterByCategoryName = rq.Category,
+            FilterByOccasion = rq.Occasion,
+            PageNumber = rq.PageNumber,
+            PageSize = rq.PageSize
+        )
+
+        val result =  _apiResponseParser.wrapResponse(response)
+
+        return result
+    }
+
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun getRecipeDetails(recipeId: Int):Result<RecipeGetDTO?>{
+        val response = _apiRepository.getRecipeDetails(recipeId)
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
+    }
+
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun getRecipeNames(): Result<List<RecipeNameDTO>?> {
+        val response =  _apiRepository.getAllRecipeNames()
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
     }
 
     suspend fun getRecipeImageBitmap(recipeId: Int): Bitmap?{
@@ -82,10 +151,7 @@ class RecipeService(private val _apiRepository: ApiRepository) {
         return response
     }
 
-    suspend fun addReview(recipeId: Int, review: ReviewPostDTO):Response<Unit>{
-        val response = _apiRepository.postReview(recipeId, review)
-        return response
-    }
+
 
     suspend fun addRecipeToFavorites(recipeId:Int):Response<Unit>{
         val response = _apiRepository.addRecipeToFavourites(recipeId)

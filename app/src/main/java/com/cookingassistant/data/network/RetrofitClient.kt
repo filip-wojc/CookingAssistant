@@ -1,17 +1,16 @@
 package com.cookingassistant.data.network
 
-import com.cookingassistant.data.TokenRepository
+import com.cookingassistant.data.repositories.TokenRepository
+import com.cookingassistant.data.repositories.ApiRepository
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
-import com.google.gson.*
-import java.time.OffsetDateTime
 
 
 class RetrofitClient(private val tokenRepository: TokenRepository){
-    private val BASE_URL = "http://192.168.100.14:5080/api/"
+    private val BASE_URL = "http://192.168.111.51:5080/api/"
 
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

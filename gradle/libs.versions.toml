@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.0"
+byteBuddy = "latest_version"
 converterGson = "2.9.0"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
@@ -22,6 +23,7 @@ constraintlayout = "2.1.4"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
+byte-buddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -1,6 +1,5 @@
 package com.cookingassistant.data.network
-import android.util.Log
-import com.cookingassistant.data.TokenRepository
+import com.cookingassistant.data.repositories.TokenRepository
 import okhttp3.Interceptor
 import okhttp3.Response
 

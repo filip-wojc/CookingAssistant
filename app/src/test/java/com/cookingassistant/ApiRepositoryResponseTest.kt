@@ -25,18 +25,21 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okio.buffer
 import okio.source
 import java.io.File
+import com.cookingassistant.util.ApiResponseParser
 
-class ApiRepositoryTest {
-    private val defaultUsername = "Darknesso5"
-    private val defaultEmail = "testemail5@email.com"
+class ApiRepositoryResponseTest {
+    private val defaultUsername = "TestUser1"
+    private val defaultEmail = "testemail123@email.com"
     private val defaultPassword = "Test123"
     private val defaultNewPassword = "Test1234"
     private val defaultRecipeId = 34
     private val defaultFavouriteRecipeId = 800
     private var defaultReviewId = 1
-    private var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRGFya25lc3NvNSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InRlc3RlbWFpbDVAZW1haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTczMjQ2NjM2OCwiaXNzIjoiaHR0cDovL2Nvb2tpbmdhc3Npc3RhbnQuY29tIiwiYXVkIjoiaHR0cDovL2Nvb2tpbmdhc3Npc3RhbnQuY29tIn0.upDtm_EqQo-Gx_df2SmBUK0a8_0K23wAyks4yuoFMmo"
+    private var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlRlc3RVc2VyMSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InRlc3RlbWFpbDEyM0BlbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzMyNjQzMDMwLCJpc3MiOiJodHRwOi8vY29va2luZ2Fzc2lzdGFudC5jb20iLCJhdWQiOiJodHRwOi8vY29va2luZ2Fzc2lzdGFudC5jb20ifQ.gOXHAljeGwacpUHFcFlYTdg9YnoC0B1S0g4Y4_FtHuE"
+
     private lateinit var apiRepository: ApiRepository
     private lateinit var tokenRepository: TokenRepository
+    private lateinit var apiResponseParser: ApiResponseParser
 
     @Before
     fun setUp(){
@@ -66,7 +69,10 @@ class ApiRepositoryTest {
             .build()
 
         apiRepository = retrofit.create(ApiRepository::class.java)
+        apiResponseParser = ApiResponseParser()
+
     }
+
 
 
     private fun convertListToMultipart(key: String, parts: List<String?>): List<MultipartBody.Part> {
@@ -86,9 +92,8 @@ class ApiRepositoryTest {
     // ################################## TESTS #######################################
     // ################################################################################
 
-    // BadRequest + (username/email taken)
+    // 400 BadRequest + (username/email taken)
     // 204 NoContent +
-
     @Test
     fun `test register`() = runBlocking {
         val registerRequest = RegisterRequest(
@@ -97,24 +102,26 @@ class ApiRepositoryTest {
             defaultPassword
         )
         val response = apiRepository.register(registerRequest)
-        if (response.isSuccessful) {
-            println("Success: ${response.body().toString()}")
-        } else {
-            val errorJson = response.errorBody()?.string()
-            if (errorJson != null) {
-                val apiError = Gson().fromJson(errorJson, ApiErrorResponse::class.java)
+        val result = apiResponseParser.wrapResponse(response)
 
-                // Display the errors
-                apiError.errors.forEach { field, messages ->
+
+        when (result) {
+            is Result.Success -> {
+                println("Success: ${result.data}")
+            }
+            is Result.Error -> {
+                println("General error message: ${result.message}")
+                result.detailedErrors?.forEach { field, messages ->
                     messages.forEach { message ->
                         println("$field: $message")
                     }
                 }
             }
         }
-        assertTrue(response.isSuccessful)
+        assert(result is Result.Success)
     }
 
+    // 204 NoContent +
     @Test
     fun `test logIn`() = runBlocking {
         val logInRequest = LoginRequest(
@@ -122,26 +129,23 @@ class ApiRepositoryTest {
             defaultPassword
         )
         val response = apiRepository.logIn(logInRequest)
-        if (response.isSuccessful) {
-            println("Success: ${response.body().toString()}")
-            token = response.body()?.token ?: token
-            println("New token: $token")
-        } else {
-            val errorJson = response.errorBody()?.string()
-            if (errorJson != null) {
-                val apiError = Gson().fromJson(errorJson, ApiErrorResponse::class.java)
-
-                // Display the errors
-                apiError.errors.forEach { field, messages ->
-                    messages.forEach { message ->
-                        println("$field: $message")
-                    }
+        val result = apiResponseParser.wrapResponse(response)
+        when (result) {
+            is Result.Success -> {
+                println("Login successful. Token: ${result.data?.token}")
+            }
+            is Result.Error -> {
+                println("Login failed: ${result.message}")
+                result.detailedErrors?.forEach { field, messages ->
+                    messages.forEach { message -> println("$field: $message") }
                 }
             }
         }
-        assertTrue(response.isSuccessful)
+        assertTrue(result is Result.Success)
     }
 
+    // 204 NoContent +
+    // 400 BadRequest + (wrong old password)
     @Test
     fun `test changePassword`() = runBlocking {
         val passwordChangeDTO = UserPasswordChangeDTO(
@@ -151,51 +155,112 @@ class ApiRepositoryTest {
         )
 
         val response = apiRepository.changePassword(passwordChangeDTO)
+        val result = apiResponseParser.wrapResponse(response)
 
-        assertTrue(response.isSuccessful)
+        when (result){
+            is Result.Success -> {
+                println("Password changed")
+            }
+
+            is Result.Error -> {
+                println("Password change failed: ${result.message}")
+                result.detailedErrors?.forEach { field, messages ->
+                    messages.forEach { message -> println("$field: $message") }
+                }
+            }
+        }
+
+        assertTrue(result is Result.Success)
     }
-    // GIT
-    // Ok +
+
+    // 200  Ok +
     @Test
     fun `test getAllIngredientsList`() = runBlocking {
         val response = apiRepository.getAllIngredientsList()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assert(response.body()!!.isNotEmpty())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                println("Ingredients list retrieved successfully.")
+                assertNotNull(result.data)
+                assertTrue(result.data!!.isNotEmpty())
+            }
+            is Result.Error -> println("Failed to retrieve ingredients list: ${result.message}")
+        }
+        assertTrue(result is Result.Success)
     }
 
+    // 200 Ok +
     @Test
     fun `test getAllOccasionsList`() = runBlocking {
         val response = apiRepository.getAllOccasionsList()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assert(response.body()!!.isNotEmpty())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                println("Occasions list retrieved successfully.")
+                assertNotNull(result.data)
+                assertTrue(result.data!!.isNotEmpty())
+            }
+            is Result.Error -> println("Failed to retrieve ingredients list: ${result.message}")
+        }
+        assertTrue(result is Result.Success)
     }
 
+    // 200 Ok +
     @Test
     fun `test getAllDifficultiesList`() = runBlocking {
         val response = apiRepository.getAllDifficultiesList()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assert(response.body()!!.isNotEmpty())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                println("Difficulties list retrieved successfully.")
+                assertNotNull(result.data)
+                assertTrue(result.data!!.isNotEmpty())
+            }
+            is Result.Error -> println("Failed to retrieve ingredients list: ${result.message}")
+        }
+        assertTrue(result is Result.Success)
     }
 
+    // 200 Ok +
     @Test
     fun `test getAllCategoriesList`() = runBlocking {
         val response = apiRepository.getAllCategoriesList()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assert(response.body()!!.isNotEmpty())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                println("Categories list retrieved successfully.")
+                assertNotNull(result.data)
+                assertTrue(result.data!!.isNotEmpty())
+            }
+            is Result.Error -> println("Failed to retrieve ingredients list: ${result.message}")
+        }
+        assertTrue(result is Result.Success)
     }
 
     // 404 user NOT FOUND +
     // 400 BAD REQUEST ( SAME RECIPE ) +
-    // Ok NoContent +
+    // 204 NoContent +
     @Test
     fun `test addRecipeToFavourites`() = runBlocking {
         val recipeId = defaultFavouriteRecipeId // Use an actual recipe ID
         val response = apiRepository.addRecipeToFavourites(recipeId)
-        assertTrue(response.isSuccessful)
+        val result = apiResponseParser.wrapResponse(response)
+        when (result)  {
+            is Result.Success -> {
+                println("Recipe added to favourites")
+            }
+            is Result.Error -> {
+                println("Failed to add recipe to favourites: ${result.message}")
+                result.detailedErrors?.forEach { field, messages ->
+                    messages.forEach { message -> println(message) }
+                }
+            }
+        }
+        assertTrue(result is Result.Success)
     }
 
     // 404 NOT FOUND ---  NOT WORKING
@@ -203,15 +268,45 @@ class ApiRepositoryTest {
     @Test
     fun `test getFavouriteRecipes`() = runBlocking {
         val response = apiRepository.getFavouriteRecipes()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                println("Favourite recipes list retrieved successfully.")
+                assertNotNull(result.data)
+                assertTrue(result.data!!.items.isNotEmpty())
+            }
+
+            is Result.Error -> {
+                println("Failed to add recipe to favourites: ${result.message}")
+                result.detailedErrors?.forEach { field, messages ->
+                    messages.forEach { message -> println(message) }
+                }
+            }
+        }
+        assertTrue("Result not success",result is Result.Success)
     }
 
+    // 400 not in api ( no need )
+    // 200 Ok +
     @Test
     fun `test checkIfRecipeInFavourites`() = runBlocking {
         val response = apiRepository.checkIfRecipeInFavourites(defaultFavouriteRecipeId)
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                assertNotNull(result.data)
+                assertTrue(result.data == false)
+                println("Favourite check result: ${result.data.toString()}")
+            }
+
+            is Result.Error -> {
+                println("Failed to check if recipe is in favourites ${result.message}")
+            }
+        }
+
+        assertTrue(result is Result.Success)
     }
 
     // 404 NOT FOUND recipe +
@@ -221,7 +316,18 @@ class ApiRepositoryTest {
     fun `test removeRecipeFromFavourites`() = runBlocking{
 
         val response = apiRepository.removeRecipeFromFavourites(defaultFavouriteRecipeId)
-        assertTrue(response.isSuccessful)
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                println("Recipe removed from favourites")
+            }
+            is Result.Error -> {
+                println("Failed to delete recipe: ${result.message}")
+            }
+        }
+
+        assertTrue(result is Result.Success)
     }
 
     // 204 NO CONTENT +
@@ -235,7 +341,18 @@ class ApiRepositoryTest {
         val imagePart = MultipartBody.Part.createFormData("imageData", "pomocy.jpg", imageRequestBody)
 
         val response = apiRepository.addProfilePicture(imagePart)
-        assertTrue(response.isSuccessful)
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                println("Profile picture added successfully")
+            }
+            is Result.Error -> {
+                println("Failed to add profile picture: ${result.message}")
+            }
+        }
+
+        assertTrue(result is Result.Success)
     }
 
 
@@ -243,8 +360,25 @@ class ApiRepositoryTest {
     @Test
     fun `test getUserProfilePicture`() = runBlocking {
         val response = apiRepository.getUserProfilePicture()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                // Ensure the data is not null
+                assertNotNull(result.data)
+
+                // Check if there is content in the image data
+                val byteArray = result.data?.bytes()
+                assertNotNull(byteArray)
+                assertTrue("Image data is empty", byteArray!!.isNotEmpty())
+            }
+            is Result.Error -> {
+                println("Failed to get user picture: ${result.message}")
+
+            }
+        }
+
+        assertTrue(result is Result.Success)
     }
 
     // GIT
@@ -258,7 +392,7 @@ class ApiRepositoryTest {
             serves = 4,
             difficultyId = 1,
             timeInMinutes = 20,
-            categoryId = 14,
+            categoryId = 1,
             ingredientNames = listOf("Tortillas", "Black Beans", "Avocado", "Salsa"),
             ingredientQuantities = listOf("4", "150", "1", "50"),
             ingredientUnits = listOf("pcs", "g", "pcs", "g"),
@@ -310,11 +444,23 @@ class ApiRepositoryTest {
         )
 
 
-        assertTrue(response.isSuccessful)
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> println("Recipe posted successfully: ${result.data}")
+            is Result.Error -> {
+                println("Failed to post recipe: ${result.message}")
+                result.detailedErrors?.forEach { field, messages ->
+                    messages.forEach { message -> println("$field: $message") }
+                }
+            }
+        }
+        assertTrue(result is Result.Success)
     }
 
     // 200 OK +
     // 403 FORBIDDEN +
+    // 404 Not Found + (category, ... etc)
     @Test
     fun `test modifyRecipe`() = runBlocking {
         val recipe = RecipePostDTO(
@@ -358,7 +504,7 @@ class ApiRepositoryTest {
 
         // Call the API
         val response = apiRepository.modifyRecipe(
-            1029,
+            1032,
             namePart,
             descriptionPart,
             servesPart,
@@ -374,29 +520,57 @@ class ApiRepositoryTest {
             imagePart
         )
 
-        assertTrue(response.isSuccessful)
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> println("Recipe posted successfully: ${result.data}")
+            is Result.Error -> {
+                println("Failed to post recipe: ${result.message}")
+                result.detailedErrors?.forEach { field, messages ->
+                    messages.forEach { message -> println("$field: $message") }
+                }
+            }
+        }
+        assertTrue(result is Result.Success)
     }
 
-    // GIT
+    // 404 Not Found +
+    // 200 Ok +
     @Test
     fun `test getRecipeDetails`() = runBlocking {
-        val recipeId = 1020 // Replace with an actual recipe ID
+        val recipeId = 1044 // Replace with an actual recipe ID
         val response = apiRepository.getRecipeDetails(recipeId)
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assertEquals(recipeId, response.body()?.id)
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                assertNotNull(result.data)
+                assertEquals(recipeId, result.data?.id)
+                println("Recipe details fetched successfully")
+            }
+            is Result.Error -> println("Failed to get recipe details: ${result.message}")
+        }
+        assertTrue(result is Result.Success)
     }
 
-    // Forbidden GIT
-    // Delete own GIT
+    // 404 Not Found +
+    // 403 Forbidden +
+    // 204 Ok +
     @Test
     fun `test deleteRecipe`() = runBlocking {
-        val recipeId = 1030 // Replace with an actual recipe ID to delete
+        val recipeId = 1031 // Replace with an actual recipe ID to delete
         val response = apiRepository.deleteRecipe(recipeId)
-        assertTrue(response.isSuccessful)
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> println("Recipe deleted successfully.")
+            is Result.Error -> println("Failed to delete recipe: ${result.message}")
+        }
+        assertTrue(result is Result.Success)
     }
 
-    // GIT
+    // 404 Not Found +
+    // 200 Ok +
     @Test
     fun `test getAllRecipes`() = runBlocking {
 
@@ -423,28 +597,61 @@ class ApiRepositoryTest {
             PageNumber = rq.PageNumber,
             PageSize = rq.PageSize
         )
-        assert(response.isSuccessful)
-        assertNotNull(response.body())
-        assert(response.body()!!.items.isNotEmpty())
+
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                assertNotNull(result.data)
+                assertTrue(result.data!!.items.isNotEmpty())
+                println("All recipes fetched successfully.")
+            }
+            is Result.Error -> {
+                println("Failed to get recipes: ${result.message}")
+            }
+        }
+        assertTrue(result is Result.Success)
     }
 
-    // GIT
+    // 200 Ok +
     @Test
     fun `test getAllRecipeNames`() = runBlocking {
         val response = apiRepository.getAllRecipeNames()
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
-        assert(response.body()!!.isNotEmpty())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                assertNotNull(result.data)
+                assertTrue(result.data!!.isNotEmpty())
+                println("All recipe names fetched successfully.")
+            }
+            is Result.Error -> {
+                println("Failed to get recipe names: ${result.message}")
+                result.detailedErrors?.forEach { field, messages ->
+                    messages.forEach { message -> println("$field: $message") }
+                }
+            }
+        }
+        assertTrue(result is Result.Success)
     }
 
-    // GIT
+    // 200 Ok +
     @Test
     fun `test getRecipeImage`() = runBlocking {
         val recipeId = 900 // Replace with an actual recipe ID with an image
         val response = apiRepository.getRecipeImage(recipeId)
-        assertTrue(response.isSuccessful)
-        assertNotNull(response.body())
+        val result = apiResponseParser.wrapResponse(response)
+
+        when (result) {
+            is Result.Success -> {
+                assertNotNull(result.data)
+                println("Recipe image fetched successfully.")
+            }
+            is Result.Error -> println("Failed to get recipe image: ${result.message}")
+        }
+        assertTrue(result is Result.Success)
     }
+
 
     // Forbidden GIT
     // BadRequest GIT
@@ -511,15 +718,24 @@ class ApiRepositoryTest {
         //assertTrue(response.isSuccessful)
     }
 
+
+    // GIT
     @Test
     fun `test deleteAccount`() = runBlocking {
         val userDeleteRequest = UserDeleteRequest(defaultPassword)
 
         val response = apiRepository.deleteUser(userDeleteRequest)
+        val result = apiResponseParser.wrapResponse(response)
 
-        assertTrue(response.isSuccessful)
+        if(result is Result.Success){
+            println("Account deleted successfully")
+        }
+        else if (result is Result.Error){
+            println("Error: ${result.message}")
+        }
+
+        assertTrue(result is Result.Success)
     }
-
 
 
 }

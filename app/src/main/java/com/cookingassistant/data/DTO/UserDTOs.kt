@@ -21,3 +21,7 @@ data class UserPasswordChangeDTO(
     val newPassword: String?,
     val newPasswordConfirm: String?,
 )
+
+data class UserDeleteRequest(
+    val password: String
+)

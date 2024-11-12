@@ -1,5 +1,6 @@
 package com.cookingassistant.ui.composables.topappbar
 
+import com.cookingassistant.data.Models.Result
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,11 +30,19 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
         _quickSearchResults.value = listOf<ExtractedResult>(ExtractedResult("Propositions are loading...",0,-1))
         viewModelScope.launch {
             try {
-                val status = _service.getRecipeNames()
-                if (status.body() != null) {
-                    SearchEngine.updateRecipesList(status.body()!!)
-                } else {
-                    Log.e("TopAppBarViewModel", "_service.getRecipeNames().body is empty", )
+                val result = _service.getRecipeNames()
+                if(result is Result.Success) {
+                    if(result.data != null)
+                        SearchEngine.updateRecipesList(result.data)
+                    else
+                        Log.e("TopAppBarViewModel", "_service.getRecipeNames().body is empty", )
+                }
+                else if (result is Result.Error){
+                    Log.e("TopAppBarViewModel", "Result is error")
+                }
+
+                else{
+                    Log.e("TopAppBarViewModel", "Unexpected error occurred getRecipeNames()")
                 }
             } catch (e: Exception) {
                 Log.e("TopAppBarViewModel", e.message ?: "couldn't get message names", )
@@ -57,11 +66,21 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
     fun updateRecipesList() {
         viewModelScope.launch {
             try {
-                val status = _service.getRecipeNames()
-                if (status.body() != null) {
-                    SearchEngine.updateRecipesList(status.body()!!)
-                } else {
-                    Log.e("TopAppBarViewModel", "_service.getRecipeNames().body is empty", )
+                val result = _service.getRecipeNames()
+
+                if(result is Result.Success){
+                    if (result.data != null) {
+                        SearchEngine.updateRecipesList(result.data)
+                    }
+                    else {
+                        Log.e("TopAppBarViewModel", "_service.getRecipeNames().body is empty", )
+                    }
+                }
+                else if (result is Result.Error){
+                    Log.e("TopAppBarViewModel", "Result is error in getRecipeNames()")
+                }
+                else{
+                    Log.e("TopAppBarViewModel", "Unexpected error in getRecipeNames()")
                 }
             } catch (e: Exception) {
                 Log.e("TopAppBarViewModel", e.message ?: "couldnt get message names", )
@@ -88,10 +107,10 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
     fun onResultSubmited(id : Int) {
         viewModelScope.launch {
             try {
-                val response = _service.getRecipeDetails(id)
-                if(response.isSuccessful) {
-                    if(response.body() != null) {
-                        _recipeScreenViewModel.loadRecipe(response.body()!!)
+                val result = _service.getRecipeDetails(id)
+                if(result is Result.Success) {
+                    if(result.data != null) {
+                        _recipeScreenViewModel.loadRecipe(result.data)
                         if(_navController.currentDestination?.route == "recipeScreen") {
                             _navController.popBackStack()
                         }
@@ -99,8 +118,15 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
                         onDeselctTool()
                     }
                 }
+                else if(result is Result.Error){
+                    Log.e("onResultSubmitted", "Result is error in onResultSubmitted")
+                }
+                else{
+                    Log.e("onResultSubmitted", "Unexpected error in onResultSubmitted")
+                }
+
             } catch(e: Exception) {
-                Log.e("onResultSubmited", e.message ?: "failed to submit result")
+                Log.e("onResultSubmitted", e.message ?: "failed to submit result")
             }
         }
     }

@@ -12,15 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import android.Manifest
 import android.os.Build
-import android.util.Log
-import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.cookingassistant.data.TokenRepository
+import com.cookingassistant.data.repositories.TokenRepository
 import com.cookingassistant.data.network.RetrofitClient
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.services.AuthService
@@ -28,9 +26,9 @@ import com.cookingassistant.ui.screens.home.LoginViewModel
 import com.cookingassistant.ui.screens.registration.RegistrationScreen
 import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.compose.AppTheme
-import com.cookingassistant.data.AdditionalFunctions
 import com.cookingassistant.data.BackButtonManager
 import com.cookingassistant.data.ShoppingProducts
+import com.cookingassistant.services.ReviewService
 import com.cookingassistant.services.UserService
 import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
@@ -70,9 +68,10 @@ class MainActivity : ComponentActivity() {
         // Create services
         val authService = AuthService(apiRepository)
         val userService = UserService(apiRepository)
+        val reviewService = ReviewService(apiRepository)
         val recipeService = RecipeService(apiRepository)
         setContent {
-            AppNavigator(authService,userService,recipeService ,tokenRepository) // inject services here
+            AppNavigator(authService,userService,reviewService,recipeService ,tokenRepository) // inject services here
         }
     }
 
@@ -131,19 +130,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 // modify this code to inject services
-fun AppNavigator(authService: AuthService,userService: UserService, recipeService: RecipeService, tokenRepository:TokenRepository){
+fun AppNavigator(authService: AuthService,userService: UserService,reviewService: ReviewService, recipeService: RecipeService, tokenRepository: TokenRepository){
     val navController = rememberNavController()
     NavGraph(navController = navController,
         authService = authService,
         userService = userService,
+        reviewService = reviewService,
         recipeService = recipeService,
         tokenRepository = tokenRepository)
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,recipeService: RecipeService, tokenRepository: TokenRepository) {
+fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository) {
     AppTheme(darkTheme = true) {
-        val rsvm = RecipeScreenViewModel(recipeService,userService)
+        val rsvm = RecipeScreenViewModel(recipeService,userService, reviewService)
         val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController)
         BackButtonManager.topAppBarViewModel=topBarViewModel
         NavHost(navController = navController, startDestination = "login") {

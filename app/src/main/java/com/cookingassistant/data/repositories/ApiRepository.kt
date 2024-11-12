@@ -1,4 +1,4 @@
-package com.cookingassistant.data.network
+package com.cookingassistant.data.repositories
 import com.cookingassistant.data.DTO.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -42,7 +42,7 @@ interface ApiRepository{
     suspend fun logIn(@Body loginRequest: LoginRequest):Response<LoginResponse>
 
     @POST("users/register")
-    suspend fun register(@Body registerRequest: RegisterRequest):Response<String?>
+    suspend fun register(@Body registerRequest: RegisterRequest):Response<Unit>
     // #
     // #
     // #########################################################################
@@ -75,10 +75,8 @@ interface ApiRepository{
     suspend fun changePassword(@Body passwordChangeDTO: UserPasswordChangeDTO): Response<Unit>
 
     // TODO: TEST
-    @DELETE("users/delete")
-    suspend fun deleteAccount(
-        @Body password: RequestBody
-    ): Response<Unit>
+    @POST("users/delete")
+    suspend fun deleteUser(@Body userDeleteRequest: UserDeleteRequest): Response<Unit>
     // #
     // #
     // #########################################################################
