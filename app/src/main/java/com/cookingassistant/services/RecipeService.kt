@@ -4,16 +4,20 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.cookingassistant.data.DTO.CategoriesGetDTO
 import com.cookingassistant.data.DTO.DifficultiesGetDTO
+import com.cookingassistant.util.RequestBodyFormatter
 import com.cookingassistant.data.DTO.OccasionsGetDTO
 import com.cookingassistant.util.ApiResponseParser
 import com.cookingassistant.data.DTO.RecipeGetDTO
 import com.cookingassistant.data.DTO.RecipeNameDTO
 import com.cookingassistant.data.DTO.RecipePageResponse
+import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.data.repositories.ApiRepository
 import com.cookingassistant.data.Models.Result
+import com.cookingassistant.util.ImageConverter
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
 import java.io.File
 import java.io.InputStream
@@ -21,7 +25,8 @@ import java.io.InputStream
 class RecipeService(private val _apiRepository: ApiRepository) {
 
     private val _apiResponseParser = ApiResponseParser()
-
+    private val _imageConverter = ImageConverter()
+    private val _formatter = RequestBodyFormatter()
     // TODO : TEST
     // TODO : ADD EXCEPTION HANDLING
     suspend fun getAllIngredientsList(): Result<List<String>?> {
@@ -96,84 +101,107 @@ class RecipeService(private val _apiRepository: ApiRepository) {
         return result
     }
 
-    suspend fun getRecipeImageBitmap(recipeId: Int): Bitmap?{
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun getRecipeImageBitmap(recipeId: Int): Result<Bitmap?>{
         val response = _apiRepository.getRecipeImage(recipeId)
 
-        return if (response.isSuccessful && response.body() != null) {
-            val inputStream: InputStream = response.body()!!.byteStream()
-            BitmapFactory.decodeStream(inputStream)
+        if(response.isSuccessful && response.body() != null) {
+            val imageByteArray = response.body()!!.bytes()
+            val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
 
-        } else {
-            println("Failed to fetch image: ${response.code()} - ${response.message()}")
-            null
+            return Result.Success(bitmap)
+        }
+        else{
+            // TODO: CHANGE LATER
+            return Result.Error("Failed to fetch user image:${response.message()}", errorCode = response.code())
         }
     }
-/*
-    suspend fun addRecipe(recipe: RecipePostDTO, imagePath: String): Response<Unit> {
-        // Prepare fields as RequestBody
-        val namePart = RequestBody.create("text/plain".toMediaTypeOrNull(), recipe.name ?: "")
-        val descriptionPart = RequestBody.create("text/plain".toMediaTypeOrNull(), recipe.description ?: "")
-        val servesPart = RequestBody.create("text/plain".toMediaTypeOrNull(), recipe.serves.toString())
-        val difficultyPart = RequestBody.create("text/plain".toMediaTypeOrNull(), recipe.difficulty ?: "")
-        val timeInMinutesPart = RequestBody.create("text/plain".toMediaTypeOrNull(), recipe.timeInMinutes?.toString() ?: "")
-        val categoryIdPart = RequestBody.create("text/plain".toMediaTypeOrNull(), recipe.categoryId.toString())
 
-        // Prepare the list fields and convert them to List<MultipartBody.Part>
-        // Convert lists to multipart with appropriate form key
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun addRecipe(recipe: RecipePostDTO): Result<Unit?> {
+        // Use RequestBodyFormatter for each part
+        val namePart = _formatter.fromString(recipe.name)
+        val descriptionPart = _formatter.fromString(recipe.description)
+        val servesPart = _formatter.fromInt(recipe.serves)
+        val difficultyIdPart = _formatter.fromInt(recipe.difficultyId)
+        val timeInMinutesPart = _formatter.fromInt(recipe.timeInMinutes)
+        val categoryIdPart = _formatter.fromInt(recipe.categoryId)
+        val occasionIdPart = _formatter.fromInt(recipe.occasionId)
+        val caloricityPart = _formatter.fromInt(recipe.caloricity)
 
-        val ingredientNames = convertListToMultipart("IngredientNames", recipe.ingredientNames ?: emptyList())
-        val ingredientQuantities = convertListToMultipart("IngredientQuantities", recipe.ingredientQuantities ?: emptyList())
-        val ingredientUnits = convertListToMultipart("IngredientUnits", recipe.ingredientUnits ?: emptyList())
-        val steps = convertListToMultipart("Steps", recipe.steps ?: emptyList())
+        // Convert lists using helper
+        val ingredientNames = _formatter.fromList("IngredientNames", recipe.ingredientNames)
+        val ingredientQuantities = _formatter.fromList("IngredientQuantities", recipe.ingredientQuantities)
+        val ingredientUnits = _formatter.fromList("IngredientUnits", recipe.ingredientUnits)
+        val steps = _formatter.fromList("Steps", recipe.steps)
 
+        // Convert image data if available
+        val imagePart = recipe.imageData.let {
+            _formatter.fromByteArray(it, "recipe_image.jpg")
+        } ?: MultipartBody.Part.createFormData("ImageData", "", "".toRequestBody("image/jpeg".toMediaTypeOrNull()))
 
-        // Prepare image part
-        val imagePart = prepareFilePart("ImageData", imagePath)
-
-        // Call the API
-        return apiRepository.postRecipe(
-            namePart,
-            descriptionPart,
-            servesPart,
-            difficultyPart,
-            timeInMinutesPart,
-            categoryIdPart,
-            ingredientNames,
-            ingredientQuantities,
-            ingredientUnits,
-            steps,
+        // Prepare all parts for the API call
+        val response = _apiRepository.postRecipe(
+            namePart, descriptionPart, servesPart, difficultyIdPart, timeInMinutesPart,
+            categoryIdPart, occasionIdPart, caloricityPart,
+            ingredientNames, ingredientQuantities, ingredientUnits, steps,
             imagePart
         )
+
+        // Handle the API response
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
     }
-*/
-    suspend fun deleteRecipe(recipeId:Int):Response<Unit>{
+
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun modifyRecipe(recipeId: Int, recipe: RecipePostDTO):Result<Unit?>{
+        // Use RequestBodyFormatter for each part
+        val namePart = _formatter.fromString(recipe.name)
+        val descriptionPart = _formatter.fromString(recipe.description)
+        val servesPart = _formatter.fromInt(recipe.serves)
+        val difficultyIdPart = _formatter.fromInt(recipe.difficultyId)
+        val timeInMinutesPart = _formatter.fromInt(recipe.timeInMinutes)
+        val categoryIdPart = _formatter.fromInt(recipe.categoryId)
+        val occasionIdPart = _formatter.fromInt(recipe.occasionId)
+        val caloricityPart = _formatter.fromInt(recipe.caloricity)
+
+        // Convert lists using helper
+        val ingredientNames = _formatter.fromList("IngredientNames", recipe.ingredientNames)
+        val ingredientQuantities = _formatter.fromList("IngredientQuantities", recipe.ingredientQuantities)
+        val ingredientUnits = _formatter.fromList("IngredientUnits", recipe.ingredientUnits)
+        val steps = _formatter.fromList("Steps", recipe.steps)
+
+        // Convert image data if available
+        val imagePart = recipe.imageData.let {
+            _formatter.fromByteArray(it, "recipe_image.jpg")
+        } ?: MultipartBody.Part.createFormData("ImageData", "", "".toRequestBody("image/jpeg".toMediaTypeOrNull()))
+
+        val response = _apiRepository.modifyRecipe(
+            recipeId,
+            namePart, descriptionPart, servesPart, difficultyIdPart, timeInMinutesPart,
+            categoryIdPart, occasionIdPart, caloricityPart,
+            ingredientNames, ingredientQuantities, ingredientUnits, steps,
+            imagePart
+        )
+
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
+    }
+    // TODO: TEST
+    // TODO: ADD EXCEPTION HANDLING
+    suspend fun deleteRecipe(recipeId:Int):Result<Unit?>{
         val response = _apiRepository.deleteRecipe(recipeId)
-        return response
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
     }
 
 
 
-    suspend fun addRecipeToFavorites(recipeId:Int):Response<Unit>{
-        val response = _apiRepository.addRecipeToFavourites(recipeId)
-        return response
-    }
 
-    // Helper function to create MultipartBody.Part from String
-    private fun createPartFromString(value: String?): MultipartBody.Part {
-        return MultipartBody.Part.createFormData("data", null, RequestBody.create("text/plain".toMediaTypeOrNull(), value ?: ""))
-    }
 
-    // Convert List<RequestBody> to List<MultipartBody.Part>
-    private fun convertListToMultipart(key: String, parts: List<String?>): List<MultipartBody.Part> {
-        return parts.mapIndexed { index, value ->
-            MultipartBody.Part.createFormData(key, null, RequestBody.create("text/plain".toMediaTypeOrNull(), value ?: ""))
-        }
-    }
-
-    // Helper function to prepare the image file as MultipartBody.Part
-    private fun prepareFilePart(partName: String, filePath: String): MultipartBody.Part {
-        val file = File(filePath)
-        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-        return MultipartBody.Part.createFormData(partName, file.name, requestFile)
-    }
 }
