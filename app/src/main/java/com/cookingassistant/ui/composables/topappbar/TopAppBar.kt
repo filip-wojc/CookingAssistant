@@ -15,10 +15,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ManageSearch
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ManageSearch
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,10 +41,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -51,7 +57,21 @@ import com.cookingassistant.data.objects.SearchEngine
 import com.cookingassistant.data.ShoppingProducts
 import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
+import com.cookingassistant.ui.screens.FilterScreen.FilterScreenViewModel
 import kotlinx.coroutines.launch
+
+@Composable
+fun DrawerItemContent(text:String, icon : ImageVector) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon,text, tint = MaterialTheme.colorScheme.secondary)
+        Text(text = text, fontSize = 18.sp,
+            modifier = Modifier.weight(1f)
+                .padding(start = 15.dp)
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +86,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
     val searchResults by topAppBarviewModel.QuickSearchResults.collectAsState()
     val showResults by topAppBarviewModel.ShowSearchResults.collectAsState()
     val selectedTool by topAppBarviewModel.SelectedTool.collectAsState()
+    val viewModel by remember { mutableStateOf(FilterScreenViewModel(topAppBarviewModel.getService())) }
 
     topAppBarviewModel.onSearchTextChanged(searchQuery)
 
@@ -93,7 +114,9 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
 
                 HorizontalDivider()
                 NavigationDrawerItem(
-                    label = { Text(text = "Shopping list", fontSize = 18.sp) },
+                    label = {
+                        DrawerItemContent("Shopping list",Icons.Outlined.ShoppingCart)
+                    },
                     selected = false,
                     onClick = {
                         if(selectedTool == "ShoppingList") {
@@ -114,7 +137,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Advanced search", fontSize = 18.sp) },
+                    label = { DrawerItemContent("Advanced search", Icons.AutoMirrored.Outlined.ManageSearch) },
                     selected = false,
                     onClick = {
                         if(selectedTool == "AdvancedSearch") {
@@ -193,7 +216,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                             },
                         )
                         {
-                            Icon(Icons.Filled.Menu, contentDescription = "Left side menu")
+                            Icon(Icons.Filled.Menu, contentDescription = "Left side menu",tint= MaterialTheme.colorScheme.onTertiaryContainer)
                         }
                     },
 
@@ -201,7 +224,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                         IconButton(onClick = { /* Handle action */ },
 
                         ) {
-                            Icon(Icons.Filled.Person, contentDescription = "Profile")
+                            Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.onTertiaryContainer)
                         }
                     }
                 )
@@ -217,7 +240,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                             ShoppingList()
                         }
                         "AdvancedSearch" -> {
-                            FilterScreen()
+                            FilterScreen(viewModel)
                         }
                     }
                 }

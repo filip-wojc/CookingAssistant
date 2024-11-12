@@ -26,6 +26,10 @@ class TopAppBarViewModel(private val _service : RecipeService, private val _reci
     val ShowSearchResults : StateFlow<Boolean> = _showSearchResults
     val SelectedTool: StateFlow<String> = _selectedTool
 
+    fun getService() : RecipeService {
+        return _service
+    }
+
     init {
         updateLists()
     }

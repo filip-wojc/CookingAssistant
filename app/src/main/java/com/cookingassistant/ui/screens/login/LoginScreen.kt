@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
@@ -37,6 +39,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -72,11 +76,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                     contentDescription = "Cooking assistant app",
                     modifier = Modifier.fillMaxWidth().fillMaxHeight()
                 )
+
                 Text(text="Cooking Assistant",
-                    fontSize = 25.sp,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 35.sp,
+                    fontWeight = FontWeight.Black,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).offset(0.dp,10.dp)
                 )
             }
         }
@@ -107,7 +114,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                             contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
                         )
                     }
+                },
+
+                keyboardActions = KeyboardActions(onDone = {
+                    loginViewModel.login()
+                    if(isLoginSuccessful)
+                        navController.navigate("home")
                 }
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))

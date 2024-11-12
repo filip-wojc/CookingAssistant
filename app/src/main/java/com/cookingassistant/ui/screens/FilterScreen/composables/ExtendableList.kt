@@ -53,7 +53,7 @@ fun ExtendableList(
     Column(modifier = Modifier.fillMaxWidth().background(color)) {
         Text(
             text = title,
-            color = MaterialTheme.colorScheme.onTertiaryContainer,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 5.dp, start = 20.dp, end = 10.dp)

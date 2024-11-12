@@ -138,7 +138,7 @@ fun AppNavigator(authService: AuthService,userService: UserService,reviewService
 
 @Composable
 fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository) {
-    AppTheme(darkTheme = true) {
+    AppTheme(true) {
         val rsvm = RecipeScreenViewModel(recipeService,userService, reviewService)
         val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController)
         ScreenControlManager.topAppBarViewModel=topBarViewModel
@@ -158,11 +158,6 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
             }
             composable("test") {//For testing purposes
 
-//                ShoppingProducts.loadProducts(LocalContext.current)
-//                ShoppingList()
-                TopAppBar(topAppBarviewModel = topBarViewModel) {
-                    FilterScreen()
-                }
             }
             composable("registration") {
                 val registrationViewModel = RegistrationViewModel(authService)

@@ -1,18 +1,25 @@
 package com.cookingassistant.ui.screens.FilterScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cookingassistant.data.DTO.CategoriesGetDTO
+import com.cookingassistant.data.DTO.DifficultiesGetDTO
+import com.cookingassistant.data.DTO.OccasionsGetDTO
+import com.cookingassistant.data.DTO.RecipeQuery
+import com.cookingassistant.data.DTO.idNameClassType
+import com.cookingassistant.data.Models.Result
 import com.cookingassistant.data.objects.SearchEngine
+import com.cookingassistant.services.RecipeService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class FilterScreenViewModel : ViewModel() {
+class FilterScreenViewModel(private val _service : RecipeService) : ViewModel() {
     private val _filterByOccasion: MutableStateFlow<String?> = MutableStateFlow(null)
     private val _filterByCategory: MutableStateFlow<String?> = MutableStateFlow(null)
     private val _filterByDifficulty: MutableStateFlow<String?> = MutableStateFlow(null)
-    private val _suggestIngredientVisible : MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _searchQuery : MutableStateFlow<String?> = MutableStateFlow(null)
     private val _suggestedIngredient : MutableStateFlow<String> = MutableStateFlow("")
     private val _addIngredientText : MutableStateFlow<String> = MutableStateFlow("")
@@ -20,15 +27,115 @@ class FilterScreenViewModel : ViewModel() {
     private val _rollIngredients : MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _sortBy : MutableStateFlow<String?> = MutableStateFlow(null)
     private val _sortDirection : MutableStateFlow<String?> = MutableStateFlow(null)
+    private val _allOccasions : MutableStateFlow<List<String>> = MutableStateFlow(listOf())
+    private val _allCategories : MutableStateFlow<List<String>> = MutableStateFlow(listOf())
+    private val _allDifficulties : MutableStateFlow<List<String>> = MutableStateFlow(listOf())
 
+    val allOccasions : StateFlow<List<String>> = _allOccasions
+    val allCategories : StateFlow<List<String>> = _allCategories
+    val allDifficulties : StateFlow<List<String>> = _allDifficulties
     val unrollIngredients : StateFlow<Boolean> = _rollIngredients
     val suggestedIngredient : StateFlow<String> = _suggestedIngredient
     val searchQuery: StateFlow<String?> = _searchQuery
     val addIngredientText : StateFlow<String> = _addIngredientText
     val selectedIngredients : StateFlow<MutableList<String>> = _selectedIngredients
     val filterByDifficulty : StateFlow<String?> = _filterByDifficulty
-    val sortBy : StateFlow<String?> = _sortBy
-    val sortDirection : StateFlow<String?> = _sortDirection
+
+    private fun _toStringList(list : List<idNameClassType>) : List<String> {
+        val result = mutableListOf<String>()
+        for(item in list) {
+            result.add(item.name)
+        }
+        return result
+    }
+
+    init {
+        viewModelScope.launch {
+            val tag = "FilterScreenViewModel"
+            try {
+                val result = _service.getAllOccasionsList()
+                when (result) {
+                    is Result.Success -> {
+                        if (result.data != null)
+                             _allOccasions.value = _toStringList(result.data)
+                        else {
+                            Log.w(tag, "_service.getAllOccasionsList().body is empty",)
+                        }
+                    }
+
+                    is Result.Error -> {
+                        Log.e(tag, result.message)
+                    }
+
+                    else -> {
+                        Log.e(tag, "Unexpected error occurred ${tag}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(tag, e.message ?: "couldn't get occasions list",)
+            }
+
+            try {
+                val result = _service.getAllCategoriesList()
+                when (result) {
+                    is Result.Success -> {
+                        if (result.data != null)
+                            _allCategories.value = _toStringList(result.data)
+                        else {
+                            Log.w(tag, "_service.getAllCategoriesList().body is empty",)
+                        }
+                    }
+
+                    is Result.Error -> {
+                        Log.e(tag, result.message)
+                    }
+
+                    else -> {
+                        Log.e(tag, "Unexpected error occurred ${tag}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(tag, e.message ?: "couldn't get categories list",)
+            }
+
+            try {
+                val result = _service.getAllDifficultiesList()
+                when (result) {
+                    is Result.Success -> {
+                        if (result.data != null)
+                            _allDifficulties.value = _toStringList(result.data)
+                        else {
+                            Log.w(tag, "_service.getAllOccasionsList().body is empty",)
+                        }
+                    }
+
+                    is Result.Error -> {
+                        Log.e(tag, result.message)
+                    }
+
+                    else -> {
+                        Log.e(tag, "Unexpected error occurred ${tag}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(tag, e.message ?: "couldn't get difficulties list",)
+            }
+        }
+    }
+
+    fun onSubmitSearch() {
+        //todo
+        val query = RecipeQuery (
+            searchQuery.value,
+            if(selectedIngredients.value.size == 0) null else selectedIngredients.value,
+            _sortBy.value,
+            _sortDirection.value,
+            _filterByDifficulty.value,
+            _filterByCategory.value,
+            _filterByOccasion.value
+        )
+        Log.i("FilterScreenViewModel",query.toString())
+    }
 
     private fun _onSortByChange(sort : String) {
         if(sort == "Default") {
@@ -40,9 +147,9 @@ class FilterScreenViewModel : ViewModel() {
 
     private fun _onSortDirectionChange(direction : String) {
         if(direction == "Default") {
-            _sortBy.value = null
+            _sortDirection.value = null
         } else {
-            _sortBy.value = direction
+            _sortDirection.value = direction
         }
     }
 

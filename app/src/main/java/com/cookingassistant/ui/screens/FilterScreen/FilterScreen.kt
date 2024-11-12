@@ -50,8 +50,9 @@ fun FilterScreen(
     filterScreenViewModel: FilterScreenViewModel = viewModel(),
 ) {
     val searchText by filterScreenViewModel.searchQuery.collectAsState()
-    val sortDirection by filterScreenViewModel.sortDirection.collectAsState()
-
+    val categories by filterScreenViewModel.allCategories.collectAsState()
+    val difficulties by filterScreenViewModel.allDifficulties.collectAsState()
+    val occasions by filterScreenViewModel.allOccasions.collectAsState()
 
     Column(Modifier.fillMaxSize()
         .background(MaterialTheme.colorScheme.surfaceContainer)
@@ -66,7 +67,7 @@ fun FilterScreen(
             ) {
             Text(
                 text = "Looking for something particular?",
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 5.dp, end = 10.dp, bottom = 3.dp)
@@ -85,7 +86,7 @@ fun FilterScreen(
         ) {
             Text(
                 text = "Which ingredients would You like to use?",
-                color =  MaterialTheme.colorScheme.onTertiaryContainer,
+                color =  MaterialTheme.colorScheme.primary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 5.dp, end = 10.dp, bottom = 3.dp)
@@ -94,14 +95,14 @@ fun FilterScreen(
         }
         ExtendableList(
             title = "Filter by occasion",
-            listOf<String>("Dinner","One Pot Dish","Breakfast","Main Course","Brunch","Snack","Lunch","Dessert","Side Dish","Appetizer"),
+            occasions,
             filterScreenViewModel,
             filterType = "Occasion",
             limit = 4
         )
         ExtendableList(
             title="Filter by category",
-            listOf<String>("Filip","Wójcik","Artur","Kozyra Course","Bruh","Robert","Lunch","Dessert","Side Dish","Appetizer"),
+            categories,
             filterScreenViewModel,
             filterType = "Category",
             limit = 6
@@ -110,12 +111,12 @@ fun FilterScreen(
         ) {
             Text(
                 text = "Filter by difficulty",
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 5.dp, start = 10.dp, end = 10.dp, bottom = 3.dp)
             )
-            DifficultyFilter(filterScreenViewModel, listOf("easy","medium","hard"), 1f, color = Color.Transparent)
+            DifficultyFilter(filterScreenViewModel, difficulties, 1f, color = Color.Transparent)
         }
 
         Column(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp, horizontal = 20.dp)
@@ -123,7 +124,7 @@ fun FilterScreen(
         ) {
             Text(
                 text = "Sort by",
-                color =  MaterialTheme.colorScheme.onTertiaryContainer,
+                color =  MaterialTheme.colorScheme.primary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 5.dp, bottom = 3.dp)
@@ -140,7 +141,7 @@ fun FilterScreen(
         ) {
             Text(
                 text = "Sort direction",
-                color =  MaterialTheme.colorScheme.onTertiaryContainer,
+                color =  MaterialTheme.colorScheme.primary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 5.dp, bottom = 3.dp)
@@ -159,7 +160,7 @@ fun FilterScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = {/*todo submit query*/},
+                onClick = {filterScreenViewModel.onSubmitSearch()},
                 modifier = Modifier.fillMaxWidth()
                     .padding(top = 30.dp)
                     .height(100.dp)
