@@ -22,6 +22,9 @@ interface ApiRepository{
     @GET("resources/ingredients")
     suspend fun getAllIngredientsList():Response<List<String>>
 
+    @GET("resources/units")
+    suspend fun getAllUnitList():Response<List<String>>
+
     @GET("resources/difficulties")
     suspend fun getAllDifficultiesList():Response<List<DifficultiesGetDTO>>
 

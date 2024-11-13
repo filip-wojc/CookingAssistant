@@ -165,6 +165,14 @@ class ApiRepositoryTest {
     }
 
     @Test
+    fun `test getAllUnitsList`() = runBlocking {
+        val response = apiRepository.getAllUnitList()
+        assertTrue(response.isSuccessful)
+        assertNotNull(response.body())
+        assert(response.body()!!.isNotEmpty())
+    }
+
+    @Test
     fun `test getAllOccasionsList`() = runBlocking {
         val response = apiRepository.getAllOccasionsList()
         assertTrue(response.isSuccessful)

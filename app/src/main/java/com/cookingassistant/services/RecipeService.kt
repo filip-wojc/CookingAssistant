@@ -36,6 +36,13 @@ class RecipeService(private val _apiRepository: ApiRepository) {
         return result
     }
 
+    suspend fun getAllUnitsList(): Result<List<String>?> {
+        val response =  _apiRepository.getAllUnitList()
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
+    }
+
     // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun getAllOccasionsList(): Result<List<OccasionsGetDTO>?>{
