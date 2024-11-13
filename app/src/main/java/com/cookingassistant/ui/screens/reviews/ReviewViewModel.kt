@@ -6,7 +6,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import com.cookingassistant.data.DTO.ReviewGetDTO
-import com.cookingassistant.data.RecipeItemPreview
 import com.cookingassistant.services.ReviewService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
