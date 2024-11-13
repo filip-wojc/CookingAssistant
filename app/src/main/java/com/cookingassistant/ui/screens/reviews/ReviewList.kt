@@ -29,6 +29,7 @@ fun ReviewList(
 ) {
     reviewViewModel.loadReviews(recipeId)
     val reviews by reviewViewModel.reviews.collectAsState()
+    val userReview by reviewViewModel.currentUserReview.collectAsState()
     reviewViewModel.LoadReviewsImage(reviews)
     val images by reviewViewModel.reviewImages.collectAsState()
         LazyColumn(
@@ -37,7 +38,7 @@ fun ReviewList(
             reviews?.let {
                 items(it.size) { index ->
                     val review = reviews!![index]
-                    Review(review, images)
+                    Review(review, userReview,images, reviewViewModel, recipeId)
                 }
             }
         }
