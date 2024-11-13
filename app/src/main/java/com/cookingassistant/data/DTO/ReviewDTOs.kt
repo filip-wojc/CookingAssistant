@@ -7,9 +7,9 @@ data class ReviewPostDTO(
 
 data class ReviewGetDTO(
     val id: Int,
-    val value: Int,
-    val description: String?,
+    var value: Int,
+    var description: String?,
     val reviewAuthor: String?,
     val dateCreated: String,
-    val dateModified: String?
+    var dateModified: String?
 )

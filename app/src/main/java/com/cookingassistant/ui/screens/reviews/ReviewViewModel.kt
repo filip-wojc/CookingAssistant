@@ -14,9 +14,11 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.DTO.Recipe
+import com.cookingassistant.data.DTO.ReviewPostDTO
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.data.objects.ScreenControlManager
 import com.cookingassistant.data.objects.SearchEngine
+import java.time.LocalDate
 
 class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
 
@@ -31,6 +33,15 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
 
     private val _loadingResult = MutableStateFlow<String>("")
     val loadingResult: StateFlow<String> = _loadingResult
+
+    private val _userRating = MutableStateFlow(0)
+    val userRating : StateFlow<Int> = _userRating
+
+    private val _userComment = MutableStateFlow("")
+    val userComment : StateFlow<String> = _userComment
+
+    private val _isDialogVisible = MutableStateFlow(false)
+    val isDialogVisible: StateFlow<Boolean> = _isDialogVisible
 
     private val _currentUserReview = MutableStateFlow<ReviewGetDTO?>(ReviewGetDTO(
         id = -1,
@@ -98,12 +109,67 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
                         }
                     }
                 }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 _loadingResult.value = "Delete failed: no access to server"
                 _isLoading.value = false;
             }
-
         }
     }
+
+    fun ModifyReview(recipeId: Int, userRating: Int, userComment: String) {
+        if(userRating == 0 || userComment == "") {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                val result = _reviewService.modifyReview(recipeId, ReviewPostDTO(_userRating.value, if(_userComment.value=="") null else _userComment.value))
+                val result2 = _reviewService.getMyReview(recipeId)
+                if(result is Result.Success && result2 is Result.Success) {
+                    _loadingResult.value = "Rating successfully submitted"
+                    _reviews.value?.forEach { review ->
+                        if (review.id == _currentUserReview.value?.id) {
+                            review.value = _userRating.value
+                            review.description = _userComment.value
+                            review.dateModified = result2.data?.dateModified
+                        }
+                    }
+                    _isLoading.value = false
+                    _userComment.value = ""
+                    _userRating.value = 0
+                }
+                else if (result is Result.Error) {
+                    _loadingResult.value = "Can't submit review"
+                    _isLoading.value = false
+                    Log.e("Modify Review","result is error: ${result.message}")
+                }
+            }
+            catch (e: Exception) {
+                _loadingResult.value = "Modify failed: no access to server"
+                _isLoading.value = false;
+            }
+        }
+    }
+
+    fun onUserCommentChanged(newComment: String) {
+        _userComment.value = newComment
+    }
+
+    fun onUserRatingChanged(newRating : Int) {
+        _userRating.value = newRating
+    }
+
+    fun showResultDialog() {
+        _isDialogVisible.value = true
+    }
+
+    fun hideResultDialog() {
+        _isDialogVisible.value = false
+    }
+
+    fun clearLoadingResult() {
+        _loadingResult.value = "" // Assuming `_loadingResult` is a MutableState holding `loadingResult`
+    }
+
 
 }

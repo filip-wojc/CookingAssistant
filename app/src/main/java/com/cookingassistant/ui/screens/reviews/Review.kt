@@ -16,18 +16,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarRate
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,6 +44,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,10 +57,14 @@ fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: Mut
     val isLoading = reviewViewModel.isLoading.collectAsState()
     val loadingResult = reviewViewModel.loadingResult.collectAsState()
     val context = LocalContext.current
+    val userRating = reviewViewModel.userRating.collectAsState()
+    val userComment = reviewViewModel.userComment.collectAsState()
+    val isDialogVisible = reviewViewModel.isDialogVisible.collectAsState()
 
     LaunchedEffect(loadingResult.value) {
-        if (loadingResult.value != "") {
+        if (loadingResult.value.isNotEmpty()) {
             Toast.makeText(context, loadingResult.value, Toast.LENGTH_SHORT).show()
+            reviewViewModel.clearLoadingResult()
         }
     }
 
@@ -91,7 +101,7 @@ fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: Mut
                         )
                     }
                     Spacer(Modifier.width(8.dp))
-                    Text(reviewGetDTO.reviewAuthor.toString(), fontSize = 18.sp,color = MaterialTheme.colorScheme.onBackground)
+                    Text(reviewGetDTO.reviewAuthor.toString(), fontSize = 18.sp, color = MaterialTheme.colorScheme.onBackground)
                 }
 
                 Row {
@@ -142,26 +152,127 @@ fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: Mut
             }
 
             Spacer(Modifier.height(5.dp))
+            Row (
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Reviewed at:",
+                        Modifier.padding(start = 8.dp),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "${reviewGetDTO.dateCreated.substring(0,10)} ${reviewGetDTO.dateCreated.substring(11,19)}",
+                        Modifier.padding(start = 8.dp),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
 
-            Text(
-                text = "Reviewed at: ${reviewGetDTO.dateCreated.substring(0,10)} ${reviewGetDTO.dateCreated.substring(11,19)}",
-                Modifier.padding(start = 8.dp),
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+                if (reviewGetDTO.dateModified != null) {
+                    Column {
+                        Text(
+                            text = "Modified at:",
+                            Modifier.padding(start = 8.dp),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            text = "${reviewGetDTO.dateModified!!.substring(0,10)} ${reviewGetDTO.dateModified!!.substring(11,19)}",
+                            Modifier.padding(start = 8.dp),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+
+                }
+
+            }
+
             Spacer(Modifier.height(5.dp))
             if (userReviewDTO != null) {
                 if (reviewGetDTO.id == userReviewDTO.id)
-                    Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround){
-                        Button(onClick = {reviewViewModel.DeleteReview(recipeId)}, Modifier.padding(horizontal = 5.dp)) {
-                            Text("Delete")
+                    Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+                        Button(onClick = {reviewViewModel.DeleteReview(recipeId)}, Modifier.padding(horizontal = 5.dp).weight(0.9f)) {
+                            Text("Delete", fontSize = 18.sp)
                         }
                         if (isLoading.value) {
                             CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
                         }
 
-                        Button(onClick = {}, Modifier.padding(horizontal = 5.dp)) {
-                            Text("Modify")
+                        Button(onClick = {reviewViewModel.showResultDialog()}, Modifier.padding(horizontal = 5.dp).weight(0.9f)) {
+                            Text("Modify", fontSize = 18.sp)
+                        }
+
+                        if (isDialogVisible.value) {
+
+                            AlertDialog(
+                                modifier = Modifier.background(color = Color.Transparent),
+                                shape = RoundedCornerShape(20.dp),
+                                onDismissRequest = { reviewViewModel.hideResultDialog() },
+                                title = { Text("Modify your review") },
+                                confirmButton = {
+                                        Column (
+                                            Modifier
+                                                .padding(top = 5.dp)
+                                                .wrapContentWidth(Alignment.CenterHorizontally),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center
+                                        ) {
+                                            Row(modifier = Modifier.padding(bottom = 10.dp))
+                                            {
+                                                for (i in 1..userRating.value) {
+                                                    IconButton(
+                                                        onClick = {if(userRating.value != i) {reviewViewModel.onUserRatingChanged(i)} else{reviewViewModel.onUserRatingChanged(0)} },
+                                                        modifier = Modifier
+                                                            .clip(RoundedCornerShape(50))
+                                                            .background(MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.5f))
+                                                    ) {
+                                                        Icon(imageVector = Icons.Filled.Star, contentDescription = "Rating star", tint = Color.Yellow,
+                                                        )
+                                                    }
+                                                }
+                                                for(i in userRating.value+1..5) {
+                                                    IconButton(
+                                                        onClick = {reviewViewModel.onUserRatingChanged(i)},
+                                                    ) {
+                                                        Icon(imageVector = Icons.Outlined.StarRate, contentDescription = "Rating star", tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                                                        )
+                                                    }
+                                                }
+                                            }
+
+                                            TextField(
+                                                value = userComment.value,
+                                                onValueChange = {if (it.length <= 150) reviewViewModel.onUserCommentChanged(it)},
+                                                maxLines = 4,
+                                                modifier = Modifier.fillMaxWidth(0.8f),
+                                                label = { Text("Additional comment") },
+                                                supportingText = {
+                                                    Text(
+                                                        text = "${userComment.value.length} / ${150}",
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        textAlign = TextAlign.End,
+                                                    )
+                                                }
+                                            )
+                                            Button (
+                                                onClick = {
+                                                    reviewViewModel.ModifyReview(recipeId,userRating.value,userComment.value)
+                                                },
+                                                enabled = userRating.value != 0,
+                                                modifier = Modifier
+                                                    .padding(top = 20.dp)
+                                                    .fillMaxWidth(0.8f)
+                                            ) {
+                                                Text("Submit rating", fontSize = 20.sp)
+                                            }
+                                        }
+                                    }
+
+                            )
                         }
                     }
             }
