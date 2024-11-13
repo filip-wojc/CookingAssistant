@@ -81,7 +81,8 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
 
     fun DeleteReview(recipeId: Int) {
         viewModelScope.launch {
-            _isLoading.value = true // Start loading
+            try {
+                _isLoading.value = true // Start loading
                 val result = _reviewService.deleteReview(recipeId)
                 if (result is Result.Success) {
                     _loadingResult.value = "Review deleted!"
@@ -97,6 +98,11 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
                         }
                     }
                 }
+            }catch (e: Exception) {
+                _loadingResult.value = "Delete failed: no access to server"
+                _isLoading.value = false;
+            }
+
         }
     }
 
