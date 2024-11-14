@@ -55,18 +55,9 @@ import java.util.Date
 @Composable
 fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: MutableMap<Int, Bitmap?>, reviewViewModel: ReviewViewModel, recipeId: Int) {
     val isLoading = reviewViewModel.isLoading.collectAsState()
-    val loadingResult = reviewViewModel.loadingResult.collectAsState()
-    val context = LocalContext.current
     val userRating = reviewViewModel.userRating.collectAsState()
     val userComment = reviewViewModel.userComment.collectAsState()
     val isDialogVisible = reviewViewModel.isDialogVisible.collectAsState()
-
-    LaunchedEffect(loadingResult.value) {
-        if (loadingResult.value.isNotEmpty()) {
-            Toast.makeText(context, loadingResult.value, Toast.LENGTH_SHORT).show()
-            reviewViewModel.clearLoadingResult()
-        }
-    }
 
     Box(Modifier.padding(10.dp)
         .shadow(5.dp, RoundedCornerShape(20.dp))
@@ -261,6 +252,7 @@ fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: Mut
                                             Button (
                                                 onClick = {
                                                     reviewViewModel.ModifyReview(recipeId,userRating.value,userComment.value)
+                                                    reviewViewModel.hideResultDialog()
                                                 },
                                                 enabled = userRating.value != 0,
                                                 modifier = Modifier

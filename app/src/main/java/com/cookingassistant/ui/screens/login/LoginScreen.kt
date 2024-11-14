@@ -94,7 +94,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 singleLine = true,
                 value = username,
                 onValueChange = { loginViewModel.onUsernameChanged(it) },
-                label = { Text("Login") },
+                label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))

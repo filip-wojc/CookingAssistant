@@ -17,6 +17,7 @@ import com.cookingassistant.data.DTO.ReviewPostDTO
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.data.objects.ScreenControlManager
 import com.cookingassistant.data.objects.SearchEngine
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 
 class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
@@ -44,6 +45,17 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
 
     private val _recipeId = MutableStateFlow<Int>(0)
     val recipeId : StateFlow<Int> = _recipeId
+
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog : StateFlow<Boolean> = _showDialog
+
+    fun callDialog() {
+        viewModelScope.launch {
+            _showDialog.value = true
+            delay(3000)
+            _showDialog.value = false
+        }
+    }
 
     private val _currentUserReview = MutableStateFlow<ReviewGetDTO?>(ReviewGetDTO(
         id = -1,
@@ -105,7 +117,7 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
                 }
                 else if (result is Result.Error ) {
                     _isLoading.value = false
-                    _loadingResult.value = "Delete failed: ${result.message}"
+                    _loadingResult.value = "Can't delete review"
                     result.detailedErrors?.forEach { field, messages ->
                         messages.forEach { message ->
                             Log.d("login", "$field: $message")
@@ -116,6 +128,7 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
                 _loadingResult.value = "Delete failed: no access to server"
                 _isLoading.value = false;
             }
+            callDialog()
         }
     }
 
@@ -151,6 +164,7 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
                 _loadingResult.value = "Modify failed: no access to server"
                 _isLoading.value = false;
             }
+            callDialog()
         }
     }
 

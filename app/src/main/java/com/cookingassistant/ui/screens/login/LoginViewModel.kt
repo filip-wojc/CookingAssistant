@@ -81,7 +81,7 @@ class LoginViewModel(private val _service: AuthService, private val tokenReposit
                     }
                 }
             } catch (e: Exception) {
-                _loginResult.value = "Error: ${e.message}" // Handle exceptions
+                _loginResult.value = "No access to server" // Handle exceptions
                 _isLoginSuccessful.value = false
             } finally {
                 _isLoading.value = false // Stop loading
