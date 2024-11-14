@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ManageSearch
+import androidx.compose.material.icons.automirrored.outlined.Note
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -58,6 +59,8 @@ import com.cookingassistant.data.ShoppingProducts
 import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreenViewModel
+import com.cookingassistant.ui.screens.editor.EditorScreen
+import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -159,6 +162,14 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                             }
                             topAppBarviewModel.onSelectTool("AdvancedSearch")
                         }
+                    }
+                )
+                NavigationDrawerItem(
+                    label = { DrawerItemContent("Create recipe", Icons.AutoMirrored.Outlined.Note) },
+                    selected = false,
+                    onClick = {
+                        //Later change
+                        topAppBarviewModel.navController.navigate("editor")
                     }
                 )
             }

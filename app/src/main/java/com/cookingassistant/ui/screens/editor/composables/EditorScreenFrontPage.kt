@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import coil3.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,17 +45,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavHostController
 import com.cookingassistant.R
+import com.cookingassistant.data.DTO.CategoriesGetDTO
+import com.cookingassistant.data.DTO.DifficultiesGetDTO
+import com.cookingassistant.data.DTO.OccasionsGetDTO
+import com.cookingassistant.data.DTO.idNameClassType
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
 
 @Composable
-fun FrontPage(navController: NavHostController, viewModel: EditorScreenViewModel) {
+fun FrontPage(viewModel: EditorScreenViewModel) {
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
@@ -62,14 +65,17 @@ fun FrontPage(navController: NavHostController, viewModel: EditorScreenViewModel
         }
     }
 
-    LazyColumn (
-            modifier = Modifier.fillMaxSize().
-            padding(top = 110.dp, start = 10.dp, end = 10.dp, bottom = 50.dp),
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
+        LazyColumn (
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).
+            padding(vertical = 50.dp, horizontal = 10.dp),
         ) {
             item { Text(text = "Name", fontSize = 18.sp, modifier = Modifier.padding(start = 16.dp)) }
             item { Spacer(modifier = Modifier.height(8.dp)) }
             item {TextField(
-                value = viewModel.name ?: "",
+                value = viewModel.name,
                 label = { Text("Enter your name") },
                 onValueChange = {
                     viewModel.name = it
@@ -83,43 +89,43 @@ fun FrontPage(navController: NavHostController, viewModel: EditorScreenViewModel
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ){
                     Column(modifier =  Modifier.weight(1f)) {
-                        Text(text = "Difficulty", fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                        Text(text = "Difficulty", color = MaterialTheme.colorScheme.onBackground,fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                         SearchableDropdownButton(
-                            defaultText = viewModel.difficulty ?: "Choose Difficulty",
-                            options = listOf("Easy", "Medium", "Hard"),
+                            choosenOption = viewModel.difficulty,
+                            options = viewModel.difficultyOptions.value,
                             modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
                         ){
                                 selectedDifficulty ->
-                            viewModel.difficulty = selectedDifficulty
+                            viewModel.difficulty = selectedDifficulty as DifficultiesGetDTO?
                         }
                     }
                     Column(modifier =  Modifier.weight(1f)) {
-                        Text(text = "Occasion", fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                        Text(text = "Occasion", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                         SearchableDropdownButton(
-                            defaultText = viewModel.occasion ?: "Choose Occasion",
-                            options = listOf("Breakfast", "Lunch", "Dinner", "Snack"),
+                            choosenOption = viewModel.occasion,
+                            options = viewModel.occasionOptions.value,
                             modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
                         ){
                                 selectedOccasion ->
-                            viewModel.occasion = selectedOccasion
+                            viewModel.occasion = selectedOccasion as OccasionsGetDTO?
                         }
                     }
                 }
             }
             item{Spacer(modifier = Modifier.height(8.dp))}
             item{Column(modifier = Modifier.fillMaxWidth()){
-                Text(text = "Category", fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text(text = "Category", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 SearchableDropdownButton(
-                    defaultText = viewModel.category ?: "Choose Category",
-                    options = listOf("Vegetarian", "Vegan", "Gluten-Free", "Keto"),
+                    choosenOption = viewModel.category,
+                    options = viewModel.categoryOptions.value,
                     modifier = Modifier.fillMaxWidth(0.8f).align(Alignment.CenterHorizontally)
                 ){
-                    selectedCategory ->
-                    viewModel.category = selectedCategory
+                        selectedCategory ->
+                    viewModel.category = selectedCategory as CategoriesGetDTO?
                 }
             }}
             item{Spacer(modifier = Modifier.height(8.dp))}
-            item{Text(text = "Recipe image", fontSize = 18.sp, modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally))}
+            item{Text(text = "Recipe image", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally))}
             item{Spacer(modifier = Modifier.height(8.dp))}
 
             item{ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
@@ -154,12 +160,13 @@ fun FrontPage(navController: NavHostController, viewModel: EditorScreenViewModel
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Edit,
-                        contentDescription = "Profile"
+                        contentDescription = "Profile",
+                        tint = Color.Black
                     )
                 }
             }}
             item{Spacer(modifier = Modifier.height(8.dp))}
-            item{Text(text = "Description", fontSize = 18.sp, modifier = Modifier.padding(start = 16.dp))}
+            item{Text(text = "Description",color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, modifier = Modifier.padding(start = 16.dp))}
 
             item{Spacer(modifier = Modifier.height(8.dp))}
 
@@ -172,24 +179,23 @@ fun FrontPage(navController: NavHostController, viewModel: EditorScreenViewModel
                 modifier = Modifier.fillMaxWidth().height(200.dp)
             )}
         }
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (right) = createRefs()
 
-
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (right) = createRefs()
-
-        IconButton(
-            onClick = { navController.navigate("details") },
-            modifier = Modifier.size(56.dp).background(Color(0xFF3700B3), shape = CircleShape)
-                .padding(8.dp).constrainAs(right) {
-                bottom.linkTo(parent.bottom, margin = 16.dp)
-                end.linkTo(parent.end, margin = 16.dp)
+            IconButton(
+                onClick = { viewModel.navigateTo("details") },
+                modifier = Modifier.size(56.dp).background(Color(0xFF3700B3), shape = CircleShape)
+                    .padding(8.dp).constrainAs(right) {
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 16.dp)
+                    }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowForward,
+                    contentDescription = "left arrow",
+                    tint = Color.White
+                )
             }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowForward,
-                contentDescription = "Przycisk strzałki",
-                tint = Color.White // Kolor strzałki
-            )
         }
     }
 }
@@ -197,23 +203,23 @@ fun FrontPage(navController: NavHostController, viewModel: EditorScreenViewModel
 
 @Composable
 fun SearchableDropdownButton(
-    defaultText: String = "Choose option",
-    options: List<String>,
+    choosenOption: idNameClassType?,
+    options: List<idNameClassType>,
     modifier: Modifier = Modifier,
-    onSelectOption: (String) -> Unit
+    onSelectOption: (idNameClassType?) -> Unit
 ) {
-    var selectedOption by remember { mutableStateOf(defaultText) }
+    var selectedOption by remember { mutableStateOf(choosenOption) }
     var isDialogOpen by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
-    val filteredOptions = options.filter { it.contains(searchText, ignoreCase = true) }
+    val filteredOptions = options.filter { it.name.contains(searchText, ignoreCase = true) }
 
     Button(
         modifier = modifier,
         onClick = { isDialogOpen = true },
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1)),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1), contentColor = Color.White),
         shape = RoundedCornerShape(20)
     ) {
-        Text(selectedOption)
+        Text(selectedOption?.name ?: "Select an option")
     }
 
     if (isDialogOpen) {
@@ -243,7 +249,7 @@ fun SearchableDropdownButton(
                                 },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(option)
+                                Text(option.name)
                             }
                         }
                     }

@@ -1,16 +1,46 @@
 package com.cookingassistant.ui.screens.editor.composables
 
-import android.widget.NumberPicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,134 +49,135 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cookingassistant.ui.composables.topappbar.TopAppBar
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowOutward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavHostController
+import com.cookingassistant.data.DTO.RecipeIngredientGetDTO
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
-import com.cookingassistant.ui.screens.editor.Ingredient
 import androidx.compose.foundation.layout.Row as Row1
 import androidx.compose.material3.Button as Button1
 import androidx.compose.material3.Text as Text1
 
-@Composable
-fun DetailsPage(navController: NavHostController, viewModel: EditorScreenViewModel) {
 
+@Composable
+fun DetailsPage(viewModel: EditorScreenViewModel) {
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 110.dp, start = 10.dp, end = 10.dp, bottom = 50.dp),
+                .background(MaterialTheme.colorScheme.background)
+                .padding(vertical = 50.dp, horizontal = 10.dp),
         ) {
             Text1(
                 text = "Calories",
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            NumberPicker(viewModel.calories){
-                selectedCalories ->
+            NumberPicker(viewModel.calories,0,99999){
+                    selectedCalories ->
                 viewModel.calories = selectedCalories
             }
             Text1(
                 text = "Preparation time",
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             TimePicker(
                 timeInMinutes = viewModel.time,
-                onTimeSelected = { selectedMinutes -> viewModel.time = selectedMinutes } // zapis do ViewModel
+                onTimeSelected = { selectedMinutes -> viewModel.time = selectedMinutes }
             )
             Text1(
                 text = "Serves",
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            NumberPicker(viewModel.serves){
-                selectedServes ->
+            NumberPicker(viewModel.serves,0,200){
+                    selectedServes ->
                 viewModel.serves = selectedServes
             }
             Text1(
                 text = "Ingredients",
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             IngredientPicker(
-                ingredientList = viewModel.igredients,
+                ingredientList = viewModel.ingredients,
+                ingredientOptions = viewModel.ingredientsOptions,
+                unitOptions = viewModel.unitOptions,
                 onIngredientListChange = { updatedList ->
-                    viewModel.igredients = updatedList
+                    viewModel.ingredients = updatedList
                 }
             )
         }
 
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (left,right) = createRefs()
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (left,right) = createRefs()
 
-        IconButton(
-            onClick = { navController.navigate("front") },
-            modifier = Modifier.size(56.dp).background(Color(0xFF3700B3), shape = CircleShape)
-                .padding(8.dp).constrainAs(left) {
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                    start.linkTo(parent.start, margin = 16.dp)
-                }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Przycisk strzałki",
-                tint = Color.White
-            )
-        }
+            IconButton(
+                onClick = { viewModel.navigateTo("front") },
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Color(0xFF3700B3), shape = CircleShape)
+                    .padding(8.dp)
+                    .constrainAs(left) {
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        start.linkTo(parent.start, margin = 16.dp)
+                    }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "right arrow",
+                    tint = Color.White
+                )
+            }
 
-        IconButton(
-            onClick = { navController.navigate("steps") },
-            modifier = Modifier.size(56.dp).background(Color(0xFF3700B3), shape = CircleShape)
-                .padding(8.dp).constrainAs(right) {
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                    end.linkTo(parent.end, margin = 16.dp)
-                }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowForward,
-                contentDescription = "Przycisk strzałki",
-                tint = Color.White
-            )
+            IconButton(
+                onClick = { viewModel.navigateTo("steps") },
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Color(0xFF3700B3), shape = CircleShape)
+                    .padding(8.dp)
+                    .constrainAs(right) {
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 16.dp)
+                    }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowForward,
+                    contentDescription = "left arrow",
+                    tint = Color.White
+                )
+            }
         }
     }
+
 
 }
 
 @Composable
-fun NumberPicker(number : Int?, onSelectOption: (Int) -> Unit) {
+fun NumberPicker(
+    number: Int?,
+    minValue: Int = 0,
+    maxValue: Int = 100,
+    onSelectOption: (Int) -> Unit
+) {
     var showDialog by remember { mutableStateOf(false) }
 
     Button1(
         onClick = { showDialog = true },
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1)),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1), contentColor = Color.White),
         shape = RoundedCornerShape(20)
     ) {
         Text1(text = number?.toString() ?: "Select number")
@@ -158,7 +189,7 @@ fun NumberPicker(number : Int?, onSelectOption: (Int) -> Unit) {
                 modifier = Modifier.padding(16.dp),
                 shape = MaterialTheme.shapes.medium
             ) {
-                var currentNumber by remember { mutableStateOf(number?.toString() ?: "0") }
+                var currentNumber by remember { mutableStateOf(number?.toString() ?: minValue.toString()) }
 
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -173,7 +204,10 @@ fun NumberPicker(number : Int?, onSelectOption: (Int) -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = {
-                            currentNumber = (currentNumber.toIntOrNull()?.minus(1) ?: 0).toString()
+                            val newValue = (currentNumber.toIntOrNull() ?: minValue) - 1
+                            if (newValue >= minValue) {
+                                currentNumber = newValue.toString()
+                            }
                         }) {
                             Icon(Icons.Default.Remove, contentDescription = "Decrease")
                         }
@@ -181,14 +215,21 @@ fun NumberPicker(number : Int?, onSelectOption: (Int) -> Unit) {
                         TextField(
                             value = currentNumber,
                             onValueChange = { newText ->
-                                currentNumber = newText.filter { it.isDigit() }
+                                // Filtrujemy do cyfr, konwertujemy na int i sprawdzamy limity
+                                val newValue = newText.filter { it.isDigit() }.toIntOrNull() ?: minValue
+                                if (newValue in minValue..maxValue) {
+                                    currentNumber = newValue.toString()
+                                }
                             },
                             modifier = Modifier.width(80.dp),
                             singleLine = true
                         )
 
                         IconButton(onClick = {
-                            currentNumber = (currentNumber.toIntOrNull()?.plus(1) ?: 0).toString()
+                            val newValue = (currentNumber.toIntOrNull() ?: minValue) + 1
+                            if (newValue <= maxValue) {
+                                currentNumber = newValue.toString()
+                            }
                         }) {
                             Icon(Icons.Default.Add, contentDescription = "Increase")
                         }
@@ -200,11 +241,11 @@ fun NumberPicker(number : Int?, onSelectOption: (Int) -> Unit) {
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        TextButton(onClick = { showDialog = false }) {
+                        Button1(onClick = { showDialog = false }) {
                             Text1("Cancel")
                         }
                         Button1(onClick = {
-                            val selectedNumber = currentNumber.toIntOrNull() ?: 0
+                            val selectedNumber = currentNumber.toIntOrNull() ?: minValue
                             onSelectOption(selectedNumber)
                             showDialog = false
                         }) {
@@ -229,7 +270,7 @@ fun TimePicker(
     Button1(
         onClick = { isDialogOpen = true },
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1)),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1),contentColor = Color.White),
         shape = RoundedCornerShape(20)
     ) {
         Text1(text = selectedTime)
@@ -248,47 +289,85 @@ fun TimePicker(
                 ) {
                     Text1(text = "Select time", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(16.dp))
-                    LazyRow {
-                        item {
-                            Column {
-                                Text1(
-                                    text = "Hour",
-                                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                                )
-                                AndroidView(
-                                    factory = { context ->
-                                        NumberPicker(context).apply {
-                                            minValue = 0
-                                            maxValue = 99
-                                            value = firstHour
-                                            setOnValueChangedListener { _, _, newVal ->
-                                                firstHour = newVal
-                                            }
-                                        }
-                                    },
-                                    update = { it.value = firstHour }
-                                )
+                    Text1(
+                        text = "Select Number",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text1(
+                                text = "Hour",
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                            IconButton(onClick = {
+                                val newValue = firstHour + 1
+                                if (newValue <= 99) {
+                                    firstHour = newValue
+                                }
+                            }) {
+                                Icon(Icons.Default.Add, contentDescription = "Increase")
+                            }
+                            TextField(
+                                value = firstHour.toString(),
+                                onValueChange = { newText ->
+                                    val newValue =
+                                        newText.filter { it.isDigit() }.toIntOrNull() ?: 0
+                                    if (newValue in 0..99) {
+                                        firstHour = newValue
+                                    }
+                                },
+                                modifier = Modifier.width(80.dp),
+                                textStyle = LocalTextStyle.current.copy(
+                                    textAlign = TextAlign.Center
+                                ),
+                                singleLine = true
+                            )
+                            IconButton(onClick = {
+                                val newValue = firstHour - 1
+                                if (newValue >= 0) {
+                                    firstHour = newValue
+                                }
+                            }) {
+                                Icon(Icons.Default.Remove, contentDescription = "Decrease")
                             }
                         }
-                        item {
-                            Column {
-                                Text1(
-                                    text = "Minute",
-                                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                                )
-                                AndroidView(
-                                    factory = { context ->
-                                        NumberPicker(context).apply {
-                                            minValue = 0
-                                            maxValue = 59
-                                            value = firstMinute
-                                            setOnValueChangedListener { _, _, newVal ->
-                                                firstMinute = newVal
-                                            }
-                                        }
-                                    },
-                                    update = { it.value = firstMinute }
-                                )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text1(
+                                text = "Minute",
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                            IconButton(onClick = {
+                                val newValue = firstMinute + 1
+                                if (newValue <= 59) {
+                                    firstMinute = newValue
+                                }
+                            }) {
+                                Icon(Icons.Default.Add, contentDescription = "Increase")
+                            }
+                            TextField(
+                                value = firstMinute.toString(),
+                                onValueChange = { newText ->
+                                    val newValue =
+                                        newText.filter { it.isDigit() }.toIntOrNull() ?: 0
+                                    if (newValue in 0..59) {
+                                        firstMinute = newValue
+                                    }
+                                },
+                                modifier = Modifier.width(80.dp),
+                                textStyle = LocalTextStyle.current.copy(
+                                    textAlign = TextAlign.Center
+                                ),
+                                singleLine = true
+                            )
+                            IconButton(onClick = {
+                                val newValue = firstMinute - 1
+                                if (newValue >= 0) {
+                                    firstMinute = newValue
+                                }
+                            }) {
+                                Icon(Icons.Default.Remove, contentDescription = "Decrease")
                             }
                         }
                     }
@@ -333,12 +412,11 @@ fun formatTime(hour: Int, minute: Int): String {
     }
 }
 
-val ingredientOptions = listOf("Flour", "Sugar", "Salt", "Butter")
-val unitOptions = listOf("kg", "g", "tsp", "cup")
-
 @Composable
-fun IngredientPicker(ingredientList: List<Ingredient>,
-                     onIngredientListChange: (List<Ingredient>) -> Unit) {
+fun IngredientPicker(ingredientList: List<RecipeIngredientGetDTO>,
+                     ingredientOptions: List<String>,
+                     unitOptions: List <String>,
+                     onIngredientListChange: (List<RecipeIngredientGetDTO>) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
     var editingIndex by remember { mutableStateOf<Int?>(null) }
 
@@ -346,7 +424,7 @@ fun IngredientPicker(ingredientList: List<Ingredient>,
         onClick = { editingIndex = null
             showDialog = true },
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1)),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1),contentColor = Color.White),
         shape = RoundedCornerShape(20)
     ) {
         Text("Add Ingredient")
@@ -354,7 +432,10 @@ fun IngredientPicker(ingredientList: List<Ingredient>,
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))) {
+    LazyColumn(modifier = Modifier
+        .fillMaxWidth()
+        .fillMaxHeight(0.9f)
+        .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))) {
         items(ingredientList.size) { index ->
             IngredientItem(
                 upEnabled = index > 0,
@@ -391,6 +472,8 @@ fun IngredientPicker(ingredientList: List<Ingredient>,
     if (showDialog) {
         IngredientDialog(
             ingredient = editingIndex?.let { ingredientList[it] },
+            ingredientOptions = ingredientOptions,
+            unitOptions = unitOptions,
             onDismiss = { showDialog = false },
             onSave = { ingredient ->
                 val updatedList = ingredientList.toMutableList().apply {
@@ -413,17 +496,21 @@ fun IngredientPicker(ingredientList: List<Ingredient>,
 fun IngredientItem(
     upEnabled: Boolean,
     downEnabled: Boolean,
-    ingredient: Ingredient,
+    ingredient: RecipeIngredientGetDTO,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit
 ) {
-    Row(modifier = Modifier.clickable(onClick = onEdit)
+    Row(modifier = Modifier
+        .clickable(onClick = onEdit)
         .fillMaxWidth()
-        .padding(8.dp).border(2.dp, Color.LightGray, shape = RoundedCornerShape(8.dp)),
+        .padding(8.dp)
+        .border(2.dp, Color.LightGray, shape = RoundedCornerShape(8.dp)),
         verticalAlignment = Alignment.CenterVertically) {
-        Text("${ingredient.amount} ${ingredient.unit} ${ingredient.name}", modifier = Modifier.weight(1f).padding(8.dp))
+        Text("${ingredient.quantity} ${ingredient.unit} ${ingredient.ingredientName}", modifier = Modifier
+            .weight(1f)
+            .padding(8.dp))
         IconButton(onClick = onMoveUp, enabled = upEnabled) {
             Icon(
                 Icons.Default.ArrowUpward,
@@ -443,12 +530,14 @@ fun IngredientItem(
 
 @Composable
 fun IngredientDialog(
-    ingredient: Ingredient? = null,
+    ingredient: RecipeIngredientGetDTO? = null,
+    ingredientOptions: List<String>,
+    unitOptions: List <String>,
     onDismiss: () -> Unit,
-    onSave: (Ingredient) -> Unit
+    onSave: (RecipeIngredientGetDTO) -> Unit
 ) {
-    var name by remember { mutableStateOf(ingredient?.name ?: "") }
-    var amount by remember { mutableStateOf(ingredient?.amount?.toString() ?: "") }
+    var name by remember { mutableStateOf(ingredient?.ingredientName ?: "") }
+    var amount by remember { mutableStateOf(ingredient?.quantity ?: "") }
     var unit by remember { mutableStateOf(ingredient?.unit ?: "") }
 
     Dialog(onDismissRequest = { onDismiss() }) {
@@ -463,14 +552,12 @@ fun IngredientDialog(
                     onOptionSelected = { name = it }
                 )
 
-                // Amount Input
                 DecimalNumericTextField(
                     label = "Amount",
                     value = amount,
                     onValueChange = { amount = it }
                 )
 
-                // Unit Selector
                 ComboBox(
                     label = "Unit",
                     options = unitOptions,
@@ -487,7 +574,7 @@ fun IngredientDialog(
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = {
                         if (name.isNotBlank() && amount.isNotEmpty() && unit.isNotBlank()) {
-                            onSave(Ingredient(name, amount.toDouble(), unit))
+                            onSave(RecipeIngredientGetDTO(name, amount, unit))
                         }
                     }) {
                         Text("Save")
@@ -512,7 +599,7 @@ fun DecimalNumericTextField(
             }
         },
         label = { Text(label) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // Klawiatura numeryczna z kropką
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -532,7 +619,7 @@ fun ComboBox(
         Button(
             onClick = { expanded = !expanded },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1),contentColor = Color.White),
             shape = RoundedCornerShape(20)
         ) {
             Text(text = if (selectedOption.isEmpty()) label else selectedOption)

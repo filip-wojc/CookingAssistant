@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.cookingassistant.data.repositories.TokenRepository
 import com.cookingassistant.data.network.RetrofitClient
@@ -35,6 +36,11 @@ import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
 import com.cookingassistant.ui.screens.RecipesList.RecipeList
 import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
+import com.cookingassistant.ui.screens.editor.EditorScreen
+import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
+import com.cookingassistant.ui.screens.editor.composables.DetailsPage
+import com.cookingassistant.ui.screens.editor.composables.FrontPage
+import com.cookingassistant.ui.screens.editor.composables.StepsPage
 import com.cookingassistant.ui.screens.home.HomeScreenViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
@@ -189,6 +195,12 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
             composable("recipeScreen") {
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
                     RecipeScreen(rsvm)
+                }
+            }
+            composable("editor"){
+                val esvm = EditorScreenViewModel(recipeService)
+                TopAppBar(topAppBarviewModel = topBarViewModel) {
+                    EditorScreen(navController, esvm)
                 }
             }
         }

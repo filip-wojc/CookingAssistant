@@ -3,6 +3,8 @@ package com.cookingassistant.ui.screens.editor.composables
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,11 +19,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,60 +42,119 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
-import com.cookingassistant.ui.screens.editor.Ingredient
 
 @Composable
-fun StepsPage(navController: NavHostController, viewModel: EditorScreenViewModel) {
+fun StepsPage(navController: NavController,viewModel: EditorScreenViewModel) {
+    var showAcceptDialog by remember { mutableStateOf(false) }
+    var showAcceptedConfirmationDialog by remember { mutableStateOf(false) }
 
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
         Column(
-            modifier = Modifier.fillMaxSize().
-            padding(top = 110.dp, start = 10.dp, end = 10.dp, bottom = 50.dp),
-        ){
+            modifier = Modifier
+                .fillMaxSize().background(MaterialTheme.colorScheme.background)
+                .padding(vertical = 50.dp, horizontal = 10.dp),
+        ) {
+            Text(
+                text = "Steps",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 18.sp,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
             StepsMaker(stepList = viewModel.steps,
-                onStepListChange = {updatedList ->
+                onStepListChange = { updatedList ->
                     viewModel.steps = updatedList
                 }
             )
         }
 
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (left) = createRefs()
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (right, accept) = createRefs()
 
 
-        IconButton(
-            onClick = { navController.navigate("details") },
-            modifier = Modifier.size(56.dp).background(Color(0xFF3700B3), shape = CircleShape)
-                .padding(8.dp).constrainAs(left) {
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                    start.linkTo(parent.start, margin = 16.dp)
-                }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Przycisk strzałki",
-                tint = Color.White
-            )
+            IconButton(
+                onClick = { viewModel.navigateTo("details") },
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Color(0xFF3700B3), shape = CircleShape)
+                    .padding(8.dp)
+                    .constrainAs(right) {
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        start.linkTo(parent.start, margin = 16.dp)
+                    }
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "right arrow",
+                    tint = Color.White
+                )
+            }
+
+            IconButton(
+                onClick = {showAcceptDialog = true },
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Color(0xFF8FD65C), shape = CircleShape)
+                    .padding(8.dp)
+                    .constrainAs(accept) {
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 16.dp)
+                    }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "accept",
+                    tint = Color.White
+                )
+            }
         }
+    }
+
+    if (showAcceptDialog) {
+        AcceptDialog(
+            onConfirm = {
+                showAcceptDialog = false
+                showAcceptedConfirmationDialog = true
+            },
+            onDismiss = { showAcceptDialog = false }
+        )
+    }
+    if (showAcceptedConfirmationDialog) {
+        AcceptedConfirmationDialog(
+            navController = navController,
+            viewModel = viewModel,
+            onDismiss = { showAcceptedConfirmationDialog = false }
+        )
     }
 }
 
 @Composable
-fun StepsMaker(stepList: List<String>,
-               onStepListChange: (List<String>) -> Unit) {
+fun StepsMaker(
+    stepList: List<String>,
+    onStepListChange: (List<String>) -> Unit
+) {
     var showDialog by remember { mutableStateOf(false) }
     var editingIndex by remember { mutableStateOf<Int?>(null) }
 
     Button(
-        onClick = { editingIndex = null
-            showDialog = true },
+        onClick = {
+            editingIndex = null
+            showDialog = true
+        },
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1)),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1),contentColor = Color.White),
         shape = RoundedCornerShape(20)
     ) {
         Text("Add Step")
@@ -100,9 +162,14 @@ fun StepsMaker(stepList: List<String>,
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.9f)
+            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+    ) {
         items(stepList.size) { index ->
-            StepItem (
+            StepItem(
                 upEnabled = index > 0,
                 downEnabled = index < stepList.size - 1,
                 text = stepList[index],
@@ -124,7 +191,7 @@ fun StepsMaker(stepList: List<String>,
                 },
                 onMoveDown = {
                     if (index < stepList.size - 1) {
-                        val updatedList  = stepList.toMutableList().apply {
+                        val updatedList = stepList.toMutableList().apply {
                             swap(index, index + 1)
                         }
                         onStepListChange(updatedList)
@@ -135,7 +202,7 @@ fun StepsMaker(stepList: List<String>,
     }
 
     if (showDialog) {
-        StepDialog (
+        StepDialog(
             step = editingIndex?.let { stepList[it] },
             onDismiss = { showDialog = false },
             onSave = { step ->
@@ -165,11 +232,17 @@ fun StepItem(
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit
 ) {
-    Row(modifier = Modifier.clickable(onClick = onEdit)
-        .fillMaxWidth()
-        .padding(8.dp).border(2.dp, Color.LightGray, shape = RoundedCornerShape(8.dp)),
-        verticalAlignment = Alignment.CenterVertically) {
-        Text(text, modifier = Modifier.weight(1f).padding(8.dp))
+    Row(
+        modifier = Modifier
+            .clickable(onClick = onEdit)
+            .fillMaxWidth()
+            .padding(8.dp)
+            .border(2.dp, Color.LightGray, shape = RoundedCornerShape(8.dp)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text, modifier = Modifier
+            .weight(1f)
+            .padding(8.dp))
         IconButton(onClick = onMoveUp, enabled = upEnabled) {
             Icon(
                 Icons.Default.ArrowUpward,
@@ -203,7 +276,9 @@ fun StepDialog(
                     value = text,
                     onValueChange = { text = it },
                     label = { Text("Edit Item") },
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.7f)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -219,6 +294,99 @@ fun StepDialog(
                         }
                     }) {
                         Text("Save")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AcceptDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Are you sure you want to accept the changes?")
+                Spacer(modifier = Modifier.height(16.dp))
+                Row {
+                    Button(onClick = onConfirm) {
+                        Text("Accept")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AcceptedConfirmationDialog(navController: NavController, viewModel: EditorScreenViewModel, onDismiss: () -> Unit) {
+    if (viewModel.checkRecipe()) {
+        val ingredientName = viewModel.ingredients.map { it.ingredientName }
+        val quantity = viewModel.ingredients.map { it.quantity }
+        val unit = viewModel.ingredients.map { it.unit }
+
+        val context = LocalContext.current
+        val bitmap = viewModel.imageConverter.uriToBitmap(context, viewModel.image!!)
+        val convertedImage = viewModel.imageConverter.bitmapToByteArray(bitmap!!)
+
+        val recipe = RecipePostDTO(
+            name = viewModel.name,
+            description = viewModel.description,
+            imageData = convertedImage,
+            serves = viewModel.serves,
+            difficultyId = viewModel.difficulty?.id!!,
+            timeInMinutes = viewModel.time,
+            categoryId = viewModel.category?.id!!,
+            occasionId = viewModel.occasion?.id!!,
+            caloricity = viewModel.calories!!,
+            ingredientNames = ingredientName,
+            ingredientQuantities = quantity,
+            ingredientUnits = unit,
+            steps = viewModel.steps,
+        )
+        viewModel.createRecipe(recipe)
+
+        Dialog(onDismissRequest = {
+            onDismiss()
+            navController.navigate("home")
+        }) {
+            Surface {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Your changes have been successfully accepted!")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = {
+                        onDismiss()
+                        navController.navigate("home")
+                    }) {
+                        Text("OK")
+                    }
+                }
+            }
+        }
+    } else {
+        Dialog(onDismissRequest = onDismiss) {
+            Surface {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Text("The form is not fully completed!")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = onDismiss) {
+                        Text("OK")
                     }
                 }
             }
