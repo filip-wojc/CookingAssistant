@@ -70,8 +70,9 @@ fun RecipeRatingPage(
                         "Rating successfully changed" -> {MaterialTheme.colorScheme.tertiaryContainer}
                         "Rating successfully submitted" -> {MaterialTheme.colorScheme.tertiaryContainer}
                         "You can't review your own recipe" -> {MaterialTheme.colorScheme.errorContainer}
+                        "You can't review recipe twice" -> {MaterialTheme.colorScheme.errorContainer}
                         "System failed to post your rating. We are sorry for inconvenience!" -> {MaterialTheme.colorScheme.errorContainer}
-                        else -> {MaterialTheme.colorScheme.background}
+                        else -> {MaterialTheme.colorScheme.errorContainer}
                     }
                 )
         ) {
@@ -83,9 +84,8 @@ fun RecipeRatingPage(
                 color = when(ratingRespone) {
                     "Rating successfully changed" -> {MaterialTheme.colorScheme.onTertiaryContainer}
                     "Rating successfully submitted" -> {MaterialTheme.colorScheme.onTertiaryContainer}
-                    "You can't review your own recipe" -> {MaterialTheme.colorScheme.onErrorContainer}
                     "System failed to post your rating. We are sorry for inconvenience!" -> {MaterialTheme.colorScheme.onErrorContainer}
-                    else -> {MaterialTheme.colorScheme.onBackground}
+                    else -> {MaterialTheme.colorScheme.onErrorContainer}
                 }
             )
         }

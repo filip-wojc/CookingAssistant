@@ -120,7 +120,7 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
                     _loadingResult.value = "Can't delete review"
                     result.detailedErrors?.forEach { field, messages ->
                         messages.forEach { message ->
-                            Log.d("login", "$field: $message")
+                            Log.d("review delete", "$field: $message")
                         }
                     }
                 }

@@ -195,11 +195,12 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
         viewModelScope.launch {
             try {
                 val result = _reviewService.addReview(_recipe.value.id, ReviewPostDTO(_userRating.value, if(_userComment.value=="") null else _userComment.value))
+
                 if(result is Result.Success) {
                     ratingResponse.value = "Rating successfully submitted"
                 }
                 else if (result is Result.Error) {
-                    ratingResponse.value = "You can't review your own recipe"
+                    ratingResponse.value = result.message
                     Log.e("onRatingSubmitted","result is error: ${result.message}")
                 }
                 else {

@@ -67,11 +67,11 @@ fun ReviewList(
                     when(loadingResult) {
                         "Review deleted!" -> {MaterialTheme.colorScheme.tertiaryContainer}
                         "Rating successfully submitted" -> {MaterialTheme.colorScheme.tertiaryContainer}
-                        "Delete failed: no access to server" -> {MaterialTheme.colorScheme.onErrorContainer}
+                        "Delete failed: no access to server" -> {MaterialTheme.colorScheme.errorContainer}
                         "Modify failed: no access to server" -> {MaterialTheme.colorScheme.errorContainer}
                         "Can't delete review" -> {MaterialTheme.colorScheme.errorContainer}
                         "Can't submit review" -> {MaterialTheme.colorScheme.errorContainer}
-                        else -> {MaterialTheme.colorScheme.background}
+                        else -> {MaterialTheme.colorScheme.errorContainer}
                     }
                 ).align(Alignment.Center)
         ) {
@@ -87,7 +87,7 @@ fun ReviewList(
                     "Modify failed: no access to server" -> {MaterialTheme.colorScheme.onErrorContainer}
                     "Can't delete review" -> {MaterialTheme.colorScheme.onErrorContainer}
                     "Can't submit review" -> {MaterialTheme.colorScheme.onErrorContainer}
-                    else -> {MaterialTheme.colorScheme.onBackground}
+                    else -> {MaterialTheme.colorScheme.onErrorContainer}
                 }
             )
         }
