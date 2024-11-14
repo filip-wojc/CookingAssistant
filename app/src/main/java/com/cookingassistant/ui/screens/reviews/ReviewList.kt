@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -25,21 +26,20 @@ import com.cookingassistant.data.DTO.ReviewGetDTO
 @Composable
 fun ReviewList(
     reviewViewModel: ReviewViewModel,
-    recipeId: Int
 ) {
-    reviewViewModel.loadReviews(recipeId)
+    val recipeId by reviewViewModel.recipeId.collectAsState()
     val reviews by reviewViewModel.reviews.collectAsState()
     val userReview by reviewViewModel.currentUserReview.collectAsState()
     reviewViewModel.LoadReviewsImage(reviews)
     val images by reviewViewModel.reviewImages.collectAsState()
-        LazyColumn(
-            Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        ) {
-            reviews?.let {
-                items(it.size) { index ->
-                    val review = reviews!![index]
-                    Review(review, userReview,images, reviewViewModel, recipeId)
-                }
-            }
+    LazyColumn(
+        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(top = 60.dp),
+    ) {
+        if(reviews == null) {
+            return@LazyColumn
         }
+        items(reviews!!) { review ->
+            Review(review, userReview,images, reviewViewModel, recipeId)
+        }
+    }
 }

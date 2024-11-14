@@ -48,6 +48,7 @@ fun RecipeScreen(
     val recipe by recipeScreenViewModel.recipe.collectAsState()
     val img by recipeScreenViewModel.recipeImg.collectAsState()
     val favorite by recipeScreenViewModel.markedFavorite.collectAsState()
+    val userReview by recipeScreenViewModel.reviewGetDto.collectAsState()
 
     // each step on separate page + 1 frontpage + 1 details
     val pagesCount by remember { mutableStateOf((recipe.steps?.size ?: 0) + 3 - 1) }
@@ -128,6 +129,7 @@ fun RecipeScreen(
             if(currentPage != pagesCount + 1) {
                 IconButton(
                     onClick = {
+                        recipeScreenViewModel.onUserEnterRecipeRatingPage()
                         savedPage = currentPage
                         currentPage = pagesCount + 1
                               },

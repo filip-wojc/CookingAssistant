@@ -42,6 +42,9 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
     private val _isDialogVisible = MutableStateFlow(false)
     val isDialogVisible: StateFlow<Boolean> = _isDialogVisible
 
+    private val _recipeId = MutableStateFlow<Int>(0)
+    val recipeId : StateFlow<Int> = _recipeId
+
     private val _currentUserReview = MutableStateFlow<ReviewGetDTO?>(ReviewGetDTO(
         id = -1,
         reviewAuthor = "Anonymous",
@@ -53,6 +56,7 @@ class ReviewViewModel(private val _reviewService: ReviewService) : ViewModel(){
     val currentUserReview: StateFlow<ReviewGetDTO?> = _currentUserReview
 
     fun loadReviews(recipeId: Int) {
+        _recipeId.value = recipeId
         viewModelScope.launch {
             val result = _reviewService.getAllReviews(recipeId)
             if (result is Result.Success) {

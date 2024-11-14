@@ -262,6 +262,49 @@ fun RecipeList(
                     }
                 }
             }
+            item {
+                Row(modifier = Modifier.fillMaxWidth().height(50.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text(
+                        textAlign = TextAlign.Start,
+                        fontSize = 20.sp,
+                        text = "Page $currentPage out of $totalPages",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.fillMaxWidth().padding(end = 10.dp).weight(1f)
+                    )
+
+                    if(currentPage != 1) {
+                        IconButton(
+                            modifier = Modifier.padding(end = 10.dp),
+                            onClick = { viewModel.onPageButtonClicked(-1) }
+                        ) {
+                            Icon(
+                                modifier = Modifier.fillMaxSize(),
+                                imageVector = Icons.Filled.KeyboardDoubleArrowLeft,
+                                contentDescription = "Page back",
+                                tint = MaterialTheme.colorScheme.inverseSurface
+                            )
+                        }
+                    }
+                    if(currentPage < totalPages) {
+                        IconButton(
+                            onClick = { viewModel.onPageButtonClicked(1) }
+                        ) {
+                            Icon(
+                                modifier = Modifier.fillMaxSize(),
+                                imageVector = Icons.Filled.KeyboardDoubleArrowRight,
+                                contentDescription = "Page next",
+                                tint = MaterialTheme.colorScheme.inverseSurface
+                            )
+                        }
+                    }
+                }
+
+            }
+            item {
+                Spacer(modifier = Modifier.padding(bottom = 10.dp))
+            }
         }
     }
 }

@@ -147,7 +147,8 @@ fun AppNavigator(authService: AuthService,userService: UserService,reviewService
 @Composable
 fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository) {
     AppTheme(true) {
-        val rsvm = RecipeScreenViewModel(recipeService,userService, reviewService)
+        val reviewViewModel = ReviewViewModel(reviewService)
+        val rsvm = RecipeScreenViewModel(recipeService, userService, reviewService, navController, reviewViewModel)
         val recipeListViewModel = RecipesListViewModel(recipeService,rsvm,navController)
         val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel)
         ScreenControlManager.topAppBarViewModel=topBarViewModel
@@ -169,6 +170,13 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
                 //val reviewViewModel = ReviewViewModel(reviewService)
                 //ReviewList(reviewViewModel, 14)
             }
+
+            composable("recipeReviews") {
+                TopAppBar(topAppBarviewModel = topBarViewModel) {
+                    ReviewList(reviewViewModel)
+                }
+            }
+
             composable("recipeList") {
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
                     RecipeList(recipeListViewModel)
