@@ -169,6 +169,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                     selected = false,
                     onClick = {
                         //Later change
+                        topAppBarviewModel.onDeselctTool()
                         topAppBarviewModel.navController.navigate("editor")
                     }
                 )

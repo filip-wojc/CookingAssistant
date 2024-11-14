@@ -38,7 +38,7 @@ fun RecipeStepPage(
                     text = "Step " + stepNumber.toString(),
                     fontSize = 50.sp,
                     color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -47,13 +47,15 @@ fun RecipeStepPage(
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(10.dp)
                 .fillMaxHeight(0.7f)
+                .fillMaxWidth(0.95f)
         ) {
             item {
                 Text(
                     textAlign = TextAlign.Justify,
                     text=stepText,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

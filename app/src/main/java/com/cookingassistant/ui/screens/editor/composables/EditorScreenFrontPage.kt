@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,10 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
         }
     }
 
+    val difficulties by viewModel.difficultyOptions.collectAsState()
+    val occasions by viewModel.occasionOptions.collectAsState()
+    val categories by viewModel.categoryOptions.collectAsState()
+
     Box(
         modifier = Modifier.fillMaxSize()
     ){
@@ -92,7 +97,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
                         Text(text = "Difficulty", color = MaterialTheme.colorScheme.onBackground,fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                         SearchableDropdownButton(
                             choosenOption = viewModel.difficulty,
-                            options = viewModel.difficultyOptions.value,
+                            options = difficulties,
                             modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
                         ){
                                 selectedDifficulty ->
@@ -103,7 +108,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
                         Text(text = "Occasion", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                         SearchableDropdownButton(
                             choosenOption = viewModel.occasion,
-                            options = viewModel.occasionOptions.value,
+                            options =  occasions,
                             modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
                         ){
                                 selectedOccasion ->
@@ -117,7 +122,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
                 Text(text = "Category", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 SearchableDropdownButton(
                     choosenOption = viewModel.category,
-                    options = viewModel.categoryOptions.value,
+                    options = categories,
                     modifier = Modifier.fillMaxWidth(0.8f).align(Alignment.CenterHorizontally)
                 ){
                         selectedCategory ->

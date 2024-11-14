@@ -51,6 +51,9 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
     var ratingResponse = MutableStateFlow("")
     val reviewGetDto = MutableStateFlow<ReviewGetDTO?>(null)
 
+    val _stepsCount = MutableStateFlow(0)
+    val stepsCount : StateFlow<Int> = _stepsCount
+
     fun callDialog() {
         viewModelScope.launch {
             _showDialog.value = true
@@ -66,6 +69,7 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
                 val result = _recipeService.getRecipeDetails(id)
                 if(result is Result.Success) {
                     _recipe.value = result.data ?: recipe.value
+                    _stepsCount.value = _recipe.value.steps?.size ?: 0
                     success = true
                 }
                 else if (result is Result.Error) {
@@ -104,6 +108,7 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
         _userComment.value = ""
         _userRating.value = 0
         _recipe.value = recipe
+        _stepsCount.value = _recipe.value.steps?.size ?: 0
         loadImage()
         viewModelScope.launch {
             try {

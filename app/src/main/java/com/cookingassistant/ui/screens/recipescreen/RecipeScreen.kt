@@ -52,12 +52,16 @@ fun RecipeScreen(
     val img by recipeScreenViewModel.recipeImg.collectAsState()
     val favorite by recipeScreenViewModel.markedFavorite.collectAsState()
     val userReview by recipeScreenViewModel.reviewGetDto.collectAsState()
+    val stepsCount by recipeScreenViewModel.stepsCount.collectAsState()
 
     // each step on separate page + 1 frontpage + 1 details
-    val pagesCount by remember { mutableStateOf((recipe.steps?.size ?: 0) + 3 - 1) }
+    val pagesCount by remember { mutableStateOf(2) }
     var currentPage by remember { mutableStateOf(0) }
     var offsetX by remember { mutableStateOf(0f) }
     var savedPage by remember { mutableStateOf(0) }
+    Log.i("current_page",currentPage.toString())
+    Log.d("current_page",pagesCount.toString())
+    Log.v("current_page",recipe.steps?.size.toString())
 
     val sizeAnim1 by animateFloatAsState(
         targetValue = if (currentPage % 2 == 0) 0.94f else 0f
@@ -78,10 +82,10 @@ fun RecipeScreen(
                     },
                     onDragStart = {offsetX = 0f},
                     onDragEnd = {
-                        if (offsetX < -5f && currentPage < pagesCount)
+                        if (offsetX < -5f && currentPage < (pagesCount+stepsCount))
                             currentPage++
                         else if(offsetX > 5f && currentPage != 0) {
-                            if(currentPage == pagesCount + 1 ) {
+                            if(currentPage == (pagesCount+stepsCount) + 1 ) {
                                 currentPage = savedPage
                             } else {
                                 currentPage--
@@ -104,14 +108,14 @@ fun RecipeScreen(
                     RecipeDetailsPage(recipe.caloricity, TextFormatting.formatTime(recipe.timeInMinutes),
                         TextFormatting.formatIngredients(recipe.ingredients), recipe.serves, modifier = Modifier.padding(vertical = 8.dp, horizontal = 5.dp))
                 }
-                in 2..<pagesCount -> {
+                in 2..<(pagesCount+stepsCount) -> {
                     RecipeStepPage(stepNumber = currentPage-1,
                         stepText = recipe.steps?.get(currentPage-2)?.description ?: "")
                 }
-                pagesCount -> {
+                (pagesCount+stepsCount) -> {
                     RecipeEndPage()
                 }
-                pagesCount+1 -> {
+                (pagesCount+stepsCount)+1 -> {
                     RecipeRatingPage(recipeScreenViewModel)
                 }
             }
@@ -130,12 +134,12 @@ fun RecipeScreen(
                 }
             }
 
-            if(currentPage != pagesCount + 1) {
+            if(currentPage != (pagesCount+stepsCount) + 1) {
                 IconButton(
                     onClick = {
                         recipeScreenViewModel.onUserEnterRecipeRatingPage()
-                        savedPage = currentPage
-                        currentPage = pagesCount + 1
+                        savedPage = (pagesCount+stepsCount)
+                        currentPage = (pagesCount+stepsCount) + 1
                     },
                 ) {
                     Icon(
@@ -157,7 +161,7 @@ fun RecipeScreen(
             if(currentPage != 0) {
                 IconButton(
                     onClick = {
-                        if(currentPage == pagesCount + 1) {
+                        if(currentPage == (pagesCount+stepsCount) + 1) {
                             currentPage = savedPage
                         } else {
                             currentPage -= 1
@@ -172,7 +176,7 @@ fun RecipeScreen(
                     )
                 }
             }
-            if(currentPage >= 0 && currentPage < pagesCount) {
+            if(currentPage >= 0 && currentPage < (pagesCount+stepsCount)) {
                 IconButton(
                     onClick = {currentPage += 1}
                 ) {

@@ -48,6 +48,7 @@ class TopAppBarViewModel (
             navController.navigate("recipeList")
         }
         recipeListViewModel.loadQuery(rq)
+        onDeselctTool()
     }
 
     fun updateLists() {
@@ -137,6 +138,7 @@ class TopAppBarViewModel (
                 Log.e("onResultSubmitted", e.message ?: "failed to submit result")
             }
         }
+        onDeselctTool()
     }
 
     private fun _proposeResults(newText: String) {

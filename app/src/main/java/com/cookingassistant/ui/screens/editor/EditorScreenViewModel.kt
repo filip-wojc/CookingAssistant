@@ -15,6 +15,7 @@ import com.cookingassistant.data.DTO.*
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.util.ImageConverter
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class EditorScreenViewModel(private val recipeService: RecipeService) : ViewModel() {
@@ -35,14 +36,22 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
     var ingredients by mutableStateOf(listOf<RecipeIngredientGetDTO>())
     var steps by mutableStateOf(listOf<String>())
 
-    var difficultyOptions = mutableStateOf<List<DifficultiesGetDTO>>(listOf())
-    var categoryOptions = mutableStateOf<List<CategoriesGetDTO>>(listOf())
-    var occasionOptions = mutableStateOf<List<OccasionsGetDTO>>(listOf())
-    var ingredientsOptions by mutableStateOf<List<String>>(listOf())
-    var unitOptions by mutableStateOf<List<String>>(listOf())
+    val difficultyOptions = MutableStateFlow<List<DifficultiesGetDTO>>(listOf())
+    val categoryOptions = MutableStateFlow<List<CategoriesGetDTO>>(listOf())
+    val occasionOptions = MutableStateFlow<List<OccasionsGetDTO>>(listOf())
+    val ingredientsOptions = MutableStateFlow<List<String>>(listOf())
+    val unitOptions = MutableStateFlow<List<String>>(listOf())
 
     fun navigateTo(screen: String) {
         _currentScreen.value = screen
+    }
+
+    init {
+        loadOccasions()
+        loadCategories()
+        loadDifficulties()
+        loadIngredients()
+        loadUnits()
     }
 
     fun checkRecipe():Boolean{
@@ -69,7 +78,7 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
                     Log.e("EditorScreenViewModel", result.message)
                 }
             }catch (e: Exception) {
-                Log.e("EditorScreenViewModel", e.message ?: "recipe couldnt be loaded")
+                Log.e("EditorScreenViewModel", e.message ?: "recipe couldnt be created")
             }
         }
     }
@@ -80,14 +89,14 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
             try{
                 val result = recipeService.getAllIngredientsList()
                 if(result is Result.Success){
-                    ingredientsOptions = result.data ?: ingredientsOptions
+                    ingredientsOptions.value = result.data ?: ingredientsOptions.value
                     success = true
                 }
                 else if(result is Result.Error){
                     Log.e("EditorScreenViewModel", result.message)
                 }
             }catch (e: Exception) {
-                Log.e("EditorScreenViewModel", "recipe couldnt be loaded")
+                Log.e("EditorScreenViewModel", "ingredients couldnt be loaded")
             }
         }
     }
@@ -98,14 +107,14 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
             try{
                 val result = recipeService.getAllUnitsList()
                 if(result is Result.Success){
-                    unitOptions = result.data ?: unitOptions
+                    unitOptions.value = result.data ?: unitOptions.value
                     success = true
                 }
                 else if(result is Result.Error){
                     Log.e("EditorScreenViewModel", result.message)
                 }
             }catch (e: Exception) {
-                Log.e("EditorScreenViewModel", "recipe couldnt be loaded")
+                Log.e("EditorScreenViewModel", "units couldnt be loaded")
             }
         }
     }
@@ -123,7 +132,7 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
                     Log.e("EditorScreenViewModel", result.message)
                 }
             } catch (e: Exception) {
-                Log.e("EditorScreenViewModel", "recipe couldnt be loaded")
+                Log.e("EditorScreenViewModel", "difficulties couldnt be loaded")
             }
         }
     }
@@ -141,7 +150,7 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
                     Log.e("EditorScreenViewModel", result.message)
                 }
             } catch (e: Exception) {
-                Log.e("EditorScreenViewModel", "recipe couldnt be loaded")
+                Log.e("EditorScreenViewModel", "categories couldnt be loaded")
             }
         }
     }
@@ -159,7 +168,7 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
                     Log.e("EditorScreenViewModel", result.message)
                 }
             } catch (e: Exception) {
-                Log.e("EditorScreenViewModel", "recipe couldnt be loaded")
+                Log.e("EditorScreenViewModel", "occasions couldnt be loaded")
             }
         }
     }

@@ -43,6 +43,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,9 @@ import androidx.compose.material3.Text as Text1
 
 @Composable
 fun DetailsPage(viewModel: EditorScreenViewModel) {
+
+    val ingredients by viewModel.ingredientsOptions.collectAsState()
+    val units by viewModel.unitOptions.collectAsState()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -113,8 +117,8 @@ fun DetailsPage(viewModel: EditorScreenViewModel) {
             )
             IngredientPicker(
                 ingredientList = viewModel.ingredients,
-                ingredientOptions = viewModel.ingredientsOptions,
-                unitOptions = viewModel.unitOptions,
+                ingredientOptions = ingredients,
+                unitOptions = units,
                 onIngredientListChange = { updatedList ->
                     viewModel.ingredients = updatedList
                 }
