@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -147,11 +148,12 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             ) {
                 Text("Register")
             }
-        }
-
-        // Loading indicator
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            // Loading indicator
+            if (isLoading) {
+                Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.Top){
+                    CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+                }
+            }
         }
 
         // Show result (either token or error message) in a dialog

@@ -1,7 +1,9 @@
 package com.cookingassistant.ui.screens.registration
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -34,6 +37,7 @@ fun RegistrationScreen(navController: NavController, registrationViewModel: Regi
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
@@ -78,8 +82,11 @@ fun RegistrationScreen(navController: NavController, registrationViewModel: Regi
         }
 
         // Loading indicator
+
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
+                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            }
         }
 
         // Show result (either token or error message) in a dialog
