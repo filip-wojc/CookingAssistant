@@ -61,13 +61,8 @@ import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 
 @Composable
 fun RecipeEndPage(
-     recipeScreenViewModel: RecipeScreenViewModel,
      size : Float = 0.9f
 ) {
-    val ratingSelection by recipeScreenViewModel.userRating.collectAsState()
-    val userComment by recipeScreenViewModel.userComment.collectAsState()
-    val maxCommentLength = 150
-
     Box(
         Modifier
             .fillMaxHeight(size)

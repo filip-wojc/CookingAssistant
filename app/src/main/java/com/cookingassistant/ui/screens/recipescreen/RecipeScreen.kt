@@ -1,5 +1,6 @@
 package com.cookingassistant.ui.screens.recipescreen
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -20,9 +21,11 @@ import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.outlined.AddComment
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -106,7 +109,7 @@ fun RecipeScreen(
                         stepText = recipe.steps?.get(currentPage-2)?.description ?: "")
                 }
                 pagesCount -> {
-                    RecipeEndPage(recipeScreenViewModel)
+                    RecipeEndPage()
                 }
                 pagesCount+1 -> {
                     RecipeRatingPage(recipeScreenViewModel)
@@ -126,13 +129,14 @@ fun RecipeScreen(
                     Icon(imageVector = Icons.Outlined.FavoriteBorder, contentDescription = "remove form favorites")
                 }
             }
+
             if(currentPage != pagesCount + 1) {
                 IconButton(
                     onClick = {
                         recipeScreenViewModel.onUserEnterRecipeRatingPage()
                         savedPage = currentPage
                         currentPage = pagesCount + 1
-                              },
+                    },
                 ) {
                     Icon(
                         Icons.Outlined.AddComment,
@@ -140,6 +144,7 @@ fun RecipeScreen(
                     )
                 }
             }
+
         }
 
         Row (
@@ -179,6 +184,7 @@ fun RecipeScreen(
                     )
                 }
             }
+
         }
     }
 }

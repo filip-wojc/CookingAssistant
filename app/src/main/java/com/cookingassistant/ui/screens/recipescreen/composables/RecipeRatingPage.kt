@@ -140,7 +140,7 @@ fun RecipeRatingPage(
             onClick = {
                         recipeScreenViewModel.onRatingSubmitted(ratingSelection, userComment)
                 },
-                enabled = ratingSelection != 0,
+                enabled = ratingSelection != 0 && userComment != "",
                 modifier = Modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(0.8f)

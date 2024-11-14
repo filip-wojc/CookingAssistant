@@ -32,6 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.createBitmap
 import coil3.compose.AsyncImage
+import com.cookingassistant.services.RecipeService
+import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
+import com.cookingassistant.ui.screens.reviews.ReviewList
+import com.cookingassistant.ui.screens.reviews.ReviewViewModel
 
 @Composable
 fun RecipeScreenFrontPage(
@@ -42,7 +46,7 @@ fun RecipeScreenFrontPage(
     category : String,
     occasion : String,
     difficulty : String,
-    size: Float = 0.9f
+    size: Float = 0.9f,
 ) {
     Column(
         Modifier
@@ -132,6 +136,7 @@ fun RecipeScreenFrontPage(
                     }
                 }
             }
+
         }
     }
 }
