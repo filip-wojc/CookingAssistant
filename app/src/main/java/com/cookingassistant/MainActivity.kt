@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import android.Manifest
 import android.os.Build
+import android.os.Environment
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -46,6 +47,7 @@ import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 import com.cookingassistant.ui.screens.reviews.ReviewList
 import com.cookingassistant.ui.screens.reviews.ReviewViewModel
+import java.io.File
 
 
 class MainActivity : ComponentActivity() {
@@ -78,8 +80,11 @@ class MainActivity : ComponentActivity() {
         val userService = UserService(apiRepository)
         val reviewService = ReviewService(apiRepository)
         val recipeService = RecipeService(apiRepository)
+        // Pdf directory
+        val destinationDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
         setContent {
-            AppNavigator(authService,userService,reviewService,recipeService ,tokenRepository) // inject services here
+            AppNavigator(authService,userService,reviewService,recipeService ,tokenRepository, destinationDir) // inject services here
         }
     }
 
@@ -140,18 +145,19 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 // modify this code to inject services
-fun AppNavigator(authService: AuthService,userService: UserService,reviewService: ReviewService, recipeService: RecipeService, tokenRepository: TokenRepository){
+fun AppNavigator(authService: AuthService,userService: UserService,reviewService: ReviewService, recipeService: RecipeService, tokenRepository: TokenRepository, destinationDir: File){
     val navController = rememberNavController()
     NavGraph(navController = navController,
         authService = authService,
         userService = userService,
         reviewService = reviewService,
         recipeService = recipeService,
-        tokenRepository = tokenRepository)
+        tokenRepository = tokenRepository,
+        destinationDir = destinationDir)
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository) {
+fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository, destinationDir: File) {
     AppTheme(true) {
         val reviewViewModel = ReviewViewModel(reviewService)
         val rsvm = RecipeScreenViewModel(recipeService, userService, reviewService, navController, reviewViewModel)
@@ -174,7 +180,7 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
             }
             composable("test") {//For testing purposes
                 //val reviewViewModel = ReviewViewModel(reviewService)
-                //ReviewList(reviewViewModel, 14)
+                //ReviewList(reviewViewModel)
             }
 
             composable("recipeReviews") {
@@ -194,7 +200,7 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
             }
             composable("recipeScreen") {
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
-                    RecipeScreen(rsvm)
+                    RecipeScreen(rsvm, destinationDir)
                 }
             }
             composable("editor"){

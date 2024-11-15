@@ -1,7 +1,10 @@
 package com.cookingassistant.ui.screens.recipescreen
 
 import android.graphics.Bitmap
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.runtime.collectAsState
 import androidx.constraintlayout.compose.Visibility
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.ViewModel
@@ -19,7 +22,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 class RecipeScreenViewModel(private val _recipeService: RecipeService,
                             private val _userService : UserService,
@@ -54,11 +59,59 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
     val _stepsCount = MutableStateFlow(0)
     val stepsCount : StateFlow<Int> = _stepsCount
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+
     fun callDialog() {
         viewModelScope.launch {
             _showDialog.value = true
             delay(3000)
             _showDialog.value = false
+        }
+    }
+
+    fun downloadPdf(recipeId: Int, destinadtionDir: File) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                val result = _recipeService.downloadRecipePdf(recipeId)
+                when (result) {
+                    is Result.Success -> {
+                        result.data?.let { responseBody ->
+
+                            val pdfFile = File(destinadtionDir, "recipes_${recipeId}_file.pdf")
+
+                            // Zapisz plik PDF
+                            try {
+                                val inputStream: InputStream = responseBody.byteStream()
+                                val outputStream = FileOutputStream(pdfFile)
+
+                                inputStream.use { input ->
+                                    outputStream.use { output ->
+                                        input.copyTo(output)
+                                    }
+                                }
+                                ratingResponse.value = "File saved succesfully"
+                                Log.d("pdf","File saved in: ${pdfFile.absolutePath}")
+                                Log.d("pdf", "File exists: ${pdfFile.exists()}")
+                            } catch (e: Exception) {
+                                Log.e("pdf", e.message.toString())
+                                ratingResponse.value = "Server error"
+                            }
+                        }
+                    }
+                    is Result.Error -> {
+                        ratingResponse.value = "File can't be saved"
+                        Log.e("pdf", "Outer Error")
+                    }
+                }
+            }catch (e: Exception) {
+                Log.e("pdf", e.message.toString())
+                ratingResponse.value = "Server error"
+            }
+            _isLoading.value = false
+            callDialog()
         }
     }
 

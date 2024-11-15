@@ -43,10 +43,12 @@ import com.cookingassistant.ui.screens.recipescreen.composables.RecipeEndPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeRatingPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeScreenFrontPage
 import com.cookingassistant.ui.screens.recipescreen.composables.RecipeStepPage
+import java.io.File
 
 @Composable
 fun RecipeScreen(
-    recipeScreenViewModel : RecipeScreenViewModel
+    recipeScreenViewModel : RecipeScreenViewModel,
+    destinationDir: File
 ) {
     val recipe by recipeScreenViewModel.recipe.collectAsState()
     val img by recipeScreenViewModel.recipeImg.collectAsState()
@@ -102,7 +104,7 @@ fun RecipeScreen(
             Spacer(Modifier.fillMaxWidth().height(1.dp).padding(top=35.dp))
             when(currentPage) {
                 0 -> {
-                    RecipeScreenFrontPage(recipe.name,img,recipe.description,recipe.authorName,recipe.categoryName,recipe.occasionName, recipe.difficultyName ?: "not known")
+                    RecipeScreenFrontPage(recipe.id, recipe.name,img,recipe.description,recipe.authorName,recipe.categoryName,recipe.occasionName, recipe.difficultyName ?: "not known", recipeScreenViewModel = recipeScreenViewModel, destinationDir = destinationDir)
                 }
                 1 -> {
                     RecipeDetailsPage(recipe.caloricity, TextFormatting.formatTime(recipe.timeInMinutes),

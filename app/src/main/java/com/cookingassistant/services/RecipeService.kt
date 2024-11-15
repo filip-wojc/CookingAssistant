@@ -18,8 +18,10 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 
 class RecipeService(private val _apiRepository: ApiRepository) {
@@ -97,6 +99,15 @@ class RecipeService(private val _apiRepository: ApiRepository) {
         val result = _apiResponseParser.wrapResponse(response)
 
         return result
+    }
+
+    suspend fun downloadRecipePdf(recipeId: Int): Result<ResponseBody?> {
+        val response = _apiRepository.downloadRecipePdf(recipeId)
+        return if (response.isSuccessful) {
+            Result.Success(response.body())
+        } else {
+            Result.Error("Can't download pdf: ${response.message()}", response.code())
+        }
     }
 
     // TODO: TEST

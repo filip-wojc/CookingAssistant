@@ -6,18 +6,20 @@ import androidx.core.graphics.createBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.cookingassistant.data.DTO.RecipeGetDTO
 import com.cookingassistant.data.DTO.RecipePageResponse
 import com.cookingassistant.data.DTO.RecipeQuery
 import com.cookingassistant.data.DTO.RecipeSimpleGetDTO
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.services.RecipeService
+import com.cookingassistant.services.UserService
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class RecipesListViewModel(
-    private val _service:RecipeService,
+    private val _service: RecipeService,
     private val _recipeScreenViewModel:RecipeScreenViewModel,
     private val _navController : NavHostController
     ): ViewModel() {

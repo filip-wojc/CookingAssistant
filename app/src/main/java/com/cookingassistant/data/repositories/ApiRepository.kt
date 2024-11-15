@@ -152,6 +152,10 @@ interface ApiRepository{
     
     @GET("recipes/image/{recipeId}")
     suspend fun getRecipeImage(@Path("recipeId") recipeId:Int):Response<ResponseBody>
+
+    @GET("recipes/pdf/{recipeId}")
+    suspend fun downloadRecipePdf(@Path("recipeId") recipeId: Int): Response<ResponseBody>
+
     // #
     // #
     // #########################################################################
