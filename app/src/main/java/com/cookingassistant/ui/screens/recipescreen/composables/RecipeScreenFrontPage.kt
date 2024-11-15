@@ -209,7 +209,7 @@ fun RecipeScreenFrontPage(
                 .align(Alignment.TopCenter)
                 .background(
                     when (ratingResponse) {
-                        "File saved succesfully" -> {
+                        "File saved succesfully in downloads folder" -> {
                             MaterialTheme.colorScheme.tertiaryContainer
                         }
 
@@ -233,7 +233,7 @@ fun RecipeScreenFrontPage(
                 fontSize = 20.sp,
                 text = ratingResponse,
                 color = when (ratingResponse) {
-                    "File saved succesfully" -> {
+                    "File saved succesfully in downloads folder" -> {
                         MaterialTheme.colorScheme.onTertiaryContainer
                     }
 

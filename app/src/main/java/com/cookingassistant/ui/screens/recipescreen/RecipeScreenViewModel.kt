@@ -92,7 +92,7 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
                                         input.copyTo(output)
                                     }
                                 }
-                                ratingResponse.value = "File saved succesfully"
+                                ratingResponse.value = "File saved succesfully in downloads folder"
                                 Log.d("pdf","File saved in: ${pdfFile.absolutePath}")
                                 Log.d("pdf", "File exists: ${pdfFile.exists()}")
                             } catch (e: Exception) {
