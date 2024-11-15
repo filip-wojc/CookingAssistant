@@ -66,6 +66,9 @@ interface ApiRepository{
     @GET("users/favourite-recipes/{recipeId}/is-favourite")
     suspend fun checkIfRecipeInFavourites(@Path("recipeId") recipeId: Int):Response<Boolean>
 
+    @GET("users/recipes/{recipeId}/is-mine")
+    suspend fun checkIfRecipeIsCreatedByUser(@Path("recipeId") recipeId: Int):Response<Boolean>
+
     @GET("users/image")
     suspend fun getUserProfilePicture():Response<ResponseBody>
 

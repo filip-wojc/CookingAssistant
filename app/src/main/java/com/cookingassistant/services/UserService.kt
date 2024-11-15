@@ -45,10 +45,18 @@ class UserService(private val _apiRepository: ApiRepository) {
         return result
     }
 
+
     // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun checkIfRecipeInUserFavourites(recipeId: Int):Result<Boolean?> {
         val response = _apiRepository.checkIfRecipeInFavourites(recipeId)
+        val result = _apiResponseParser.wrapResponse(response)
+
+        return result
+    }
+
+    suspend fun checkIfRecipeIsCreatedByUser(recipeId: Int):Result<Boolean?> {
+        val response = _apiRepository.checkIfRecipeIsCreatedByUser(recipeId)
         val result = _apiResponseParser.wrapResponse(response)
 
         return result
