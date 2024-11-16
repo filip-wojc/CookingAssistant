@@ -223,7 +223,7 @@ fun RecipeList(
                                 fontSize = 15.sp
                             )
                             RatingToStars(item.ratings.roundToInt(),
-                                modifier = Modifier.size(20.dp).shadow(elevation = 4.dp),
+                                modifier = Modifier.size(16.dp).shadow(elevation = 4.dp),
                                 color = MaterialTheme.colorScheme.onBackground
                             ) {
                                 Text(
