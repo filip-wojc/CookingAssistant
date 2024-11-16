@@ -13,6 +13,12 @@ import androidx.core.app.ActivityCompat
 import android.Manifest
 import android.os.Build
 import android.os.Environment
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -47,6 +53,7 @@ import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 import com.cookingassistant.ui.screens.reviews.ReviewList
 import com.cookingassistant.ui.screens.reviews.ReviewViewModel
+import com.cookingassistant.util.VoiceToTextParser
 import java.io.File
 
 
@@ -64,6 +71,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    val voiceToTextParser by lazy {
+        VoiceToTextParser(application)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +94,21 @@ class MainActivity : ComponentActivity() {
         val destinationDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
         setContent {
-            AppNavigator(authService,userService,reviewService,recipeService ,tokenRepository, destinationDir) // inject services here
+            var canRecord by remember {
+                mutableStateOf(false)
+            }
+
+            val recordAudioLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission(),
+                onResult = {isGranted ->
+                    canRecord = isGranted
+                }
+            )
+            LaunchedEffect(key1 = recordAudioLauncher) {
+                recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+
+            AppNavigator(authService,userService,reviewService,recipeService ,tokenRepository, destinationDir, voiceToTextParser) // inject services here
         }
     }
 
@@ -145,7 +169,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 // modify this code to inject services
-fun AppNavigator(authService: AuthService,userService: UserService,reviewService: ReviewService, recipeService: RecipeService, tokenRepository: TokenRepository, destinationDir: File){
+fun AppNavigator(authService: AuthService,userService: UserService,reviewService: ReviewService, recipeService: RecipeService, tokenRepository: TokenRepository, destinationDir: File, voiceToTextParser: VoiceToTextParser){
     val navController = rememberNavController()
     NavGraph(navController = navController,
         authService = authService,
@@ -153,16 +177,17 @@ fun AppNavigator(authService: AuthService,userService: UserService,reviewService
         reviewService = reviewService,
         recipeService = recipeService,
         tokenRepository = tokenRepository,
-        destinationDir = destinationDir)
+        destinationDir = destinationDir,
+        voiceToTextParser = voiceToTextParser)
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository, destinationDir: File) {
+fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository, destinationDir: File, voiceToTextParser: VoiceToTextParser) {
     AppTheme(true) {
         val reviewViewModel = ReviewViewModel(reviewService)
         val rsvm = RecipeScreenViewModel(recipeService, userService, reviewService, navController, reviewViewModel)
         val recipeListViewModel = RecipesListViewModel(recipeService,rsvm,navController)
-        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel)
+        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser)
         ScreenControlManager.topAppBarViewModel=topBarViewModel
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {

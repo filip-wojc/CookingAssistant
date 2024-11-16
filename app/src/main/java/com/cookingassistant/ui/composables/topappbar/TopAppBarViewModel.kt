@@ -2,6 +2,9 @@ package com.cookingassistant.ui.composables.topappbar
 
 import com.cookingassistant.data.Models.Result
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -11,17 +14,20 @@ import com.cookingassistant.data.objects.SearchEngine
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
+import com.cookingassistant.util.VoiceToTextParser
 import com.frosch2010.fuzzywuzzy_kotlin.model.ExtractedResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TopAppBarViewModel (
     private val _service : RecipeService,
     val recipeScreenViewModel : RecipeScreenViewModel,
     val navController: NavHostController,
-    val recipeListViewModel: RecipesListViewModel
+    val recipeListViewModel: RecipesListViewModel,
+    val voiceToTextParser: VoiceToTextParser
 ) : ViewModel()
 {
     private val _quickSearchText = MutableStateFlow("")
@@ -40,6 +46,10 @@ class TopAppBarViewModel (
 
     init {
         updateLists()
+    }
+
+    fun updateQuickSearchText(text: String) {
+        _quickSearchText.value = text
     }
 
     fun onQuickSearch() {
