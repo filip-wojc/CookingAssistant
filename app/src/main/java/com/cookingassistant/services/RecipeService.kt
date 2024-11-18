@@ -164,11 +164,26 @@ class RecipeService(private val _apiRepository: ApiRepository) {
         } catch (e: Exception) {
             Log.e("RecipeService", "Exception in getRecipeNames: ${e.localizedMessage}", e)
             Result.Error(
-                message = "An exception occurred while getting recipe namesF: ${e.localizedMessage}",
+                message = "An exception occurred while fetching recipe names: ${e.localizedMessage}",
                 errorCode = INTERNAL_SERVICE_ERROR_CODE
             )
         }
     }
+
+    suspend fun getDailyRecipe(): Result<RecipeGetDTO?>{
+        return try{
+            val response = _apiRepository.getDailyRecipe()
+            _apiResponseParser.wrapResponse(response)
+
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in getDailyRecipe: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching daily recipe: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+    }
+
 
     suspend fun getRecipeImageBitmap(recipeId: Int): Result<Bitmap?>{
         return try {

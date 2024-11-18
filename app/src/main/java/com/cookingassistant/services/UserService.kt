@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import com.cookingassistant.data.DTO.RecipePageResponse
+import com.cookingassistant.data.DTO.RecipeSimpleGetDTO
 import com.cookingassistant.data.DTO.UserDeleteRequest
 import com.cookingassistant.data.DTO.UserPasswordChangeDTO
 import com.cookingassistant.data.repositories.ApiRepository
@@ -60,6 +61,20 @@ class UserService(private val _apiRepository: ApiRepository) {
                 errorCode = INTERNAL_SERVICE_ERROR_CODE
             )
         }
+    }
+
+    suspend fun getUserRecipes(): Result<List<RecipeSimpleGetDTO>?>{
+        return try{
+            val response = _apiRepository.getUserRecipes()
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception){
+            Log.e("UserService", "Exception in getUserRecipes: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while getting user recipes: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+
     }
 
     suspend fun checkIfRecipeInUserFavourites(recipeId: Int): Result<Boolean?> {

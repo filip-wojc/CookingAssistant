@@ -16,6 +16,20 @@ import retrofit2.http.Query
 
 interface ApiRepository{
 
+
+    // ##### AUTH CONTROLLER ###################################################
+    // #
+    // #
+    @POST("users/login")
+    suspend fun logIn(@Body loginRequest: LoginRequest):Response<LoginResponse>
+
+    @POST("users/register")
+    suspend fun register(@Body registerRequest: RegisterRequest):Response<Unit>
+    // #
+    // #
+    // #########################################################################
+
+
     // ##### RESOURCE CONTROLLER ###############################################
     // #
     // #
@@ -38,19 +52,6 @@ interface ApiRepository{
     // #########################################################################
 
 
-    // ##### AUTH CONTROLLER ###################################################
-    // #
-    // #
-    @POST("users/login")
-    suspend fun logIn(@Body loginRequest: LoginRequest):Response<LoginResponse>
-
-    @POST("users/register")
-    suspend fun register(@Body registerRequest: RegisterRequest):Response<Unit>
-    // #
-    // #
-    // #########################################################################
-
-
     // ##### USER CONTROLLER ###################################################
     // #
     // #
@@ -62,6 +63,9 @@ interface ApiRepository{
 
     @GET("users/favourite-recipes")
     suspend fun getFavouriteRecipes():Response<RecipePageResponse>
+
+    @GET("users/my-recipes")
+    suspend fun getUserRecipes():Response<List<RecipeSimpleGetDTO>>
 
     @GET("users/favourite-recipes/{recipeId}/is-favourite")
     suspend fun checkIfRecipeInFavourites(@Path("recipeId") recipeId: Int):Response<Boolean>
@@ -76,7 +80,6 @@ interface ApiRepository{
     @POST("users/image")
     suspend fun addProfilePicture(@Part image: MultipartBody.Part):Response<Unit>
 
-    // TODO: ADD TO SERVICE
     @PUT("users/change-password")
     suspend fun changePassword(@Body passwordChangeDTO: UserPasswordChangeDTO): Response<Unit>
 
@@ -149,7 +152,10 @@ interface ApiRepository{
 
     @GET("recipes/names")
     suspend fun getAllRecipeNames():Response<List<RecipeNameDTO>>
-    
+
+    @GET("recipes/daily-recipe")
+    suspend fun getDailyRecipe():Response<RecipeGetDTO>
+
     @GET("recipes/image/{recipeId}")
     suspend fun getRecipeImage(@Path("recipeId") recipeId:Int):Response<ResponseBody>
 
