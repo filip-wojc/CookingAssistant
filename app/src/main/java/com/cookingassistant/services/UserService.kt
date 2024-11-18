@@ -2,6 +2,7 @@ package com.cookingassistant.services
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import com.cookingassistant.data.DTO.RecipePageResponse
 import com.cookingassistant.data.DTO.UserDeleteRequest
 import com.cookingassistant.data.DTO.UserPasswordChangeDTO
@@ -21,96 +22,139 @@ class UserService(private val _apiRepository: ApiRepository) {
 
     // TODO: ADD EXCEPTION HANDLING
     suspend fun addRecipeToUserFavourites(recipeId:Int):Result<Unit?>{
-        val response = _apiRepository.addRecipeToFavourites(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
+        return try {
+            val response = _apiRepository.addRecipeToFavourites(recipeId)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in addRecipeToUserFavorites: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while adding recipe to favourites: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
 
-        return result
-    }
-
-    // TODO: ADD EXCEPTION HANDLING
-    suspend fun removeRecipeFromUserFavourites(recipeId: Int):Result<Unit?>{
-        val response = _apiRepository.removeRecipeFromFavourites(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
-    }
-
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
-    suspend fun getUserFavouriteRecipes():Result<RecipePageResponse?>{
-        val response = _apiRepository.getFavouriteRecipes()
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
-    }
-
-    // TODO: ADD EXCEPTION HANDLING
-    suspend fun checkIfRecipeInUserFavourites(recipeId: Int):Result<Boolean?> {
-        val response = _apiRepository.checkIfRecipeInFavourites(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
-    }
-
-    suspend fun checkIfRecipeIsCreatedByUser(recipeId: Int):Result<Boolean?> {
-        val response = _apiRepository.checkIfRecipeIsCreatedByUser(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
-    }
-
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
-    suspend fun addUserProfilePicture(imageStream: InputStream, mimeType: String):Result<Unit?>{
-        val imageRequestBody = imageStream.readBytes()
-            .toRequestBody("image/jpeg".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData("imageData", "profile.${mimeType.substringAfter("/")}", imageRequestBody)
-
-        val response = _apiRepository.addProfilePicture(imagePart)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
-    }
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
-    suspend fun getUserProfilePictureBitmap(): Result<Bitmap?>{
-        val response = _apiRepository.getUserProfilePicture()
-        if(response.isSuccessful && response.body() != null) {
-            val imageByteArray = response.body()!!.bytes()
-            val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
-
-            return Result.Success(bitmap)
-        }
-        else{
-            // TODO: CHANGE LATER
-            return Result.Error("Failed to fetch user image:${response.message()}", errorCode = response.code())
         }
 
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
-    suspend fun changeUserPassword(oldPassword: String, newPassword:String , newPasswordConfirm:String ):Result<Unit?>{
-        val passwordChangeDTO = UserPasswordChangeDTO(
-            oldPassword,
-            newPassword,
-            newPasswordConfirm
-        )
-        val response = _apiRepository.changePassword(passwordChangeDTO)
-        val result= _apiResponseParser.wrapResponse(response)
-
-        return result
+    suspend fun removeRecipeFromUserFavourites(recipeId: Int): Result<Unit?> {
+        return try {
+            val response = _apiRepository.removeRecipeFromFavourites(recipeId)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in removeRecipeFromUserFavourites: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while removing recipe from favourites: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
-    suspend fun deleteUserAccount(password: String):Result<Unit?>{
-        val userDeleteRequest = UserDeleteRequest(password)
-        val response = _apiRepository.deleteUser(userDeleteRequest)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
+    suspend fun getUserFavouriteRecipes(): Result<RecipePageResponse?> {
+        return try {
+            val response = _apiRepository.getFavouriteRecipes()
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in getUserFavouriteRecipes: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching favourite recipes: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
+    suspend fun checkIfRecipeInUserFavourites(recipeId: Int): Result<Boolean?> {
+        return try {
+            val response = _apiRepository.checkIfRecipeInFavourites(recipeId)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in checkIfRecipeInUserFavourites: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while checking if recipe is in favourites: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+    }
 
+    suspend fun checkIfRecipeIsCreatedByUser(recipeId: Int): Result<Boolean?> {
+        return try {
+            val response = _apiRepository.checkIfRecipeIsCreatedByUser(recipeId)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in checkIfRecipeIsCreatedByUser: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while checking if recipe is created by user: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+    }
+
+    suspend fun addUserProfilePicture(imageStream: InputStream, mimeType: String): Result<Unit?> {
+        return try {
+            val imageRequestBody = imageStream.readBytes()
+                .toRequestBody("image/jpeg".toMediaTypeOrNull())
+            val imagePart = MultipartBody.Part.createFormData("imageData", "profile.${mimeType.substringAfter("/")}", imageRequestBody)
+
+            val response = _apiRepository.addProfilePicture(imagePart)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in addUserProfilePicture: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while uploading profile picture: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+    }
+    suspend fun getUserProfilePictureBitmap(): Result<Bitmap?> {
+        return try {
+            val response = _apiRepository.getUserProfilePicture()
+            if (response.isSuccessful && response.body() != null) {
+                val imageByteArray = response.body()!!.bytes()
+                val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
+                Result.Success(bitmap)
+            } else {
+                Result.Error(
+                    message = "Failed to fetch user image: ${response.message()}",
+                    errorCode = response.code()
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in getUserProfilePictureBitmap: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching profile picture: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+    }
+
+    suspend fun changeUserPassword(oldPassword: String, newPassword: String, newPasswordConfirm: String): Result<Unit?> {
+        return try {
+            val passwordChangeDTO = UserPasswordChangeDTO(
+                oldPassword,
+                newPassword,
+                newPasswordConfirm
+            )
+            val response = _apiRepository.changePassword(passwordChangeDTO)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in changeUserPassword: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while changing user password: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+    }
+
+    suspend fun deleteUserAccount(password: String): Result<Unit?> {
+        return try {
+            val userDeleteRequest = UserDeleteRequest(password)
+            val response = _apiRepository.deleteUser(userDeleteRequest)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception) {
+            Log.e("UserService", "Exception in deleteUserAccount: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while deleting user account: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+    }
 }
