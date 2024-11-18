@@ -1,5 +1,8 @@
 package com.cookingassistant.ui.screens.profile
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,37 +27,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import android.net.Uri
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.cookingassistant.R
-import com.cookingassistant.ui.composables.topappbar.TopAppBar
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
-import coil3.compose.rememberAsyncImagePainter
+import com.cookingassistant.util.ImageConverter
 
-@Preview
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController,profileScreenViewModel: ProfileScreenViewModel = viewModel()) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        profilImage()
+        profilImage(profileScreenViewModel)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -64,7 +62,7 @@ fun ProfileScreen() {
             Text(text = "Jan Kowalski", fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = "test@gmail.com", fontSize = 18.sp)
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -88,9 +86,7 @@ fun ProfileScreen() {
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
-            profilButton(onClick = {}, text = "Change Password", color = Color(0xFF9E72E1))
-            Spacer(modifier = Modifier.height(8.dp))
-            profilButton(onClick = {}, text = "Change E-mail", color = Color(0xFF9E72E1))
+            profilButton(onClick = {navController.navigate("authorization")}, text = "Change Password", color = Color(0xFF9E72E1))
             Spacer(modifier = Modifier.height(8.dp))
             profilButton(onClick = {}, text = "Delete Account", color = Color(0xFFEC544C))
             Spacer(modifier = Modifier.height(8.dp))
@@ -121,13 +117,14 @@ private fun profilButton(
 }
 
 @Composable
-fun profilImage() {
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+fun profilImage(profileScreenViewModel: ProfileScreenViewModel) {
+    val imageConverter = ImageConverter()
+    val context = LocalContext.current
 
-    //Launcher do otwierania galerii
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            selectedImageUri = uri
+            profileScreenViewModel.userProfilePicture = imageConverter.uriToBitmap(context,uri)
+            profileScreenViewModel.addUserProfilePicture(context.contentResolver.openInputStream(uri)!!,context.contentResolver.getType(uri)!!)
         }
     }
 
@@ -150,11 +147,7 @@ fun profilImage() {
         )
 
         Image(
-            painter = if (selectedImageUri != null) {
-                rememberAsyncImagePainter(selectedImageUri)
-            } else {
-                painterResource(id = R.drawable.projectlogotransparencycircular)
-            },
+            bitmap = profileScreenViewModel.userProfilePicture?.asImageBitmap() ?: ImageBitmap.imageResource(id = R.drawable.projectlogotransparencycircular),
             contentDescription = "avatar",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -187,7 +180,8 @@ fun profilImage() {
         ) {
             Icon(
                 imageVector = Icons.Filled.Edit,
-                contentDescription = "Profile"
+                contentDescription = "Profile",
+                tint = Color.Black
             )
         }
     }

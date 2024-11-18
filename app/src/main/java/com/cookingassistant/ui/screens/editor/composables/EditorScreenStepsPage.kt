@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -33,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,15 +41,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.cookingassistant.data.DTO.RecipePostDTO
-import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
 
 @Composable
@@ -91,7 +86,7 @@ fun StepsPage(navController: NavController,viewModel: EditorScreenViewModel) {
                     .background(Color(0xFF3700B3), shape = CircleShape)
                     .padding(8.dp)
                     .constrainAs(right) {
-                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        bottom.linkTo(parent.bottom, margin = 40.dp)
                         start.linkTo(parent.start, margin = 16.dp)
                     }
             ) {
@@ -109,7 +104,7 @@ fun StepsPage(navController: NavController,viewModel: EditorScreenViewModel) {
                     .background(Color(0xFF8FD65C), shape = CircleShape)
                     .padding(8.dp)
                     .constrainAs(accept) {
-                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        bottom.linkTo(parent.bottom, margin = 40.dp)
                         end.linkTo(parent.end, margin = 16.dp)
                     }
             ) {

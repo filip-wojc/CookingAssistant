@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import coil3.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil3.compose.rememberAsyncImagePainter
 import com.cookingassistant.R
 import com.cookingassistant.data.DTO.CategoriesGetDTO
 import com.cookingassistant.data.DTO.DifficultiesGetDTO
@@ -191,7 +191,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
                 onClick = { viewModel.navigateTo("details") },
                 modifier = Modifier.size(56.dp).background(Color(0xFF3700B3), shape = CircleShape)
                     .padding(8.dp).constrainAs(right) {
-                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        bottom.linkTo(parent.bottom, margin = 40.dp)
                         end.linkTo(parent.end, margin = 16.dp)
                     }
             ) {

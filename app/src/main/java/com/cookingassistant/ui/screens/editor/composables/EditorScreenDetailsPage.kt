@@ -135,7 +135,7 @@ fun DetailsPage(viewModel: EditorScreenViewModel) {
                     .background(Color(0xFF3700B3), shape = CircleShape)
                     .padding(8.dp)
                     .constrainAs(left) {
-                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        bottom.linkTo(parent.bottom, margin = 40.dp)
                         start.linkTo(parent.start, margin = 16.dp)
                     }
             ) {
@@ -153,7 +153,7 @@ fun DetailsPage(viewModel: EditorScreenViewModel) {
                     .background(Color(0xFF3700B3), shape = CircleShape)
                     .padding(8.dp)
                     .constrainAs(right) {
-                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        bottom.linkTo(parent.bottom, margin = 40.dp)
                         end.linkTo(parent.end, margin = 16.dp)
                     }
             ) {
