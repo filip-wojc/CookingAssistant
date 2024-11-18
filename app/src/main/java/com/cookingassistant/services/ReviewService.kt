@@ -1,6 +1,7 @@
 package com.cookingassistant.services
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.cookingassistant.data.DTO.ReviewGetDTO
 import com.cookingassistant.data.DTO.ReviewPostDTO
 import com.cookingassistant.data.Models.Result
@@ -13,60 +14,96 @@ class ReviewService(private val _apiRepository: ApiRepository) {
     private val _apiResponseParser = ApiResponseParser()
     private val _imageConverter = ImageConverter()
 
-    // TODO: ADD EXCEPTION HANDLING
+
     suspend fun addReview(recipeId: Int, reviewPostDTO: ReviewPostDTO):Result<Unit?>{
+        return try {
+            val response = _apiRepository.postReview(recipeId, reviewPostDTO)
+            _apiResponseParser.wrapResponse(response)
 
-        val response = _apiRepository.postReview(recipeId, reviewPostDTO)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
+        } catch (e: Exception) {
+            Log.e("ReviewService", "Exception in addReview: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while adding review: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun modifyReview(recipeId: Int, reviewPostDTO: ReviewPostDTO):Result<Unit?>{
+        return try {
+            val response = _apiRepository.modifyReview(recipeId, reviewPostDTO)
+            _apiResponseParser.wrapResponse(response)
 
-        val response = _apiRepository.modifyReview(recipeId, reviewPostDTO)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
+        } catch (e: Exception){
+            Log.e("ReviewService", "Exception in modifyReview: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while modifying review: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun deleteReview(recipeId: Int):Result<Unit?>{
-        val response = _apiRepository.deleteReview(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
+        return try {
+            val response = _apiRepository.deleteReview(recipeId)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception){
+            Log.e("ReviewService", "Exception in deleteReview: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while deleting review: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun getMyReview(recipeId: Int):Result<ReviewGetDTO?>{
-        val response = _apiRepository.getMyReview(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
-
-        return result
+        return try {
+            val response = _apiRepository.getMyReview(recipeId)
+            _apiResponseParser.wrapResponse(response)
+        } catch (e: Exception){
+            Log.e("ReviewService", "Exception in getMyReview: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while getting user review: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun getAllReviews(recipeId: Int):Result<List<ReviewGetDTO>?> {
-        val response = _apiRepository.getAllReviews(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
+        return try{
+            val response = _apiRepository.getAllReviews(recipeId)
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception){
+            Log.e("ReviewService", "Exception in getAllReview: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while getting all reviews: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
     // TODO: ADD EXCEPTION HANDLING
     suspend fun getReviewImageBitmap(reviewId: Int): Result<Bitmap?>{
-        val response = _apiRepository.getReviewImage(reviewId)
-        if(response.isSuccessful && response.body() != null){
-            val imageByteArray = response.body()!!.bytes()
-            val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
+        return try {
+            val response = _apiRepository.getReviewImage(reviewId)
+            if(response.isSuccessful && response.body() != null) {
+                val imageByteArray = response.body()!!.bytes()
+                val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
 
-            return Result.Success(bitmap)
-        }
-        else{
-            return Result.Error("Failed to fetch user image:${response.message()}", errorCode = response.code())
-        }
+                return Result.Success(bitmap)
 
+            }
+            else {
+                return Result.Error("Failed to fetch user image:${response.message()}", errorCode = response.code())
+            }
+
+        } catch (e: Exception) {
+            Log.e("ReviewService", "Exception in getReviewImageBitmap: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while getting review image: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 }
