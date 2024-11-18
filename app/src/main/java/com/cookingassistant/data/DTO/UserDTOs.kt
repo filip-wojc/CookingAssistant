@@ -13,7 +13,8 @@ data class LoginRequest(
 
 data class LoginResponse(
     val token: String,
-    val username: String
+    val username: String,
+    val email: String
 )
 
 data class UserPasswordChangeDTO(
