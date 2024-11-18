@@ -42,7 +42,5 @@ class AuthorizationScreenViewModel(private val userService : UserService) : View
 
     fun resetState() {
         _operationFinished = false
-        _success = false
     }
-
 }

@@ -42,6 +42,9 @@ fun AuthorizationScreen(navController: NavController, viewModel: AuthorizationSc
     var confirmPassword by remember {mutableStateOf("")}
     var showDialog by remember { mutableStateOf(false) }
 
+    val success by viewModel::success
+    val operationFinished by viewModel::operationFinished
+
     Box(modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background)){
         ConstraintLayout(modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background)) {
             val (exitButton, centerLayout) = createRefs()
@@ -114,13 +117,18 @@ fun AuthorizationScreen(navController: NavController, viewModel: AuthorizationSc
             }
         }
 
-        if (viewModel.operationFinished) {
+        if (operationFinished) {
             showDialog = true
-            viewModel.resetState() // Resetuj stan po zakończeniu operacji
+            viewModel.resetState()
         }
 
         if (showDialog) {
-            Dialog(onDismissRequest = { showDialog = false }) {
+            Dialog(onDismissRequest = { showDialog = false
+                if (success) {
+                    navController.navigate("profile")
+                }
+            }
+            ) {
                 Surface(
                     shape = MaterialTheme.shapes.medium,
                     color = MaterialTheme.colorScheme.surface,
@@ -130,12 +138,12 @@ fun AuthorizationScreen(navController: NavController, viewModel: AuthorizationSc
                         modifier = Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(if (viewModel.success) "Password changed successfully!" else "Password change failed!")
+                        Text(if (success) "Password changed successfully!" else "Password change failed!")
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
                                 showDialog = false
-                                if (viewModel.success) {
+                                if (success) {
                                     navController.navigate("profile")
                                 }
                             },
