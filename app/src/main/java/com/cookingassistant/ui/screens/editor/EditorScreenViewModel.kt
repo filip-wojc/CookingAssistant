@@ -6,12 +6,15 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cookingassistant.data.DTO.*
+import com.cookingassistant.data.DTO.CategoriesGetDTO
+import com.cookingassistant.data.DTO.DifficultiesGetDTO
+import com.cookingassistant.data.DTO.OccasionsGetDTO
+import com.cookingassistant.data.DTO.RecipeIngredientGetDTO
+import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.util.ImageConverter

@@ -1,56 +1,53 @@
 package com.cookingassistant
 
+import android.Manifest
 import android.content.pm.PackageManager
-import com.cookingassistant.ui.screens.home.HomeScreen
-import com.cookingassistant.ui.screens.login.LoginScreen
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.core.app.ActivityCompat
-import android.Manifest
-import android.os.Build
-import android.os.Environment
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.cookingassistant.data.repositories.TokenRepository
-import com.cookingassistant.data.network.RetrofitClient
-import com.cookingassistant.services.RecipeService
-import com.cookingassistant.services.AuthService
-import com.cookingassistant.ui.screens.home.LoginViewModel
-import com.cookingassistant.ui.screens.registration.RegistrationScreen
-import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.compose.AppTheme
+import com.cookingassistant.data.network.RetrofitClient
 import com.cookingassistant.data.objects.ScreenControlManager
+import com.cookingassistant.data.repositories.TokenRepository
+import com.cookingassistant.services.AuthService
+import com.cookingassistant.services.RecipeService
 import com.cookingassistant.services.ReviewService
 import com.cookingassistant.services.UserService
-import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
 import com.cookingassistant.ui.composables.topappbar.TopAppBar
 import com.cookingassistant.ui.composables.topappbar.TopAppBarViewModel
-import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
 import com.cookingassistant.ui.screens.RecipesList.RecipeList
 import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
 import com.cookingassistant.ui.screens.editor.EditorScreen
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
-import com.cookingassistant.ui.screens.editor.composables.DetailsPage
-import com.cookingassistant.ui.screens.editor.composables.FrontPage
-import com.cookingassistant.ui.screens.editor.composables.StepsPage
+import com.cookingassistant.ui.screens.editor.authorization.AuthorizationScreen
+import com.cookingassistant.ui.screens.editor.authorization.AuthorizationScreenViewModel
+import com.cookingassistant.ui.screens.home.HomeScreen
 import com.cookingassistant.ui.screens.home.HomeScreenViewModel
+import com.cookingassistant.ui.screens.home.LoginViewModel
+import com.cookingassistant.ui.screens.login.LoginScreen
+import com.cookingassistant.ui.screens.profile.ProfileScreen
+import com.cookingassistant.ui.screens.profile.ProfileScreenViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreen
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
+import com.cookingassistant.ui.screens.registration.RegistrationScreen
+import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.ui.screens.reviews.ReviewList
 import com.cookingassistant.ui.screens.reviews.ReviewViewModel
 import com.cookingassistant.util.VoiceToTextParser
@@ -233,6 +230,16 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
                     EditorScreen(navController, esvm)
                 }
+            }
+            composable("profile"){
+                val pvm = ProfileScreenViewModel(userService)
+                TopAppBar(topAppBarviewModel = topBarViewModel) {
+                    ProfileScreen(navController,pvm)
+                }
+            }
+            composable("authorization"){
+                val avm = AuthorizationScreenViewModel(userService)
+                AuthorizationScreen(navController,avm)
             }
         }
     }
