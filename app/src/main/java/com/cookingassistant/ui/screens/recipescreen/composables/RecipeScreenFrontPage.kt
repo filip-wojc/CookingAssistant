@@ -95,7 +95,7 @@ fun RecipeScreenFrontPage(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(Modifier.padding(vertical = 20.dp))
+                Spacer(Modifier.padding(vertical = 5.dp))
             }
 
             LazyVerticalGrid(
@@ -108,7 +108,7 @@ fun RecipeScreenFrontPage(
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(Modifier.height(20.dp).fillMaxWidth())
+                    Spacer(Modifier.height(10.dp).fillMaxWidth())
                 }
                 item {
                     Text(
@@ -116,7 +116,7 @@ fun RecipeScreenFrontPage(
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(Modifier.height(20.dp).fillMaxWidth())
+                    Spacer(Modifier.height(10.dp).fillMaxWidth())
                 }
                 item {
                     HorizontalDivider(
@@ -148,13 +148,13 @@ fun RecipeScreenFrontPage(
 
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(top = 12.dp)
+                modifier = Modifier.padding(top = 10.dp)
             ) {
                 item {
                     if (img != createBitmap(1, 1)) {
                         Image(
                             modifier = Modifier
-                                .height(300.dp)
+                                .height(250.dp)
                                 .clip(RoundedCornerShape(10)),
                             bitmap = img.asImageBitmap(),
                             contentDescription = null,

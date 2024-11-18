@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,6 +82,7 @@ fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: Mut
                             bitmap = image.asImageBitmap(),
                             contentDescription = "profile-pic",
                             modifier = Modifier.width(48.dp).height(48.dp).clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
                     }
                     else {
@@ -88,11 +90,11 @@ fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: Mut
                             imageVector = Icons.Filled.AccountCircle,
                             tint = Color.Gray,
                             contentDescription = "profile-pic",
-                            modifier = Modifier.width(48.dp).height(48.dp)
+                            modifier = Modifier.width(48.dp).height(48.dp),
                         )
                     }
                     Spacer(Modifier.width(8.dp))
-                    Text(reviewGetDTO.reviewAuthor.toString(), fontSize = 18.sp, color = MaterialTheme.colorScheme.onBackground)
+                    Text(reviewGetDTO.reviewAuthor.toString(), fontSize = 18.sp, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.width(90.dp))
                 }
 
                 Row {

@@ -75,7 +75,7 @@ fun RecipeScreen(
     Box(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(vertical = 50.dp, horizontal = 5.dp)
+            .padding(vertical = 40.dp, horizontal = 5.dp)
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onHorizontalDrag = {change, dragAmount ->
