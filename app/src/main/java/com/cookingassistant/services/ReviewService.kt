@@ -13,7 +13,6 @@ class ReviewService(private val _apiRepository: ApiRepository) {
     private val _apiResponseParser = ApiResponseParser()
     private val _imageConverter = ImageConverter()
 
-    // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun addReview(recipeId: Int, reviewPostDTO: ReviewPostDTO):Result<Unit?>{
 
@@ -23,7 +22,6 @@ class ReviewService(private val _apiRepository: ApiRepository) {
         return result
     }
 
-    // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun modifyReview(recipeId: Int, reviewPostDTO: ReviewPostDTO):Result<Unit?>{
 
@@ -33,7 +31,6 @@ class ReviewService(private val _apiRepository: ApiRepository) {
         return result
     }
 
-    // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun deleteReview(recipeId: Int):Result<Unit?>{
         val response = _apiRepository.deleteReview(recipeId)
@@ -42,7 +39,6 @@ class ReviewService(private val _apiRepository: ApiRepository) {
         return result
     }
 
-    // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun getMyReview(recipeId: Int):Result<ReviewGetDTO?>{
         val response = _apiRepository.getMyReview(recipeId)
@@ -51,7 +47,6 @@ class ReviewService(private val _apiRepository: ApiRepository) {
         return result
     }
 
-    // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun getAllReviews(recipeId: Int):Result<List<ReviewGetDTO>?> {
         val response = _apiRepository.getAllReviews(recipeId)
@@ -60,7 +55,6 @@ class ReviewService(private val _apiRepository: ApiRepository) {
         return result
     }
 
-    // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun getReviewImageBitmap(reviewId: Int): Result<Bitmap?>{
         val response = _apiRepository.getReviewImage(reviewId)

@@ -18,7 +18,7 @@ class UserService(private val _apiRepository: ApiRepository) {
 
     private val _apiResponseParser = ApiResponseParser()
     private val _imageConverter = ImageConverter()
-    // TODO: TEST
+
     // TODO: ADD EXCEPTION HANDLING
     suspend fun addRecipeToUserFavourites(recipeId:Int):Result<Unit?>{
         val response = _apiRepository.addRecipeToFavourites(recipeId)
@@ -27,7 +27,6 @@ class UserService(private val _apiRepository: ApiRepository) {
         return result
     }
 
-    // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun removeRecipeFromUserFavourites(recipeId: Int):Result<Unit?>{
         val response = _apiRepository.removeRecipeFromFavourites(recipeId)
@@ -45,8 +44,6 @@ class UserService(private val _apiRepository: ApiRepository) {
         return result
     }
 
-
-    // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun checkIfRecipeInUserFavourites(recipeId: Int):Result<Boolean?> {
         val response = _apiRepository.checkIfRecipeInFavourites(recipeId)

@@ -2,6 +2,7 @@ package com.cookingassistant.services
 import com.cookingassistant.data.DTO.RecipeQuery
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import com.cookingassistant.data.DTO.CategoriesGetDTO
 import com.cookingassistant.data.DTO.DifficultiesGetDTO
 import com.cookingassistant.util.RequestBodyFormatter
@@ -23,199 +24,283 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+public const val INTERNAL_SERVICE_ERROR_CODE = -1
 
 class RecipeService(private val _apiRepository: ApiRepository) {
 
     private val _apiResponseParser = ApiResponseParser()
     private val _imageConverter = ImageConverter()
     private val _formatter = RequestBodyFormatter()
-    // TODO : TEST
-    // TODO : ADD EXCEPTION HANDLING
-    suspend fun getAllIngredientsList(): Result<List<String>?> {
-        val response =  _apiRepository.getAllIngredientsList()
-        val result = _apiResponseParser.wrapResponse(response)
 
-        return result
+
+    suspend fun getAllIngredientsList(): Result<List<String>?> {
+        return try {
+            val response = _apiRepository.getAllIngredientsList()
+            _apiResponseParser.wrapResponse(response)
+
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in getAllIngredientsList: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching ingredients: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
     suspend fun getAllUnitsList(): Result<List<String>?> {
-        val response =  _apiRepository.getAllUnitList()
-        val result = _apiResponseParser.wrapResponse(response)
+        return try {
+            val response =  _apiRepository.getAllUnitList()
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch(e: Exception) {
+            Log.e("RecipeService", "Exception in getAllUnitsList: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching units: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun getAllOccasionsList(): Result<List<OccasionsGetDTO>?>{
-        val response = _apiRepository.getAllOccasionsList()
-        val result = _apiResponseParser.wrapResponse(response)
+        return try {
+            val response = _apiRepository.getAllOccasionsList()
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in getAllOccasionsList: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching occasions list: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun getAllDifficultiesList(): Result<List<DifficultiesGetDTO>?>{
-        val response = _apiRepository.getAllDifficultiesList()
-        val result = _apiResponseParser.wrapResponse(response)
+        return try {
+            val response = _apiRepository.getAllDifficultiesList()
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in getAllDifficultiesList: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching difficulties: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun getAllCategoriesList(): Result<List<CategoriesGetDTO>?> {
-        val response = _apiRepository.getAllCategoriesList()
-        val result = _apiResponseParser.wrapResponse(response)
+        return try {
+            val response = _apiRepository.getAllCategoriesList()
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in getAllCategoriesList: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching categories: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun findAllMatchingRecipes(rq: RecipeQuery): Result<RecipePageResponse?>{
-        val response = _apiRepository.getAllRecipes(
-            SearchPhrase = rq.SearchPhrase,
-            IngredientsSearch = rq.Ingredients,
-            SortBy = rq.SortBy,
-            SortDirection = rq.SortDirection,
-            FilterByDifficulty = rq.Difficulty,
-            FilterByCategoryName = rq.Category,
-            FilterByOccasion = rq.Occasion,
-            PageNumber = rq.PageNumber,
-            PageSize = rq.PageSize
-        )
+        return try {
+            val response = _apiRepository.getAllRecipes(
+                SearchPhrase = rq.SearchPhrase,
+                IngredientsSearch = rq.Ingredients,
+                SortBy = rq.SortBy,
+                SortDirection = rq.SortDirection,
+                FilterByDifficulty = rq.Difficulty,
+                FilterByCategoryName = rq.Category,
+                FilterByOccasion = rq.Occasion,
+                PageNumber = rq.PageNumber,
+                PageSize = rq.PageSize
+            )
 
-        val result =  _apiResponseParser.wrapResponse(response)
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in findAllMatchingRecipes: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching matching recipes: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun getRecipeDetails(recipeId: Int):Result<RecipeGetDTO?>{
-        val response = _apiRepository.getRecipeDetails(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
+        return try {
+            val response = _apiRepository.getRecipeDetails(recipeId)
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in getRecipeDetails: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while getting recipe details recipes: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
     suspend fun downloadRecipePdf(recipeId: Int): Result<ResponseBody?> {
-        val response = _apiRepository.downloadRecipePdf(recipeId)
-        return if (response.isSuccessful) {
-            Result.Success(response.body())
-        } else {
-            Result.Error("Can't download pdf: ${response.message()}", response.code())
+        return try {
+            val response = _apiRepository.downloadRecipePdf(recipeId)
+            _apiResponseParser.wrapResponse(response)
+
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in downloadRecipePdf: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while downloading recipe PDF: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
         }
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun getRecipeNames(): Result<List<RecipeNameDTO>?> {
-        val response =  _apiRepository.getAllRecipeNames()
-        val result = _apiResponseParser.wrapResponse(response)
+        return try {
+            val response =  _apiRepository.getAllRecipeNames()
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in getRecipeNames: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while getting recipe namesF: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
-    // TODO: TEST
-    // TODO: ADD EXCEPTION HANDLING
     suspend fun getRecipeImageBitmap(recipeId: Int): Result<Bitmap?>{
-        val response = _apiRepository.getRecipeImage(recipeId)
+        return try {
+            val response = _apiRepository.getRecipeImage(recipeId)
 
-        if(response.isSuccessful && response.body() != null) {
-            val imageByteArray = response.body()!!.bytes()
-            val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
+            if (response.isSuccessful && response.body() != null) {
+                val imageByteArray = response.body()!!.bytes()
+                val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
+                Result.Success(bitmap)
 
-            return Result.Success(bitmap)
-        }
-        else{
-            // TODO: CHANGE LATER
-            return Result.Error("Failed to fetch user image:${response.message()}", errorCode = response.code())
+            } else {
+                Result.Error(
+                    message = "Failed to fetch recipe image: ${response.message()}",
+                    errorCode = response.code()
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in getRecipeImageBitmap: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while fetching recipe image: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
         }
     }
 
     // TODO: ADD EXCEPTION HANDLING
     suspend fun addRecipe(recipe: RecipePostDTO): Result<Unit?> {
-        // Use RequestBodyFormatter for each part
-        val namePart = _formatter.fromString(recipe.name)
-        val descriptionPart = _formatter.fromString(recipe.description)
-        val servesPart = _formatter.fromInt(recipe.serves)
-        val difficultyIdPart = _formatter.fromInt(recipe.difficultyId)
-        val timeInMinutesPart = _formatter.fromInt(recipe.timeInMinutes)
-        val categoryIdPart = _formatter.fromInt(recipe.categoryId)
-        val occasionIdPart = _formatter.fromInt(recipe.occasionId)
-        val caloricityPart = _formatter.fromInt(recipe.caloricity)
+        return try {
+            // Use RequestBodyFormatter for each part
+            val namePart = _formatter.fromString(recipe.name)
+            val descriptionPart = _formatter.fromString(recipe.description)
+            val servesPart = _formatter.fromInt(recipe.serves)
+            val difficultyIdPart = _formatter.fromInt(recipe.difficultyId)
+            val timeInMinutesPart = _formatter.fromInt(recipe.timeInMinutes)
+            val categoryIdPart = _formatter.fromInt(recipe.categoryId)
+            val occasionIdPart = _formatter.fromInt(recipe.occasionId)
+            val caloricityPart = _formatter.fromInt(recipe.caloricity)
 
-        // Convert lists using helper
-        val ingredientNames = _formatter.fromList("IngredientNames", recipe.ingredientNames)
-        val ingredientQuantities = _formatter.fromList("IngredientQuantities", recipe.ingredientQuantities)
-        val ingredientUnits = _formatter.fromList("IngredientUnits", recipe.ingredientUnits)
-        val steps = _formatter.fromList("Steps", recipe.steps)
+            // Convert lists using helper
+            val ingredientNames = _formatter.fromList("IngredientNames", recipe.ingredientNames)
+            val ingredientQuantities = _formatter.fromList("IngredientQuantities", recipe.ingredientQuantities)
+            val ingredientUnits = _formatter.fromList("IngredientUnits", recipe.ingredientUnits)
+            val steps = _formatter.fromList("Steps", recipe.steps)
 
-        // Convert image data if available
-        val imagePart = recipe.imageData.let {
-            _formatter.fromByteArray(it, "recipe_image.jpg")
-        } ?: MultipartBody.Part.createFormData("ImageData", "", "".toRequestBody("image/jpeg".toMediaTypeOrNull()))
+            // Convert image data if available
+            val imagePart = recipe.imageData.let {
+                _formatter.fromByteArray(it, "recipe_image.jpg")
+            } ?: MultipartBody.Part.createFormData("ImageData", "", "".toRequestBody("image/jpeg".toMediaTypeOrNull()))
 
-        // Prepare all parts for the API call
-        val response = _apiRepository.postRecipe(
-            namePart, descriptionPart, servesPart, difficultyIdPart, timeInMinutesPart,
-            categoryIdPart, occasionIdPart, caloricityPart,
-            ingredientNames, ingredientQuantities, ingredientUnits, steps,
-            imagePart
-        )
+            // Prepare all parts for the API call
+            val response = _apiRepository.postRecipe(
+                namePart, descriptionPart, servesPart, difficultyIdPart, timeInMinutesPart,
+                categoryIdPart, occasionIdPart, caloricityPart,
+                ingredientNames, ingredientQuantities, ingredientUnits, steps,
+                imagePart
+            )
 
-        // Handle the API response
-        val result = _apiResponseParser.wrapResponse(response)
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in addRecipe: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while adding recipe: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
     }
 
     // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun modifyRecipe(recipeId: Int, recipe: RecipePostDTO):Result<Unit?>{
-        // Use RequestBodyFormatter for each part
-        val namePart = _formatter.fromString(recipe.name)
-        val descriptionPart = _formatter.fromString(recipe.description)
-        val servesPart = _formatter.fromInt(recipe.serves)
-        val difficultyIdPart = _formatter.fromInt(recipe.difficultyId)
-        val timeInMinutesPart = _formatter.fromInt(recipe.timeInMinutes)
-        val categoryIdPart = _formatter.fromInt(recipe.categoryId)
-        val occasionIdPart = _formatter.fromInt(recipe.occasionId)
-        val caloricityPart = _formatter.fromInt(recipe.caloricity)
 
-        // Convert lists using helper
-        val ingredientNames = _formatter.fromList("IngredientNames", recipe.ingredientNames)
-        val ingredientQuantities = _formatter.fromList("IngredientQuantities", recipe.ingredientQuantities)
-        val ingredientUnits = _formatter.fromList("IngredientUnits", recipe.ingredientUnits)
-        val steps = _formatter.fromList("Steps", recipe.steps)
+        return try {
 
-        // Convert image data if available
-        val imagePart = recipe.imageData.let {
-            _formatter.fromByteArray(it, "recipe_image.jpg")
-        } ?: MultipartBody.Part.createFormData("ImageData", "", "".toRequestBody("image/jpeg".toMediaTypeOrNull()))
+            val namePart = _formatter.fromString(recipe.name)
+            val descriptionPart = _formatter.fromString(recipe.description)
+            val servesPart = _formatter.fromInt(recipe.serves)
+            val difficultyIdPart = _formatter.fromInt(recipe.difficultyId)
+            val timeInMinutesPart = _formatter.fromInt(recipe.timeInMinutes)
+            val categoryIdPart = _formatter.fromInt(recipe.categoryId)
+            val occasionIdPart = _formatter.fromInt(recipe.occasionId)
+            val caloricityPart = _formatter.fromInt(recipe.caloricity)
+            val ingredientNames = _formatter.fromList("IngredientNames", recipe.ingredientNames)
+            val ingredientQuantities =
+                _formatter.fromList("IngredientQuantities", recipe.ingredientQuantities)
+            val ingredientUnits = _formatter.fromList("IngredientUnits", recipe.ingredientUnits)
+            val steps = _formatter.fromList("Steps", recipe.steps)
 
-        val response = _apiRepository.modifyRecipe(
-            recipeId,
-            namePart, descriptionPart, servesPart, difficultyIdPart, timeInMinutesPart,
-            categoryIdPart, occasionIdPart, caloricityPart,
-            ingredientNames, ingredientQuantities, ingredientUnits, steps,
-            imagePart
-        )
+            // Convert image data if available
+            val imagePart = recipe.imageData.let {
+                _formatter.fromByteArray(it, "recipe_image.jpg")
+            } ?: MultipartBody.Part.createFormData(
+                "ImageData",
+                "",
+                "".toRequestBody("image/jpeg".toMediaTypeOrNull())
+            )
 
-        val result = _apiResponseParser.wrapResponse(response)
+            val response = _apiRepository.modifyRecipe(
+                recipeId,
+                namePart, descriptionPart, servesPart, difficultyIdPart, timeInMinutesPart,
+                categoryIdPart, occasionIdPart, caloricityPart,
+                ingredientNames, ingredientQuantities, ingredientUnits, steps,
+                imagePart
+            )
 
-        return result
+            _apiResponseParser.wrapResponse(response)
+
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in modifyRecipe: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while modifying recipe: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+
     }
     // TODO: TEST
     // TODO: ADD EXCEPTION HANDLING
     suspend fun deleteRecipe(recipeId:Int):Result<Unit?>{
-        val response = _apiRepository.deleteRecipe(recipeId)
-        val result = _apiResponseParser.wrapResponse(response)
+        return try {
+            val response = _apiRepository.deleteRecipe(recipeId)
+            _apiResponseParser.wrapResponse(response)
 
-        return result
+        } catch (e: Exception) {
+            Log.e("RecipeService", "Exception in deleteRecipe: ${e.localizedMessage}", e)
+            Result.Error(
+                message = "An exception occurred while deleting recipe: ${e.localizedMessage}",
+                errorCode = INTERNAL_SERVICE_ERROR_CODE
+            )
+        }
+
     }
 
 
