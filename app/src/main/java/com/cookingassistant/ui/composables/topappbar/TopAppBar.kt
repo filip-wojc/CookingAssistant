@@ -173,9 +173,10 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                     label = { DrawerItemContent("Create recipe", Icons.AutoMirrored.Outlined.Note) },
                     selected = false,
                     onClick = {
-                        //Later change
                         topAppBarviewModel.onDeselctTool()
-                        topAppBarviewModel.navController.navigate("editor")
+                        if(topAppBarviewModel.navController.currentDestination?.route != "editor") {
+                            topAppBarviewModel.navController.navigate("editor")
+                        }
                     }
                 )
             }
@@ -282,7 +283,11 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                     actions = {
                         IconButton(onClick = {
                             topAppBarviewModel.onDeselctTool()
-                            topAppBarviewModel.navController.navigate("profile") },
+                            topAppBarviewModel.profileScreenViewModel.getUserProfilePicture()
+                            if(topAppBarviewModel.navController.currentDestination?.route != "profile") {
+                                topAppBarviewModel.navController.navigate("profile")
+                            }
+                            }
                         ) {
                             Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.onSecondaryContainer)
                         }

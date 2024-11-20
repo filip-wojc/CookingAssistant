@@ -69,7 +69,10 @@ fun ProfileScreen(navController: NavController,profileScreenViewModel: ProfileSc
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 profilButton(
-                    onClick = {},
+                    onClick = {
+                        navController.navigate("recipeList")
+                        profileScreenViewModel.loadFavoriteRecipes()
+                    },
                     text = "Favorite recipes",
                     modifier = Modifier
                         .height(80.dp)
@@ -86,9 +89,13 @@ fun ProfileScreen(navController: NavController,profileScreenViewModel: ProfileSc
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
-            profilButton(onClick = {navController.navigate("authorization")}, text = "Change Password", color = Color(0xFF9E72E1))
+            profilButton(onClick = {
+                navController.navigate("authorization")
+                },
+                text = "Change Password", color = Color(0xFF9E72E1))
             Spacer(modifier = Modifier.height(8.dp))
-            profilButton(onClick = {}, text = "Delete Account", color = Color(0xFFEC544C))
+            profilButton(onClick = {},
+                text = "Delete Account", color = Color(0xFFEC544C))
             Spacer(modifier = Modifier.height(8.dp))
             profilButton(onClick = {}, text = "Log out", color = Color(0xFF5F75E1))
         }

@@ -9,15 +9,16 @@ import androidx.lifecycle.viewModelScope
 import coil3.Bitmap
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.services.UserService
+import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
 import kotlinx.coroutines.launch
 import java.io.InputStream
 
-class ProfileScreenViewModel(private val userService : UserService) : ViewModel() {
+class ProfileScreenViewModel(private val userService : UserService, val recipeListViewModel: RecipesListViewModel) : ViewModel() {
     private var _userProfilePicture by mutableStateOf<Bitmap?>(null)
     var userProfilePicture by mutableStateOf<Bitmap?>(null)
 
-    init{
-        getUserProfilePicture()
+    fun loadFavoriteRecipes(){
+        recipeListViewModel.loadFavoriteRecipes()
     }
 
     fun getUserProfilePicture() {

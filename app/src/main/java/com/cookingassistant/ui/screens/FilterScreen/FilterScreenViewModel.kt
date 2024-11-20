@@ -4,9 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.cookingassistant.data.DTO.CategoriesGetDTO
-import com.cookingassistant.data.DTO.DifficultiesGetDTO
-import com.cookingassistant.data.DTO.OccasionsGetDTO
 import com.cookingassistant.data.DTO.RecipeQuery
 import com.cookingassistant.data.DTO.idNameClassType
 import com.cookingassistant.data.Models.Result
