@@ -65,7 +65,7 @@ interface ApiRepository{
     suspend fun getFavouriteRecipes():Response<RecipePageResponse>
 
     @GET("users/my-recipes")
-    suspend fun getUserRecipes():Response<List<RecipeSimpleGetDTO>>
+    suspend fun getUserRecipes():Response<RecipePageResponse>
 
     @GET("users/favourite-recipes/{recipeId}/is-favourite")
     suspend fun checkIfRecipeInFavourites(@Path("recipeId") recipeId: Int):Response<Boolean>

@@ -63,7 +63,7 @@ class UserService(private val _apiRepository: ApiRepository) {
         }
     }
 
-    suspend fun getUserRecipes(): Result<List<RecipeSimpleGetDTO>?>{
+    suspend fun getUserRecipes(): Result<RecipePageResponse?>{
         return try{
             val response = _apiRepository.getUserRecipes()
             _apiResponseParser.wrapResponse(response)
