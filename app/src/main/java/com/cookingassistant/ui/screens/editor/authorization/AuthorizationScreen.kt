@@ -50,7 +50,7 @@ fun AuthorizationScreen(navController: NavController, viewModel: AuthorizationSc
             val (exitButton, centerLayout) = createRefs()
 
             IconButton(
-                onClick = { navController.navigate("profile") },
+                onClick = { navController.popBackStack() },
                 modifier = Modifier
                     .constrainAs(exitButton) {
                         top.linkTo(parent.top)
@@ -125,7 +125,7 @@ fun AuthorizationScreen(navController: NavController, viewModel: AuthorizationSc
         if (showDialog) {
             Dialog(onDismissRequest = { showDialog = false
                 if (success) {
-                    navController.navigate("profile")
+                    navController.popBackStack()
                 }
             }
             ) {
