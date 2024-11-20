@@ -107,7 +107,7 @@ fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: Mut
                                 .padding(2.dp)
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.inverseSurface.copy(0.5f))
-                                .size(30.dp)
+                                .size(24.dp)
                                 .padding(4.dp)
 
                         )
@@ -120,7 +120,7 @@ fun Review(reviewGetDTO: ReviewGetDTO, userReviewDTO: ReviewGetDTO? ,images: Mut
                                 .padding(2.dp)
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.inverseSurface.copy(0.5f))
-                                .size(30.dp)
+                                .size(24.dp)
                                 .padding(4.dp)
 
                         )
