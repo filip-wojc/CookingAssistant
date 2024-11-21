@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,7 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -48,6 +49,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
+import com.cookingassistant.ui.screens.editor.State
 
 @Composable
 fun StepsPage(navController: NavController,viewModel: EditorScreenViewModel) {
@@ -57,22 +59,21 @@ fun StepsPage(navController: NavController,viewModel: EditorScreenViewModel) {
     Box(
         modifier = Modifier.fillMaxSize()
     ){
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize().background(MaterialTheme.colorScheme.background)
-                .padding(vertical = 50.dp, horizontal = 10.dp),
+                .padding(vertical = 50.dp, horizontal = 10.dp).align(Alignment.TopCenter),
         ) {
-            Text(
+            item{Text(
                 text = "Steps",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            StepsMaker(stepList = viewModel.steps,
+            )}
+            item{StepsMaker(stepList = viewModel.steps,
                 onStepListChange = { updatedList ->
                     viewModel.steps = updatedList
                 }
-            )
+            )}
         }
 
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
@@ -160,7 +161,7 @@ fun StepsMaker(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.9f)
+            .heightIn(min = if(LocalConfiguration.current.screenHeightDp.dp > 300.dp) LocalConfiguration.current.screenHeightDp.dp else 300.dp ,  max = LocalConfiguration.current.screenHeightDp.dp)
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
     ) {
         items(stepList.size) { index ->
@@ -328,9 +329,7 @@ fun AcceptedConfirmationDialog(navController: NavController, viewModel: EditorSc
         val quantity = viewModel.ingredients.map { it.quantity }
         val unit = viewModel.ingredients.map { it.unit }
 
-        val context = LocalContext.current
-        val bitmap = viewModel.imageConverter.uriToBitmap(context, viewModel.image!!)
-        val convertedImage = viewModel.imageConverter.bitmapToByteArray(bitmap!!)
+        val convertedImage = viewModel.imageConverter.bitmapToByteArray(viewModel.image!!)
 
         val recipe = RecipePostDTO(
             name = viewModel.name,
@@ -347,7 +346,15 @@ fun AcceptedConfirmationDialog(navController: NavController, viewModel: EditorSc
             ingredientUnits = unit,
             steps = viewModel.steps,
         )
-        viewModel.createRecipe(recipe)
+
+        if(viewModel.state == State.Create)
+        {
+            viewModel.createRecipe(recipe)
+        }
+        else if(viewModel.state == State.Modify)
+        {
+            viewModel.modifyRecipe(recipe)
+        }
 
         Dialog(onDismissRequest = {
             onDismiss()

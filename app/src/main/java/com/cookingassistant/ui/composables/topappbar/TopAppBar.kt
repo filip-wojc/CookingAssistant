@@ -175,6 +175,7 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                     onClick = {
                         topAppBarviewModel.onDeselctTool()
                         if(topAppBarviewModel.navController.currentDestination?.route != "editor") {
+                            topAppBarviewModel.editorScreenViewModel.emptyRecipe()
                             topAppBarviewModel.navController.navigate("editor")
                         }
                     }

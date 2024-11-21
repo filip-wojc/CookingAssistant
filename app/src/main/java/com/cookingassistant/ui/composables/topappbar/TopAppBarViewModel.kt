@@ -10,6 +10,7 @@ import com.cookingassistant.data.objects.ScreenControlManager
 import com.cookingassistant.data.objects.SearchEngine
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
+import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
 import com.cookingassistant.ui.screens.profile.ProfileScreenViewModel
 import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 import com.cookingassistant.util.VoiceToTextParser
@@ -25,7 +26,8 @@ class TopAppBarViewModel (
     val navController: NavHostController,
     val recipeListViewModel: RecipesListViewModel,
     val voiceToTextParser: VoiceToTextParser,
-    val profileScreenViewModel: ProfileScreenViewModel
+    val profileScreenViewModel: ProfileScreenViewModel,
+    val editorScreenViewModel: EditorScreenViewModel
 ) : ViewModel()
 {
     private val _quickSearchText = MutableStateFlow("")

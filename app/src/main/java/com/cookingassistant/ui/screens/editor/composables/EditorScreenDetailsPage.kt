@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -51,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -73,56 +74,52 @@ fun DetailsPage(viewModel: EditorScreenViewModel) {
     Box(
         modifier = Modifier.fillMaxSize()
     ){
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(vertical = 50.dp, horizontal = 10.dp),
+                .padding(vertical = 50.dp, horizontal = 10.dp).align(Alignment.TopCenter),
         ) {
-            Text1(
+            item{Text1(
                 text = "Calories",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            NumberPicker(viewModel.calories,0,99999){
+            )}
+            item{NumberPicker(viewModel.calories,0,99999){
                     selectedCalories ->
                 viewModel.calories = selectedCalories
-            }
-            Text1(
+            }}
+            item{Text1(
                 text = "Preparation time",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            TimePicker(
+            )}
+            item{TimePicker(
                 timeInMinutes = viewModel.time,
                 onTimeSelected = { selectedMinutes -> viewModel.time = selectedMinutes }
-            )
-            Text1(
+            )}
+            item{Text1(
                 text = "Serves",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            NumberPicker(viewModel.serves,0,200){
+            )}
+            item{NumberPicker(viewModel.serves,0,200){
                     selectedServes ->
                 viewModel.serves = selectedServes
-            }
-            Text1(
+            }}
+            item{Text1(
                 text = "Ingredients",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            IngredientPicker(
+            )}
+            item{IngredientPicker(
                 ingredientList = viewModel.ingredients,
                 ingredientOptions = ingredients,
                 unitOptions = units,
                 onIngredientListChange = { updatedList ->
                     viewModel.ingredients = updatedList
                 }
-            )
+            )}
         }
 
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
@@ -438,7 +435,7 @@ fun IngredientPicker(ingredientList: List<RecipeIngredientGetDTO>,
 
     LazyColumn(modifier = Modifier
         .fillMaxWidth()
-        .fillMaxHeight(0.9f)
+        .heightIn(min = if(LocalConfiguration.current.screenHeightDp.dp > 300.dp) LocalConfiguration.current.screenHeightDp.dp else 300.dp ,  max = LocalConfiguration.current.screenHeightDp.dp)
         .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))) {
         items(ingredientList.size) { index ->
             IngredientItem(

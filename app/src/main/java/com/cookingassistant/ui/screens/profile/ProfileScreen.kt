@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -45,15 +46,16 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.cookingassistant.R
+import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
 import com.cookingassistant.util.ImageConverter
 
 @Composable
-fun ProfileScreen(navController: NavController,profileScreenViewModel: ProfileScreenViewModel = viewModel()) {
-    Column(
+fun ProfileScreen(navController: NavController, recipeListViewModel: RecipesListViewModel, profileScreenViewModel: ProfileScreenViewModel = viewModel()) {
+    LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        profilImage(profileScreenViewModel)
-        Column(
+        item{profilImage(profileScreenViewModel)}
+        item{Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 20.dp, end = 20.dp),
@@ -71,7 +73,7 @@ fun ProfileScreen(navController: NavController,profileScreenViewModel: ProfileSc
                 profilButton(
                     onClick = {
                         navController.navigate("recipeList")
-                        profileScreenViewModel.loadFavoriteRecipes()
+                        recipeListViewModel.loadFavoriteRecipes()
                     },
                     text = "Favorite recipes",
                     modifier = Modifier
@@ -80,7 +82,10 @@ fun ProfileScreen(navController: NavController,profileScreenViewModel: ProfileSc
                     color = Color(0xFF5F75E1)
                 )
                 profilButton(
-                    onClick = {},
+                    onClick = {
+                        navController.navigate("recipeList")
+                        recipeListViewModel.loadOwnRecipes()
+                    },
                     text = "Own recipes",
                     modifier = Modifier
                         .height(80.dp)
@@ -98,7 +103,8 @@ fun ProfileScreen(navController: NavController,profileScreenViewModel: ProfileSc
                 text = "Delete Account", color = Color(0xFFEC544C))
             Spacer(modifier = Modifier.height(8.dp))
             profilButton(onClick = {}, text = "Log out", color = Color(0xFF5F75E1))
-        }
+            Spacer(modifier = Modifier.height(8.dp))
+        }}
     }
 }
 

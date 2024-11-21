@@ -1,7 +1,6 @@
 package com.cookingassistant.ui.screens.RecipesList
 
 import android.graphics.Bitmap
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,26 +23,34 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.AbsoluteCutCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -52,14 +59,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.cookingassistant.data.objects.TextFormatting
 import com.cookingassistant.ui.composables.RatingToStars
+import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
+import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 import kotlin.math.roundToInt
 
 
 @Composable
 fun RecipeList(
+    _navController : NavHostController,
+    _recipeScreenViewModel: RecipeScreenViewModel,
+    _editorScreenViewModel: EditorScreenViewModel,
     viewModel: RecipesListViewModel = viewModel()
 ) {
     val recipesPreviewList by viewModel.recipes.collectAsState()
@@ -68,6 +82,11 @@ fun RecipeList(
     val inputPageNumber by viewModel.inputPageNumber.collectAsState()
     val images by viewModel.recipeImages.collectAsState()
     val foundResult by viewModel.foundResults.collectAsState()
+    val currentState by viewModel.currentState.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    var isDialogDelete by remember { mutableStateOf(false) }
+    var tempIdDelete by remember { mutableStateOf(0) }
 
     val sizeAnim1 by animateFloatAsState(
         targetValue = if (foundResult == 1) 1f else 0f
@@ -75,7 +94,9 @@ fun RecipeList(
 
     if(foundResult == 2) {
         Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surfaceContainer),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -89,7 +110,9 @@ fun RecipeList(
         return
     } else if(foundResult == 0) {
         Column(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -103,7 +126,9 @@ fun RecipeList(
         return
     }
     Box(
-        Modifier.fillMaxWidth().fillMaxHeight(sizeAnim1)
+        Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(sizeAnim1)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -113,9 +138,14 @@ fun RecipeList(
                 .padding(bottom = 50.dp)
                 .wrapContentWidth(Alignment.CenterHorizontally)
         ) {
-            item { Spacer(Modifier.fillMaxWidth().padding(bottom = 50.dp)) }
+            item { Spacer(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 50.dp)) }
             item {
-                Row(modifier = Modifier.fillMaxWidth().height(50.dp), verticalAlignment = Alignment.CenterVertically,
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp), verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                     if(currentPage != 1) {
@@ -148,14 +178,19 @@ fun RecipeList(
                         fontSize = 20.sp,
                         text = "Page $currentPage out of $totalPages",
                         color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.fillMaxWidth().padding(end = 10.dp).weight(1f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 10.dp)
+                            .weight(1f)
                     )
 
                 }
 
             }
             item{
-                Row(modifier=Modifier.fillMaxWidth().padding(10.dp),
+                Row(modifier= Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextField(
@@ -179,9 +214,13 @@ fun RecipeList(
             }
             items(recipesPreviewList) {item ->
                 Column(
-                    Modifier.padding(10.dp)
+                    Modifier
+                        .padding(10.dp)
                         .height(500.dp)
-                        .clickable { viewModel.onRecipeClick(item.id) }
+                        .clickable {
+                            _recipeScreenViewModel.loadRecipe(item.id)
+                            _navController.navigate("recipeScreen")
+                        }
                         .background(MaterialTheme.colorScheme.background)
                         .wrapContentHeight(Alignment.CenterVertically)
                         .padding(bottom = 10.dp)
@@ -189,6 +228,51 @@ fun RecipeList(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
+                    //----------------------
+                    //Edit and Delete recipe
+                    //----------------------
+                    if (currentState == State.Own) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    _editorScreenViewModel.loadRecipe(item.id)
+                                    _navController.navigate("editor")
+                                },
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .background(Color(0xFF89CE91), shape = CircleShape)
+                                    .padding(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "edit recipe",
+                                    tint = Color.White
+                                )
+                            }
+
+                            IconButton(
+                                onClick = {
+                                    isDialogDelete = true
+                                    tempIdDelete = item.id
+                                },
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .background(Color(0xFFD23B3B), shape = CircleShape)
+                                    .padding(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = "delete recipe",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                    }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -223,7 +307,9 @@ fun RecipeList(
                                 fontSize = 15.sp
                             )
                             RatingToStars(item.ratings.roundToInt(),
-                                modifier = Modifier.size(16.dp).shadow(elevation = 4.dp),
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .shadow(elevation = 4.dp),
                                 color = MaterialTheme.colorScheme.onBackground
                             ) {
                                 Text(
@@ -256,7 +342,11 @@ fun RecipeList(
                             Image(
                                 contentScale = ContentScale.Crop,
                                 bitmap = rawBitmap.asImageBitmap(),
-                                modifier = Modifier.clip(RoundedCornerShape(10.dp)).weight(1f).fillMaxWidth().padding(10.dp),
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
                                 contentDescription = null,
                             )
                         }
@@ -265,7 +355,9 @@ fun RecipeList(
                 }
             }
             item {
-                Row(modifier = Modifier.fillMaxWidth().height(50.dp), verticalAlignment = Alignment.CenterVertically,
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp), verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(
@@ -273,7 +365,10 @@ fun RecipeList(
                         fontSize = 20.sp,
                         text = "Page $currentPage out of $totalPages",
                         color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.fillMaxWidth().padding(end = 10.dp).weight(1f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 10.dp)
+                            .weight(1f)
                     )
 
                     if(currentPage != 1) {
@@ -306,6 +401,47 @@ fun RecipeList(
             }
             item {
                 Spacer(modifier = Modifier.padding(bottom = 10.dp))
+            }
+        }
+    }
+
+    if (isDialogDelete) {
+        dialogDelete(
+            onConfirm = {
+                isDialogDelete = false
+                viewModel.deleteRecipe(tempIdDelete)
+            },
+            onDismiss = { isDialogDelete = false }
+        )
+    }
+
+    if(isLoading){
+        viewModel.resetLoading()
+        viewModel.loadOwnRecipes()
+    }
+}
+
+
+@Composable
+fun dialogDelete(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Are you sure you want to delete this recipe?")
+                Spacer(modifier = Modifier.height(16.dp))
+                Row {
+                    Button(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = onConfirm) {
+                        Text("Accept")
+                    }
+                }
             }
         }
     }

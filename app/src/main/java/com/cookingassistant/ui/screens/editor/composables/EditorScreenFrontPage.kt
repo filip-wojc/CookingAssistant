@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -56,13 +57,16 @@ import com.cookingassistant.data.DTO.DifficultiesGetDTO
 import com.cookingassistant.data.DTO.OccasionsGetDTO
 import com.cookingassistant.data.DTO.idNameClassType
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
+import com.cookingassistant.util.ImageConverter
 
 @Composable
 fun FrontPage(viewModel: EditorScreenViewModel) {
+    val imageConverter = ImageConverter()
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            viewModel.image = uri
+            viewModel.image = imageConverter.uriToBitmap(context,uri)
         }
     }
 
@@ -75,7 +79,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
     ){
         LazyColumn (
             modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).
-            padding(vertical = 50.dp, horizontal = 10.dp),
+            padding(vertical = 50.dp, horizontal = 10.dp).align(Alignment.TopCenter),
         ) {
             item { Text(text = "Name", fontSize = 18.sp, modifier = Modifier.padding(start = 16.dp)) }
             item { Spacer(modifier = Modifier.height(8.dp)) }

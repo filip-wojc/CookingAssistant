@@ -183,10 +183,11 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
     AppTheme(true) {
         val reviewViewModel = ReviewViewModel(reviewService)
         val rsvm = RecipeScreenViewModel(recipeService, userService, reviewService, navController, reviewViewModel)
-        val recipeListViewModel = RecipesListViewModel(recipeService,userService,rsvm,navController)
+        val esvm = EditorScreenViewModel(recipeService)
+        val recipeListViewModel = RecipesListViewModel(recipeService,userService)
         val homeScreenViewModel = HomeScreenViewModel(recipeService, rsvm, navController)
-        val pvm = ProfileScreenViewModel(userService,recipeListViewModel)
-        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser,pvm)
+        val pvm = ProfileScreenViewModel(userService)
+        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser,pvm,esvm)
         ScreenControlManager.topAppBarViewModel=topBarViewModel
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
@@ -214,7 +215,7 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
 
             composable("recipeList") {
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
-                    RecipeList(recipeListViewModel)
+                    RecipeList(navController,rsvm,esvm,recipeListViewModel)
                 }
             }
             composable("registration") {
@@ -227,14 +228,13 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
                 }
             }
             composable("editor"){
-                val esvm = EditorScreenViewModel(recipeService)
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
                     EditorScreen(navController, esvm)
                 }
             }
             composable("profile"){
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
-                    ProfileScreen(navController,pvm)
+                    ProfileScreen(navController,recipeListViewModel,pvm)
                 }
             }
             composable("authorization"){
