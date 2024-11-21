@@ -1,5 +1,17 @@
 package com.cookingassistant.data.repositories
-import com.cookingassistant.data.DTO.*
+import com.cookingassistant.data.DTO.CategoriesGetDTO
+import com.cookingassistant.data.DTO.DifficultiesGetDTO
+import com.cookingassistant.data.DTO.LoginRequest
+import com.cookingassistant.data.DTO.LoginResponse
+import com.cookingassistant.data.DTO.OccasionsGetDTO
+import com.cookingassistant.data.DTO.RecipeGetDTO
+import com.cookingassistant.data.DTO.RecipeNameDTO
+import com.cookingassistant.data.DTO.RecipePageResponse
+import com.cookingassistant.data.DTO.RegisterRequest
+import com.cookingassistant.data.DTO.ReviewGetDTO
+import com.cookingassistant.data.DTO.ReviewPostDTO
+import com.cookingassistant.data.DTO.UserDeleteRequest
+import com.cookingassistant.data.DTO.UserPasswordChangeDTO
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -62,10 +74,30 @@ interface ApiRepository{
     suspend fun removeRecipeFromFavourites(@Path("recipeId") recipeId:Int):Response<Unit>
 
     @GET("users/favourite-recipes")
-    suspend fun getFavouriteRecipes():Response<RecipePageResponse>
+    suspend fun getFavouriteRecipes(
+        @Query("SearchPhrase") SearchPhrase: String? = null,
+        @Query("IngredientsSearch") IngredientsSearch: List<String>?  = null,
+        @Query("SortBy") SortBy: String? = null, //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity
+        @Query("SortDirection") SortDirection: String? = null, // "Ascending" or "Descending"
+        @Query("FilterByDifficulty") FilterByDifficulty: String? = null,
+        @Query("FilterByCategoryName") FilterByCategoryName: String? = null,
+        @Query("FilterByOccasion") FilterByOccasion: String? = null,
+        @Query("PageNumber") PageNumber: Int? = null,
+        @Query("PageSize") PageSize: Int? = null
+    ):Response<RecipePageResponse>
 
     @GET("users/my-recipes")
-    suspend fun getUserRecipes():Response<RecipePageResponse>
+    suspend fun getUserRecipes(
+        @Query("SearchPhrase") SearchPhrase: String? = null,
+        @Query("IngredientsSearch") IngredientsSearch: List<String>?  = null,
+        @Query("SortBy") SortBy: String? = null, //  "Ratings", "TimeInMinutes", "Difficulty", "VoteCount", "Caloricity
+        @Query("SortDirection") SortDirection: String? = null, // "Ascending" or "Descending"
+        @Query("FilterByDifficulty") FilterByDifficulty: String? = null,
+        @Query("FilterByCategoryName") FilterByCategoryName: String? = null,
+        @Query("FilterByOccasion") FilterByOccasion: String? = null,
+        @Query("PageNumber") PageNumber: Int? = null,
+        @Query("PageSize") PageSize: Int? = null
+    ):Response<RecipePageResponse>
 
     @GET("users/favourite-recipes/{recipeId}/is-favourite")
     suspend fun checkIfRecipeInFavourites(@Path("recipeId") recipeId: Int):Response<Boolean>

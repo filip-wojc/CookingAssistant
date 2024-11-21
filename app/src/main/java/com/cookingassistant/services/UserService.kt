@@ -1,14 +1,13 @@
 package com.cookingassistant.services
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.cookingassistant.data.DTO.RecipePageResponse
-import com.cookingassistant.data.DTO.RecipeSimpleGetDTO
+import com.cookingassistant.data.DTO.RecipeQuery
 import com.cookingassistant.data.DTO.UserDeleteRequest
 import com.cookingassistant.data.DTO.UserPasswordChangeDTO
-import com.cookingassistant.data.repositories.ApiRepository
 import com.cookingassistant.data.Models.Result
+import com.cookingassistant.data.repositories.ApiRepository
 import com.cookingassistant.util.ApiResponseParser
 import com.cookingassistant.util.ImageConverter
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -50,9 +49,19 @@ class UserService(private val _apiRepository: ApiRepository) {
         }
     }
 
-    suspend fun getUserFavouriteRecipes(): Result<RecipePageResponse?> {
+    suspend fun getUserFavouriteRecipes(rq: RecipeQuery): Result<RecipePageResponse?> {
         return try {
-            val response = _apiRepository.getFavouriteRecipes()
+            val response = _apiRepository.getFavouriteRecipes(
+                SearchPhrase = rq.SearchPhrase,
+                IngredientsSearch = rq.Ingredients,
+                SortBy = rq.SortBy,
+                SortDirection = rq.SortDirection,
+                FilterByDifficulty = rq.Difficulty,
+                FilterByCategoryName = rq.Category,
+                FilterByOccasion = rq.Occasion,
+                PageNumber = rq.PageNumber,
+                PageSize = rq.PageSize
+            )
             _apiResponseParser.wrapResponse(response)
         } catch (e: Exception) {
             Log.e("UserService", "Exception in getUserFavouriteRecipes: ${e.localizedMessage}", e)
@@ -63,9 +72,19 @@ class UserService(private val _apiRepository: ApiRepository) {
         }
     }
 
-    suspend fun getUserRecipes(): Result<RecipePageResponse?>{
+    suspend fun getUserRecipes(rq: RecipeQuery): Result<RecipePageResponse?>{
         return try{
-            val response = _apiRepository.getUserRecipes()
+            val response = _apiRepository.getUserRecipes(
+                SearchPhrase = rq.SearchPhrase,
+                IngredientsSearch = rq.Ingredients,
+                SortBy = rq.SortBy,
+                SortDirection = rq.SortDirection,
+                FilterByDifficulty = rq.Difficulty,
+                FilterByCategoryName = rq.Category,
+                FilterByOccasion = rq.Occasion,
+                PageNumber = rq.PageNumber,
+                PageSize = rq.PageSize
+            )
             _apiResponseParser.wrapResponse(response)
         } catch (e: Exception){
             Log.e("UserService", "Exception in getUserRecipes: ${e.localizedMessage}", e)

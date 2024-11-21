@@ -40,8 +40,6 @@ class RecipesListViewModel(
     private val _inputPageNumber : MutableStateFlow<String> = MutableStateFlow("")
     private val _recipeImages = MutableStateFlow<MutableMap<Int,Bitmap?>>(mutableMapOf(0 to null))
 
-    private val tempRecipes : MutableStateFlow<List<RecipeSimpleGetDTO>> = MutableStateFlow(listOf())
-
     val currentState : StateFlow<State> = _currentState
     val recipeImages : StateFlow<MutableMap<Int,Bitmap?>> = _recipeImages
     val foundResults : StateFlow<Int> = _foundResults
@@ -86,27 +84,11 @@ class RecipesListViewModel(
             }
             else if(_currentState.value == State.Favourite)
             {
-                var temp = (pageNumber - 1) * 10 + 10
-                if(temp >= tempRecipes.value.size)
-                {
-                    temp = tempRecipes.value.size
-
-                }
-                _recipes.value = _recipes.value.subList((pageNumber - 1) * 10,temp)
-                _currentPage.value = pageNumber
-                loadImages()
+                loadFavoriteRecipes(_recipeQuery.value.copy(PageNumber = pageNumber))
             }
             else if(_currentState.value == State.Own)
             {
-                var temp = (pageNumber - 1) * 10 + 10
-                if(temp >= tempRecipes.value.size)
-                {
-                    temp = tempRecipes.value.size
-
-                }
-                _recipes.value = tempRecipes.value.subList((pageNumber - 1) * 10,temp)
-                _currentPage.value = pageNumber
-                loadImages()
+                loadOwnRecipes(_recipeQuery.value.copy(PageNumber = pageNumber))
             }
         }
     }
@@ -135,51 +117,22 @@ class RecipesListViewModel(
         _isLoading.value = false
     }
 
-    fun loadImages(){
-        viewModelScope.launch {
-            for (r in recipes.value) {
-                var bitmap : Bitmap? = null
-                try {
-                    val result = _service.getRecipeImageBitmap(r.id)
-                    if(result is Result.Success && result.data != null)
-                        bitmap=result.data
-                    else if(result is Result.Error){
-                        Log.e("_onLoadQuery", "Failed to get image: ${result.message}")
-                        // TODO : ADD DEFAULT IMAGE IF FAILED
-                        // bitmap = placeholder
-                    }
-                }
-                catch (e: Exception) {
-                    Log.e("RecipeListViewModelImages", e.message ?: "recipe id ${r.id} image couldn't be loaded", )
-                }
-                _recipeImages.value.apply { put(r.id, bitmap) }
-            }
-        }
-    }
-
-    fun loadOwnRecipes(){
+    fun loadOwnRecipes(rq : RecipeQuery = RecipeQuery()){
         _currentState.value = State.Own
         _foundResults.value = 0
+        _recipeQuery.value = rq
         viewModelScope.launch {
             var tag = "RecipeListViewModel"
             try {
-                val result = userService.getUserRecipes()
+                val result = userService.getUserRecipes(rq)
                 when(result) {
                     is Result.Success -> {
                         if(result.data != null) {
                             _recipeImages.value.apply { clear() }
                             _response.value = result.data
                             _totalPages.value = result.data.totalPages
-                            tempRecipes.value = result.data.items
-                            var temp = 10
-                            if(temp >= tempRecipes.value.size)
-                            {
-                                temp = tempRecipes.value.size
-
-                            }
-                            _recipes.value = tempRecipes.value.subList(0,temp)
-                            _currentPage.value = 1
-
+                            _recipes.value = result.data?.items ?: listOf()
+                            _currentPage.value = _recipeQuery.value.PageNumber
                             if(_recipes.value.size != 0) {
                                 _foundResults.value = 1
                             } else {
@@ -228,29 +181,22 @@ class RecipesListViewModel(
         }
     }
 
-    fun loadFavoriteRecipes(){
+    fun loadFavoriteRecipes(rq : RecipeQuery = RecipeQuery()){
         _currentState.value = State.Favourite
         _foundResults.value = 0
+        _recipeQuery.value = rq
         viewModelScope.launch {
             var tag = "RecipeListViewModel"
             try {
-                val result = userService.getUserFavouriteRecipes()
+                val result = userService.getUserFavouriteRecipes(rq)
                 when(result) {
                     is Result.Success -> {
                         if(result.data != null) {
                             _recipeImages.value.apply { clear() }
                             _response.value = result.data
                             _totalPages.value = result.data.totalPages
-                            tempRecipes.value = result.data.items
-                            var temp = 10
-                            if(temp >= tempRecipes.value.size)
-                            {
-                                temp = tempRecipes.value.size
-
-                            }
-                            _recipes.value = tempRecipes.value.subList(0,temp)
-                            _currentPage.value = 1
-
+                            _recipes.value = result.data?.items ?: listOf()
+                            _currentPage.value = _recipeQuery.value.PageNumber
                             if(_recipes.value.size != 0) {
                                 _foundResults.value = 1
                             } else {
