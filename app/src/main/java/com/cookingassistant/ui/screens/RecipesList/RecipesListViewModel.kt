@@ -92,7 +92,7 @@ class RecipesListViewModel(
                     temp = tempRecipes.value.size
 
                 }
-                _recipes.value.subList((pageNumber - 1) * 10,temp)
+                _recipes.value = _recipes.value.subList((pageNumber - 1) * 10,temp)
                 _currentPage.value = pageNumber
                 loadImages()
             }
