@@ -1,169 +1,68 @@
 package com.cookingassistant.ui.screens.home
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.cookingassistant.data.DTO.RecipeGetDTO
 import com.cookingassistant.services.RecipeService
 import com.cookingassistant.services.UserService
 import com.cookingassistant.data.Models.Result
+import com.cookingassistant.ui.screens.recipescreen.RecipeScreenViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HomeScreenViewModel(private val _recipeService: RecipeService,private val _userService: UserService):ViewModel() {
-    // TODO: DELETE THIS WHEN FINISHED TESTING
+class HomeScreenViewModel(private val _recipeService: RecipeService,
+                          private val _recipeScreenViewModel: RecipeScreenViewModel,
+                          private val _navController : NavHostController
+):ViewModel() {
+    val recipePlaceHolder = RecipeGetDTO(1,"","","",4f,
+        2,2,"",2,"","",
+        1, listOf(), listOf()
+    )
+
     private val _recipeImage = MutableStateFlow<Bitmap?>(null)
-    private val _userProfileImage = MutableStateFlow<Bitmap?>(null)
     val recipeImage: StateFlow<Bitmap?> get() = _recipeImage
-    val userProfileImage: StateFlow<Bitmap?> get() = _userProfileImage
-/*
-    fun getAllIngredientsList(){
-        viewModelScope.launch {
-            try {
-                // Call the suspend function from within a coroutine
-                val response = _recipeService.getAllIngredientsList()
-                // Handle the response here (e.g., update UI state)
-                if (response.isSuccessful) {
-                    val ingredientsList = response.body()
-                    // Handle nutrients list (for example, store it in a LiveData)
-                } else {
-                    // Handle error
-                }
-            } catch (e: Exception) {
-                // Handle any exception that occurs during the network call
-            }
-        }
-    }
-    */
-// TODO : DELETE - test only
+
+    private val _recipe = MutableStateFlow<RecipeGetDTO>(recipePlaceHolder)
+    val recipe : StateFlow<RecipeGetDTO> = _recipe
+
+
     fun fetchRecipeImage(recipeId:Int){
         viewModelScope.launch {
-            val result:Result<Bitmap?> = _recipeService.getRecipeImageBitmap(recipeId)
+            val result: Result<Bitmap?> = _recipeService.getRecipeImageBitmap(recipeId)
 
-            if (result is Result.Success && result.data != null){
-                val bitmap:Bitmap = result.data
+            if (result is Result.Success && result.data != null) {
+                val bitmap: Bitmap = result.data
                 _recipeImage.value = bitmap
-            }
-
-            else if(result is Result.Error){
+            } else if (result is Result.Error) {
                 _recipeImage.value = null
-        }
-        }
-    }
-
-    /*
-    fun getRecipeDetails(recipeId: Int){
-        viewModelScope.launch {
-            try {
-                // Call the suspend function from within a coroutine
-                val response = _recipeService.getRecipeDetails(recipeId)
-                // Handle the response here (e.g., update UI state)
-                if (response.isSuccessful) {
-                    val recipe = response.body()
-                    if(recipe != null){
-                        // TODO: ADD LOGIC AND DELETE TESTING
-                        printRecipeDetails(recipe)
-                    }else{
-                        println("No details available")
-                    }
-                    // TODO : ADD HANDLING
-                    // Handle nutrients list
-                } else {
-                    // Handle error
-                }
-            } catch (e: Exception) {
-                // Handle any exception that occurs during the network call
             }
         }
     }
-*/
 
-/*
-    // Test recipe post
-    fun postRecipeWithImage(){
-        // /storage/emulated/0/Download/ja.jpg
-
+    fun fetchDailyRecipe() {
         viewModelScope.launch {
-            try {
-                val imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/ja.jpg"
-                val imageConverter = ImageConverter()
-                val imageByteArray = imageConverter.convertImageToByteArray(imagePath)
-                val testRecipe = RecipePostDTO(
-                    name = "Test Recipe",
-                    description = "A delicious test recipe",
-                    imageData = imageByteArray,
-                    serves = 4,
-                    difficulty = "Medium",
-                    timeInMinutes = 45,
-                    categoryId = 1,
-                    ingredientNames = listOf("Flour", "Eggs", "Milk"),
-                    ingredientQuantities = listOf("200", "3", "250"),
-                    ingredientUnits = listOf("g", "pcs", "ml"),
-                    occasionId = 1,
-                    caloricity = 330,
-                    steps = listOf("Mix the ingredients", "Bake for 30 minutes", "Let cool before serving"),
-                )
-                // Call the suspend function from within a coroutine
-                val response = _recipeService.addRecipe(testRecipe,imagePath)
-                // Handle the response here (e.g., update UI state)
-                if (response.isSuccessful) {
-                    println("Poggers")
+            val result = _recipeService.getDailyRecipe()
 
-                    // TODO : ADD HANDLING
-                    // Handle nutrients list
-                } else {
-                    println("NOT POGGERS")
-                    // Handle error
-                }
-            } catch (e: Exception) {
-                println("EXception:${e.message}")
+            if (result is Result.Success && result.data != null) {
+                val recipe: RecipeGetDTO = result.data
+                Log.d("recipe", recipe.id.toString())
+                _recipe.value = recipe
+                fetchRecipeImage(_recipe.value.id)
+            } else if (result is Result.Error) {
+                Log.e("recipe fetch", result.message)
             }
         }
     }
-*/
-// TODO : REMOVE AFTER FINISHED TESTING
-    private fun printRecipeDetails(recipe: RecipeGetDTO?) {
-        if (recipe != null) {
-            println("Recipe Details:")
-            println("ID: ${recipe.id}")
-            println("Name: ${recipe.name}")
-            println("Description: ${recipe.description}")
-            println("Author: ${recipe.authorName}")
-            println("Ratings: ${recipe.ratings}")
-            println("Time In Minutes: ${recipe.timeInMinutes}")
-            println("Serves: ${recipe.serves}")
-            println("Difficulty: ${recipe.difficultyName ?: "N/A"}")
-            println("Vote Count: ${recipe.voteCount}")
-            println("Category Name: ${recipe.categoryName}")
 
-            // Print Ingredients
-            println("\nIngredients:")
-            recipe.ingredients?.forEachIndexed { index, ingredient ->
-                println("Ingredient #${index + 1}")
-                println("\tName: ${ingredient.ingredientName ?: "N/A"}")
-                println("\tQuantity: ${ingredient.quantity ?: "N/A"}")
-                println("\tUnit: ${ingredient.unit ?: "N/A"}")
-            } ?: println("No Ingredients")
 
-            // Print Nutrients
-//            println("\nNutrients:")
-//            recipe.nutrients?.forEachIndexed { index, nutrient ->
-//                println("Nutrient #${index + 1}")
-//                println("\tName: ${nutrient.nutrientName ?: "N/A"}")
-//                println("\tQuantity: ${nutrient.quantity ?: "N/A"}")
-//                println("\tUnit: ${nutrient.unit ?: "N/A"}")
-//            } ?: println("No Nutrients")
 
-            // Print Steps
-            println("\nSteps:")
-            recipe.steps?.forEachIndexed { index, step ->
-                println("Step #${step.stepNumber}")
-                println("\tDescription: ${step.description ?: "N/A"}")
-            } ?: println("No Steps")
-
-        } else {
-            println("Recipe is null")
-        }
+    fun onRecipeClick(recipeId : Int) {
+        _recipeScreenViewModel.loadRecipe(recipeId)
+        _navController.navigate("recipeScreen")
     }
 
 }

@@ -184,6 +184,7 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
         val reviewViewModel = ReviewViewModel(reviewService)
         val rsvm = RecipeScreenViewModel(recipeService, userService, reviewService, navController, reviewViewModel)
         val recipeListViewModel = RecipesListViewModel(recipeService,userService,rsvm,navController)
+        val homeScreenViewModel = HomeScreenViewModel(recipeService, rsvm, navController)
         val pvm = ProfileScreenViewModel(userService,recipeListViewModel)
         val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser,pvm)
         ScreenControlManager.topAppBarViewModel=topBarViewModel
@@ -196,9 +197,8 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
                 LoginScreen(navController, loginViewModel)
             }
             composable("home") {
-                val homeViewModel = HomeScreenViewModel(recipeService, userService)
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
-                    HomeScreen(navController, homeViewModel)
+                    HomeScreen(homeScreenViewModel)
                 }
             }
             composable("test") {//For testing purposes
