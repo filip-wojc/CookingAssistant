@@ -1,5 +1,6 @@
 package com.cookingassistant.ui.screens.home
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Environment
 import androidx.compose.foundation.Image
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 
 
@@ -59,6 +61,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel) {
 
     val recipeImage by homeScreenViewModel.recipeImage.collectAsState()
     val recipe by homeScreenViewModel.recipe.collectAsState()
+    val isLoading by homeScreenViewModel.isLoading.collectAsState()
 
         Column(modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -70,88 +73,96 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel) {
                 fontSize = 40.sp,
                 )
             Spacer(Modifier.height(20.dp))
-            Column(
-                Modifier.padding(10.dp)
-                    .height(500.dp)
-                    .clickable { homeScreenViewModel.onRecipeClick(recipe.id) }
-                    .background(MaterialTheme.colorScheme.background)
-                    .wrapContentHeight(Alignment.CenterVertically)
-                    .padding(bottom = 10.dp)
-                ,
-                horizontalAlignment = Alignment.CenterHorizontally
+            if (isLoading) {
+                Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.Top){
+                    CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+                }
+            }
+            else {
+                Column(
+                    Modifier.padding(10.dp)
+                        .height(500.dp)
+                        .clickable { homeScreenViewModel.onRecipeClick(recipe.id) }
+                        .background(MaterialTheme.colorScheme.background)
+                        .wrapContentHeight(Alignment.CenterVertically)
+                        .padding(bottom = 10.dp)
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally
 
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(all = 10.dp)
-                        .height(100.dp)
                 ) {
-                    Text(
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        text = recipe.name,
-                        fontWeight = FontWeight(500),
-                        fontSize = 18.sp,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f)
-                            .wrapContentHeight(align = Alignment.CenterVertically),
-                        textAlign = TextAlign.Center,
-                        overflow = TextOverflow.Ellipsis,
-
-                        )
-                    Column(
-                        horizontalAlignment = Alignment.Start,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 10.dp)
-                            .align(Alignment.CenterVertically)
+                            .fillMaxWidth()
+                            .padding(all = 10.dp)
+                            .height(100.dp)
                     ) {
                         Text(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            text = "Difficulty: ${recipe.difficultyName}",
-                            modifier = Modifier.verticalScroll(rememberScrollState()),
-                            fontSize = 15.sp
-                        )
-                        RatingToStars(recipe.ratings.roundToInt(),
-                            modifier = Modifier.size(16.dp).shadow(elevation = 4.dp),
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            text = recipe.name,
+                            fontWeight = FontWeight(500),
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f)
+                                .wrapContentHeight(align = Alignment.CenterVertically),
+                            textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis,
+
+                            )
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 10.dp)
+                                .align(Alignment.CenterVertically)
                         ) {
                             Text(
                                 color = MaterialTheme.colorScheme.onBackground,
-                                text = "Rating:",
+                                text = "Difficulty: ${recipe.difficultyName}",
+                                modifier = Modifier.verticalScroll(rememberScrollState()),
+                                fontSize = 15.sp
+                            )
+                            RatingToStars(recipe.ratings.roundToInt(),
+                                modifier = Modifier.size(16.dp).shadow(elevation = 4.dp),
+                                color = MaterialTheme.colorScheme.onBackground
+                            ) {
+                                Text(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    text = "Rating:",
+                                    fontSize = 15.sp
+                                )
+                            }
+                            Text(
+                                color = MaterialTheme.colorScheme.onBackground,
+                                text = "Vote count: ${recipe.voteCount}",
+                                modifier = Modifier.verticalScroll(rememberScrollState()),
                                 fontSize = 15.sp
                             )
                         }
-                        Text(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            text = "Vote count: ${recipe.voteCount}",
-                            modifier = Modifier.verticalScroll(rememberScrollState()),
-                            fontSize = 15.sp
+                    }
+                    Text(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        text = "Category: ${recipe.categoryName}, Occasion: ${recipe.occasionName}",
+                        fontSize = 15.sp,
+                    )
+                    Text(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        text = "Calories: ${recipe.caloricity}, Completion time: ${TextFormatting.formatTime(recipe.timeInMinutes)}",
+                        fontSize = 15.sp
+                    )
+                    if (recipeImage != null) {
+                        Image(
+                            contentScale = ContentScale.Crop,
+                            bitmap = recipeImage!!.asImageBitmap(),
+                            modifier = Modifier.clip(RoundedCornerShape(10.dp)).weight(1f).fillMaxWidth().padding(10.dp),
+                            contentDescription = null,
                         )
                     }
-                }
-                Text(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    text = "Category: ${recipe.categoryName}, Occasion: ${recipe.occasionName}",
-                    fontSize = 15.sp,
-                )
-                Text(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    text = "Calories: ${recipe.caloricity}, Completion time: ${TextFormatting.formatTime(recipe.timeInMinutes)}",
-                    fontSize = 15.sp
-                )
-                if (recipeImage != null) {
-                    Image(
-                        contentScale = ContentScale.Crop,
-                        bitmap = recipeImage!!.asImageBitmap(),
-                        modifier = Modifier.clip(RoundedCornerShape(10.dp)).weight(1f).fillMaxWidth().padding(10.dp),
-                        contentDescription = null,
-                    )
-                }
 
+                }
             }
+
         }
     }
 

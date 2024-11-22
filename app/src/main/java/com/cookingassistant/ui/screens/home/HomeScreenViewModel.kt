@@ -29,6 +29,9 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,
     private val _recipe = MutableStateFlow<RecipeGetDTO>(recipePlaceHolder)
     val recipe : StateFlow<RecipeGetDTO> = _recipe
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
 
     fun fetchRecipeImage(recipeId:Int){
         viewModelScope.launch {
@@ -45,6 +48,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,
 
     fun fetchDailyRecipe() {
         viewModelScope.launch {
+            _isLoading.value = true
             val result = _recipeService.getDailyRecipe()
 
             if (result is Result.Success && result.data != null) {
@@ -55,6 +59,7 @@ class HomeScreenViewModel(private val _recipeService: RecipeService,
             } else if (result is Result.Error) {
                 Log.e("recipe fetch", result.message)
             }
+            _isLoading.value = false
         }
     }
 
