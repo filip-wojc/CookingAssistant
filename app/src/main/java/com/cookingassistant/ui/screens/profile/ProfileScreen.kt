@@ -52,12 +52,13 @@ import com.cookingassistant.util.ImageConverter
 @Composable
 fun ProfileScreen(navController: NavController, recipeListViewModel: RecipesListViewModel, profileScreenViewModel: ProfileScreenViewModel = viewModel()) {
     LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize().padding(bottom = 60.dp)
     ) {
         item{profilImage(profileScreenViewModel)}
         item{Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -146,7 +147,7 @@ fun profilImage(profileScreenViewModel: ProfileScreenViewModel) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp)
+                .height(200.dp)
                 .background(
                     brush = Brush.linearGradient(
                         0f to Color(0xFF6200EE),
