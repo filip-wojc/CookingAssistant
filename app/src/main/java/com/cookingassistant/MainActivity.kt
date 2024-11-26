@@ -186,15 +186,17 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
         val esvm = EditorScreenViewModel(recipeService)
         val recipeListViewModel = RecipesListViewModel(recipeService,userService)
         val homeScreenViewModel = HomeScreenViewModel(recipeService, rsvm, navController)
-        val pvm = ProfileScreenViewModel(userService)
+        val pvm = ProfileScreenViewModel(userService,tokenRepository)
         val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser,pvm,esvm)
+
+        val loginViewModel = LoginViewModel(authService, tokenRepository)
+
         ScreenControlManager.topAppBarViewModel=topBarViewModel
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 // create viewModel and inject service
                 // TODO: Implement factories later
                 //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
-                val loginViewModel = LoginViewModel(authService, tokenRepository)
                 LoginScreen(navController, loginViewModel)
             }
             composable("home") {
@@ -234,7 +236,7 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
             }
             composable("profile"){
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
-                    ProfileScreen(navController,recipeListViewModel,pvm)
+                    ProfileScreen(navController,recipeListViewModel,pvm,loginViewModel)
                 }
             }
             composable("authorization"){

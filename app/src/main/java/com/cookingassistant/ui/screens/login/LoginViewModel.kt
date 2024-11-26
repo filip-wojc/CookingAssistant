@@ -3,11 +3,11 @@ package com.cookingassistant.ui.screens.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cookingassistant.data.repositories.TokenRepository
-import com.cookingassistant.services.AuthService
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.data.objects.ScreenControlManager
 import com.cookingassistant.data.objects.SearchEngine
+import com.cookingassistant.data.repositories.TokenRepository
+import com.cookingassistant.services.AuthService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,8 +17,8 @@ class LoginViewModel(private val _service: AuthService, private val tokenReposit
     private val _ingredientsList = MutableStateFlow<List<Pair<String,Int>>?>(null)
     val ingredientsList:StateFlow<List<Pair<String,Int>>?> = _ingredientsList
     // Hold login and password input
-    private val _username = MutableStateFlow("")
-    val username: StateFlow<String> = _username
+    private val _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email
 
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password
@@ -41,8 +41,12 @@ class LoginViewModel(private val _service: AuthService, private val tokenReposit
     private val _isDialogVisible = MutableStateFlow(false)
     val isDialogVisible: StateFlow<Boolean> = _isDialogVisible
 
-    fun onUsernameChanged(newUsername: String) {
-        _username.value = newUsername
+    //username
+    private val _username = MutableStateFlow("")
+    val username: StateFlow<String> = _username
+
+    fun onEmailChanged(newUsername: String) {
+        _email.value = newUsername
     }
 
     fun onPasswordChanged(newPassword: String) {
@@ -57,13 +61,16 @@ class LoginViewModel(private val _service: AuthService, private val tokenReposit
         viewModelScope.launch {
             _isLoading.value = true // Start loading
             try {
-                val result = _service.logInUser(username.value, password.value)
+                val result = _service.logInUser(email.value, password.value)
 
                 if (result is Result.Success) {
                     val token = result.data!!.token
                     tokenRepository.saveToken(token)
                     _isLoginSuccessful.value = true
                     _loginResult.value = "Login successful" // Update with token if successful
+
+                    _email.value = result.data.email
+                    _username.value = result.data.username
 
                     ScreenControlManager.hasLoggedIn = true
                     if(SearchEngine.loadedApiResources < 2) {

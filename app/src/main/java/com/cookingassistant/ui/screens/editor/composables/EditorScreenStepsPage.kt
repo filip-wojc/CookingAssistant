@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,7 +40,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -56,20 +57,35 @@ fun StepsPage(navController: NavController,viewModel: EditorScreenViewModel) {
     var showAcceptDialog by remember { mutableStateOf(false) }
     var showAcceptedConfirmationDialog by remember { mutableStateOf(false) }
 
+    var firstLazyColumnBottom by remember { mutableStateOf(0f) }
+    var secondLazyColumnTop by remember { mutableStateOf(0f) }
+    var secondLazyColumnHeight by remember { mutableStateOf(0f) }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ){
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize().background(MaterialTheme.colorScheme.background)
-                .padding(vertical = 50.dp, horizontal = 10.dp).align(Alignment.TopCenter),
+                .padding(vertical = 50.dp, horizontal = 10.dp).align(Alignment.TopCenter).
+                onGloballyPositioned { coordinates ->
+                    val position = coordinates.positionInRoot().y + coordinates.size.height
+                    firstLazyColumnBottom = position
+                }
+            ,
         ) {
             item{Text(
                 text = "Steps",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
             )}
-            item{StepsMaker(stepList = viewModel.steps,
+            item{StepsMaker(
+                onPositionChanged = { position ->
+                    secondLazyColumnTop = position
+                    secondLazyColumnHeight = firstLazyColumnBottom - secondLazyColumnTop
+                },
+                availableHeight = secondLazyColumnHeight,
+                stepList = viewModel.steps,
                 onStepListChange = { updatedList ->
                     viewModel.steps = updatedList
                 }
@@ -138,11 +154,17 @@ fun StepsPage(navController: NavController,viewModel: EditorScreenViewModel) {
 
 @Composable
 fun StepsMaker(
+    onPositionChanged: (Float) -> Unit,
+    availableHeight: Float,
     stepList: List<String>,
     onStepListChange: (List<String>) -> Unit
 ) {
+    val density = LocalDensity.current.density
+
     var showDialog by remember { mutableStateOf(false) }
     var editingIndex by remember { mutableStateOf<Int?>(null) }
+
+
 
     Button(
         onClick = {
@@ -161,8 +183,12 @@ fun StepsMaker(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = if(LocalConfiguration.current.screenHeightDp.dp > 300.dp) LocalConfiguration.current.screenHeightDp.dp else 300.dp ,  max = LocalConfiguration.current.screenHeightDp.dp)
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+            .height(if((availableHeight / density).dp > 300.dp) (availableHeight / density).dp else 300.dp)
+            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp)).
+            onGloballyPositioned { coordinates ->
+                val position = coordinates.positionInRoot().y
+                onPositionChanged(position)
+            }
     ) {
         items(stepList.size) { index ->
             StepItem(
