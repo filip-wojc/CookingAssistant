@@ -107,4 +107,11 @@ class LoginViewModel(private val _service: AuthService, private val tokenReposit
     fun hideResultDialog() {
         _isDialogVisible.value = false
     }
+
+    fun clearInfoUser(){
+        _email.value = ""
+        _password.value = ""
+        _username.value = ""
+        _isLoginSuccessful.value = false
+    }
 }

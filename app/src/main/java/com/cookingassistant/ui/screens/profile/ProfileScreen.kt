@@ -130,6 +130,7 @@ fun ProfileScreen(navController: NavController, recipeListViewModel: RecipesList
             Spacer(modifier = Modifier.height(8.dp))
             profilButton(onClick = {
                 profileScreenViewModel.resetToken()
+                loginViewModel.clearInfoUser()
                 navController.popBackStack("login", inclusive = false)
             }, text = "Log out", color = Color(0xFF5F75E1))
             Spacer(modifier = Modifier.height(8.dp))
@@ -176,6 +177,7 @@ fun ProfileScreen(navController: NavController, recipeListViewModel: RecipesList
                 showResultDialog = false
                 if(success){
                     profileScreenViewModel.resetToken()
+                    loginViewModel.clearInfoUser()
                     navController.popBackStack("login", inclusive = false)
                 }
             }
