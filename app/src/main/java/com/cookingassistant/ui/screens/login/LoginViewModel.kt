@@ -64,13 +64,14 @@ class LoginViewModel(private val _service: AuthService, private val tokenReposit
                 val result = _service.logInUser(email.value, password.value)
 
                 if (result is Result.Success) {
-                    val token = result.data!!.token
-                    tokenRepository.saveToken(token)
-                    _isLoginSuccessful.value = true
-                    _loginResult.value = "Login successful" // Update with token if successful
-
-                    _email.value = result.data.email
-                    _username.value = result.data.username
+                    if(result.data != null) {
+                        val token = result.data.token
+                        tokenRepository.saveToken(token)
+                        _isLoginSuccessful.value = true
+                        _loginResult.value = "Login successful" // Update with token if successful
+                        _email.value = result.data.email
+                        _username.value = result.data.userName
+                    }
 
                     ScreenControlManager.hasLoggedIn = true
                     if(SearchEngine.loadedApiResources < 2) {
@@ -87,9 +88,11 @@ class LoginViewModel(private val _service: AuthService, private val tokenReposit
                         }
                     }
                 }
+
             } catch (e: Exception) {
                 _loginResult.value = "No access to server" // Handle exceptions
                 _isLoginSuccessful.value = false
+                Log.d("LogInViewModel", e.message.toString())
             } finally {
                 _isLoading.value = false // Stop loading
                 _isDialogVisible.value = true
