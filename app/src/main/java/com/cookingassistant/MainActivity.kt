@@ -54,7 +54,6 @@ import com.cookingassistant.ui.screens.registration.RegistrationViewModel
 import com.cookingassistant.ui.screens.reviews.ReviewList
 import com.cookingassistant.ui.screens.reviews.ReviewViewModel
 import com.cookingassistant.util.VoiceToTextParser
-import kotlinx.coroutines.runBlocking
 import java.io.File
 
 
@@ -156,14 +155,6 @@ class MainActivity : ComponentActivity() {
             permissionsToRequest.add(Manifest.permission.RECORD_AUDIO)
         }
 
-        // Poproś o brakujące uprawnienia
-        if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(
-                this,
-                permissionsToRequest.toTypedArray(),
-                101
-            )
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) ==
@@ -200,6 +191,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        // Poproś o brakujące uprawnienia
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                101
+            )
+        }
     }
 }
 
@@ -225,16 +224,18 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
         val esvm = EditorScreenViewModel(recipeService)
         val recipeListViewModel = RecipesListViewModel(recipeService,userService)
         val homeScreenViewModel = HomeScreenViewModel(recipeService, rsvm, navController)
-        val pvm = ProfileScreenViewModel(userService)
+        val pvm = ProfileScreenViewModel(userService,tokenRepository)
         val timerToolViewModel = TimerViewModel(LocalContext.current)
-        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser, pvm,esvm, timerToolViewModel)
+        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser,pvm,esvm,timerToolViewModel)
+
+        val loginViewModel = LoginViewModel(authService, tokenRepository)
+
         ScreenControlManager.topAppBarViewModel=topBarViewModel
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 // create viewModel and inject service
                 // TODO: Implement factories later
                 //val loginViewModel: LoginViewModel = ViewModelProvider(LoginViewModelFactory(userService))
-                val loginViewModel = LoginViewModel(authService, tokenRepository)
                 LoginScreen(navController, loginViewModel)
             }
             composable("home") {
@@ -280,7 +281,7 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
             }
             composable("profile"){
                 TopAppBar(topAppBarviewModel = topBarViewModel) {
-                    ProfileScreen(navController,recipeListViewModel,pvm)
+                    ProfileScreen(navController,recipeListViewModel,pvm,loginViewModel)
                 }
             }
             composable("authorization"){
