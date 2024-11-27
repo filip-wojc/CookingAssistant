@@ -23,9 +23,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TimerTool(viewModel: TimerViewModel = TimerViewModel(LocalContext.current)) {
     var inputMinutes by remember { mutableStateOf("") }
-
     val isRunning = viewModel.isTimerRunning
-    val timeRemaining = viewModel.timeRemainingInSeconds
+    val timeRemaining by viewModel.timeRemainingInSeconds.collectAsState()
 
     Column(
         modifier = Modifier
@@ -37,8 +36,15 @@ fun TimerTool(viewModel: TimerViewModel = TimerViewModel(LocalContext.current)) 
     ) {
 
         // Display remaining time in minutes and seconds
-        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.4f).clip(RoundedCornerShape(50)).clickable { viewModel.toggleTimer() }) {
-            Box(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh).fillMaxSize().align(Alignment.Center))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.4f)
+            .clip(RoundedCornerShape(50))
+            .clickable { viewModel.toggleTimer() }) {
+            Box(modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                .fillMaxSize()
+                .align(Alignment.Center))
             Text(
                 text = "${timeRemaining / 60}m : ${timeRemaining % 60}s",
                 style = MaterialTheme.typography.bodyLarge,
@@ -47,7 +53,9 @@ fun TimerTool(viewModel: TimerViewModel = TimerViewModel(LocalContext.current)) 
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 50.sp
             )
-            Icon(imageVector = if(isRunning) Icons.Filled.Pause else Icons.Filled.PlayArrow, contentDescription = "play", modifier = Modifier.align(Alignment.BottomCenter).size(60.dp), tint = MaterialTheme.colorScheme.primary)
+            Icon(imageVector = if(isRunning) Icons.Filled.Pause else Icons.Filled.PlayArrow, contentDescription = "play", modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .size(60.dp), tint = MaterialTheme.colorScheme.primary)
         }
 
         // Numeric TextField to input minutes
@@ -72,7 +80,12 @@ fun TimerTool(viewModel: TimerViewModel = TimerViewModel(LocalContext.current)) 
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-
+        Button(
+            onClick = { viewModel.setTimerFromInput(inputMinutes) },
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+        ) {
+            Text("Start", color = MaterialTheme.colorScheme.onPrimaryContainer)
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         // Start/Pause Button

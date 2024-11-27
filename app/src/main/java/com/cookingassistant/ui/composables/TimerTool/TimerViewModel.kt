@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,7 +24,7 @@ import kotlinx.coroutines.launch
 class TimerViewModel(context: Context) : ViewModel() {
     // Timer state
     var timeInMinutes by mutableStateOf(0)
-    var timeRemainingInSeconds by mutableStateOf(0)
+    val timeRemainingInSeconds = MutableStateFlow<Int>(0)
     var isTimerRunning by mutableStateOf(false)
     val context : MutableStateFlow<Context?> = MutableStateFlow<Context?>(context)
 
@@ -35,7 +36,8 @@ class TimerViewModel(context: Context) : ViewModel() {
         if (isTimerRunning) {
             stopTimer()
         } else {
-            startTimer()
+            if(timeRemainingInSeconds.value > 0)
+                startTimer()
         }
     }
 
@@ -95,15 +97,15 @@ class TimerViewModel(context: Context) : ViewModel() {
         if(isTimerRunning) return
         if (timeInMinutes <= 0) return // Do nothing if time is not set
         isTimerRunning = true
-
+        job?.cancel()
         job = timerScope.launch {
-            while (isTimerRunning && timeRemainingInSeconds > 0) {
+            while (isTimerRunning && timeRemainingInSeconds.value > 0) {
                 delay(1000)
                 if (isActive && isTimerRunning) {
-                    timeRemainingInSeconds -= 1
+                    timeRemainingInSeconds.value -= 1
                 }
             }
-            if(isTimerRunning && timeRemainingInSeconds <= 0) {
+            if(isTimerRunning && timeRemainingInSeconds.value <= 0) {
                 createNotification(context.value)
                 job?.cancel()
             }
@@ -121,8 +123,8 @@ class TimerViewModel(context: Context) : ViewModel() {
         job?.cancel()
         timeInMinutes = minutes.toIntOrNull() ?: 0
         if (timeInMinutes > 0) {
-            timeRemainingInSeconds = timeInMinutes * 60
+            timeRemainingInSeconds.value = timeInMinutes * 60
+            startTimer()
         }
-        startTimer()
     }
 }

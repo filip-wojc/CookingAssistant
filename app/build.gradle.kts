@@ -47,7 +47,6 @@ android {
 
 
 dependencies {
-    implementation("androidx.core:core-ktx:2.2.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
