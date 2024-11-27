@@ -1,5 +1,6 @@
 package com.cookingassistant.ui.composables.topappbar
 
+import TimerTool
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -148,6 +150,29 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                         }
                     }
                 )
+
+                NavigationDrawerItem(
+                    label = { DrawerItemContent("Timer", Icons.Outlined.Timer) },
+                    selected = false,
+                    onClick = {
+                        if(selectedTool == "Timer") {
+                            topAppBarviewModel.onDeselctTool()
+                            scope.launch {
+                                drawerState.apply {
+                                    close()
+                                }
+                            }
+                        } else {
+                            scope.launch {
+                                drawerState.apply {
+                                    close()
+                                }
+                            }
+                            topAppBarviewModel.onSelectTool("Timer")
+                        }
+                    }
+                )
+
                 NavigationDrawerItem(
                     label = { DrawerItemContent("Advanced search", Icons.AutoMirrored.Outlined.ManageSearch) },
                     selected = false,
@@ -308,6 +333,9 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                         "AdvancedSearch" -> {
                             FilterScreen(viewModel)
                         }
+                        "Timer" -> {
+                            TimerTool(topAppBarviewModel.timerToolViewModel)
+                        }
                     }
                 }
             },
@@ -350,8 +378,6 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                         }
                     }
                 }
-
-
             }
         }
     }

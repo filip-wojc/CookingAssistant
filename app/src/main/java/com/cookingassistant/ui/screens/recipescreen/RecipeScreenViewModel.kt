@@ -62,6 +62,11 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    val currentPage = MutableStateFlow(0)
+
+    fun setPage(number: Int) {
+        currentPage.value = number
+    }
 
     fun callDialog() {
         viewModelScope.launch {
@@ -116,6 +121,7 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
     }
 
     fun loadRecipe(id : Int) {
+        setPage(0)
         viewModelScope.launch {
             var success = false
             try {
@@ -158,6 +164,7 @@ class RecipeScreenViewModel(private val _recipeService: RecipeService,
     }
 
     fun loadRecipe(recipe : RecipeGetDTO) {
+        setPage(0)
         _userComment.value = ""
         _userRating.value = 0
         _recipe.value = recipe

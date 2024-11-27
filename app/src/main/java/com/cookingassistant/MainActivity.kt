@@ -1,5 +1,7 @@
 package com.cookingassistant
 
+import TimerTool
+import TimerViewModel
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -16,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -122,6 +125,36 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkAndRequestPermission() {
+        val permissionsToRequest = mutableListOf<String>()
+        // Powiadomienia (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+        // Wibracje/dźwięki (Android 6+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.VIBRATE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionsToRequest.add(Manifest.permission.VIBRATE)
+            }
+        }
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionsToRequest.add(Manifest.permission.RECORD_AUDIO)
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) ==
@@ -136,11 +169,10 @@ class MainActivity : ComponentActivity() {
                 }
                 else -> {
 
-                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                    permissionsToRequest.add(Manifest.permission.READ_MEDIA_IMAGES)
                 }
             }
         } else {
-
             when {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
                         PackageManager.PERMISSION_GRANTED -> {
@@ -155,12 +187,18 @@ class MainActivity : ComponentActivity() {
                 }
                 else -> {
                     // Request the permission
-                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
                 }
             }
         }
-
-
+        // Poproś o brakujące uprawnienia
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                101
+            )
+        }
     }
 }
 
@@ -187,7 +225,8 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
         val recipeListViewModel = RecipesListViewModel(recipeService,userService)
         val homeScreenViewModel = HomeScreenViewModel(recipeService, rsvm, navController)
         val pvm = ProfileScreenViewModel(userService,tokenRepository)
-        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser,pvm,esvm)
+        val timerToolViewModel = TimerViewModel(LocalContext.current)
+        val topBarViewModel = TopAppBarViewModel(recipeService, rsvm, navController, recipeListViewModel, voiceToTextParser,pvm,esvm,timerToolViewModel)
 
         val loginViewModel = LoginViewModel(authService, tokenRepository)
 
@@ -207,6 +246,12 @@ fun NavGraph(navController: NavHostController, authService: AuthService, userSer
             composable("test") {//For testing purposes
                 //val reviewViewModel = ReviewViewModel(reviewService)
                 //ReviewList(reviewViewModel)
+            }
+
+            composable("timer") {
+                TopAppBar(topBarViewModel) {
+                    TimerTool(timerToolViewModel)
+                }
             }
 
             composable("recipeReviews") {

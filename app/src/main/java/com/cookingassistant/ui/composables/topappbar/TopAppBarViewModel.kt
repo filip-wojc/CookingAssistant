@@ -1,5 +1,6 @@
 package com.cookingassistant.ui.composables.topappbar
 
+import TimerViewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,7 +28,8 @@ class TopAppBarViewModel (
     val recipeListViewModel: RecipesListViewModel,
     val voiceToTextParser: VoiceToTextParser,
     val profileScreenViewModel: ProfileScreenViewModel,
-    val editorScreenViewModel: EditorScreenViewModel
+    val editorScreenViewModel: EditorScreenViewModel,
+    val timerToolViewModel: TimerViewModel
 ) : ViewModel()
 {
     private val _quickSearchText = MutableStateFlow("")
@@ -163,7 +165,7 @@ class TopAppBarViewModel (
     }
 
     fun onSelectTool(tool : String) {
-        ScreenControlManager.activeTool=tool
+        ScreenControlManager.activeTool = tool
         _selectedTool.value = tool
     }
 

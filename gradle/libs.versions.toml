@@ -18,6 +18,7 @@ securityCrypto = "1.1.0-alpha06"
 securityCryptoKtx = "1.0.0"
 uiTextGoogleFonts = "1.7.4"
 constraintlayout = "2.1.4"
+foundationAndroid = "1.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +46,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converte
 androidx-security-crypto-ktx = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "securityCryptoKtx" }
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

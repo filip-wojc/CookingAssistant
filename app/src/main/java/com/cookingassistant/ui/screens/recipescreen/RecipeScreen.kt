@@ -48,22 +48,19 @@ import java.io.File
 @Composable
 fun RecipeScreen(
     recipeScreenViewModel : RecipeScreenViewModel,
-    destinationDir: File
+    destinationDir: File,
 ) {
     val recipe by recipeScreenViewModel.recipe.collectAsState()
     val img by recipeScreenViewModel.recipeImg.collectAsState()
     val favorite by recipeScreenViewModel.markedFavorite.collectAsState()
     val userReview by recipeScreenViewModel.reviewGetDto.collectAsState()
     val stepsCount by recipeScreenViewModel.stepsCount.collectAsState()
+    val currentPage by recipeScreenViewModel.currentPage.collectAsState()
 
     // each step on separate page + 1 frontpage + 1 details
     val pagesCount by remember { mutableStateOf(2) }
-    var currentPage by remember { mutableStateOf(0) }
     var offsetX by remember { mutableStateOf(0f) }
     var savedPage by remember { mutableStateOf(0) }
-    Log.i("current_page",currentPage.toString())
-    Log.d("current_page",pagesCount.toString())
-    Log.v("current_page",recipe.steps?.size.toString())
 
     val sizeAnim1 by animateFloatAsState(
         targetValue = if (currentPage % 2 == 0) 0.94f else 0f
@@ -85,12 +82,12 @@ fun RecipeScreen(
                     onDragStart = {offsetX = 0f},
                     onDragEnd = {
                         if (offsetX < -5f && currentPage < (pagesCount+stepsCount))
-                            currentPage++
+                            recipeScreenViewModel.setPage(currentPage+1)
                         else if(offsetX > 5f && currentPage != 0) {
                             if(currentPage == (pagesCount+stepsCount) + 1 ) {
-                                currentPage = savedPage
+                                recipeScreenViewModel.setPage(savedPage)
                             } else {
-                                currentPage--
+                                recipeScreenViewModel.setPage(currentPage-1)
                             }
                         }
                     }
@@ -141,7 +138,7 @@ fun RecipeScreen(
                     onClick = {
                         recipeScreenViewModel.onUserEnterRecipeRatingPage()
                         savedPage = (pagesCount+stepsCount)
-                        currentPage = (pagesCount+stepsCount) + 1
+                        recipeScreenViewModel.setPage((pagesCount+stepsCount) + 1)
                     },
                 ) {
                     Icon(
@@ -164,9 +161,9 @@ fun RecipeScreen(
                 IconButton(
                     onClick = {
                         if(currentPage == (pagesCount+stepsCount) + 1) {
-                            currentPage = savedPage
+                            recipeScreenViewModel.setPage(savedPage)
                         } else {
-                            currentPage -= 1
+                            recipeScreenViewModel.setPage(currentPage - 1)
                         }
                     }
                 ) {
@@ -180,7 +177,7 @@ fun RecipeScreen(
             }
             if(currentPage >= 0 && currentPage < (pagesCount+stepsCount)) {
                 IconButton(
-                    onClick = {currentPage += 1}
+                    onClick = {recipeScreenViewModel.setPage(currentPage + 1)}
                 ) {
                     Icon(
                         imageVector = Icons.Filled.KeyboardDoubleArrowRight

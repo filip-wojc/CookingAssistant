@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.foundation.android)
     val nav_version = "2.8.2"
     implementation("androidx.compose.runtime:runtime:1.7.3")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.3")
