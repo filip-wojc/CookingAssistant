@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cookingassistant.compose.AppTheme
+import com.cookingassistant.data.ShoppingProducts
 import com.cookingassistant.data.network.RetrofitClient
 import com.cookingassistant.data.objects.ScreenControlManager
 import com.cookingassistant.data.repositories.TokenRepository
@@ -110,6 +111,8 @@ class MainActivity : ComponentActivity() {
 
             AppNavigator(authService,userService,reviewService,recipeService ,tokenRepository, destinationDir, voiceToTextParser) // inject services here
         }
+
+        ShoppingProducts.loadProducts(this)
     }
 
     override fun onBackPressed() { //Deprecated but wbo asked?

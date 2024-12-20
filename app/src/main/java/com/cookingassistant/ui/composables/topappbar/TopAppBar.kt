@@ -64,6 +64,7 @@ import com.cookingassistant.data.ShoppingProducts
 import com.cookingassistant.data.objects.ScreenControlManager.topAppBarViewModel
 import com.cookingassistant.data.objects.SearchEngine
 import com.cookingassistant.ui.composables.ShoppingList.ShoppingList
+import com.cookingassistant.ui.composables.ShoppingList.ShoppingListViewModel
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreen
 import com.cookingassistant.ui.screens.FilterScreen.FilterScreenViewModel
 import kotlinx.coroutines.launch
@@ -328,7 +329,8 @@ fun TopAppBar(topAppBarviewModel : TopAppBarViewModel,
                         "" -> {content()}
                         "ShoppingList" -> {
                             ShoppingProducts.loadProducts(LocalContext.current)
-                            ShoppingList()
+                            val spvm = ShoppingListViewModel()
+                            ShoppingList(spvm)
                         }
                         "AdvancedSearch" -> {
                             FilterScreen(viewModel)
