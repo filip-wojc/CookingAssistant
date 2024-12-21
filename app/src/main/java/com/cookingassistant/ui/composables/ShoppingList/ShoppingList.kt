@@ -53,7 +53,7 @@ fun ShoppingList(shoppingListViewModel: ShoppingListViewModel = viewModel()) {
     val products by shoppingListViewModel.productList.collectAsState()
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer)
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainer).padding(bottom = 40.dp)
         ,
         horizontalAlignment = Alignment.CenterHorizontally
     )
