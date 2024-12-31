@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.cookingassistant.data.DTO.RecipeQuery
 import com.cookingassistant.data.objects.TextFormatting
 import com.cookingassistant.ui.composables.RatingToStars
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
@@ -417,7 +418,7 @@ fun RecipeList(
 
     if(isLoading){
         viewModel.resetLoading()
-        viewModel.loadOwnRecipes()
+        viewModel.loadQuery(RecipeQuery())
     }
 }
 

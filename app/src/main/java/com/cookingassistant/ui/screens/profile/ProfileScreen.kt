@@ -58,6 +58,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.cookingassistant.R
 import com.cookingassistant.ui.screens.RecipesList.RecipesListViewModel
+import com.cookingassistant.ui.screens.RecipesList.State
 import com.cookingassistant.ui.screens.home.LoginViewModel
 import com.cookingassistant.util.ImageConverter
 
@@ -97,7 +98,7 @@ fun ProfileScreen(navController: NavController, recipeListViewModel: RecipesList
                 profilButton(
                     onClick = {
                         navController.navigate("recipeList")
-                        recipeListViewModel.loadFavoriteRecipes()
+                        recipeListViewModel.loadQuery(state = State.Favourite)
                     },
                     text = "Favorite recipes",
                     modifier = Modifier
@@ -108,7 +109,7 @@ fun ProfileScreen(navController: NavController, recipeListViewModel: RecipesList
                 profilButton(
                     onClick = {
                         navController.navigate("recipeList")
-                        recipeListViewModel.loadOwnRecipes()
+                        recipeListViewModel.loadQuery(state = State.Own)
                     },
                     text = "Own recipes",
                     modifier = Modifier

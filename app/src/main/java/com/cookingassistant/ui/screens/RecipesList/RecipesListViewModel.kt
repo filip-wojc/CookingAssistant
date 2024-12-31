@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 enum class State{
-    None,
     Search,
     Favourite,
     Own
@@ -26,7 +25,7 @@ class RecipesListViewModel(
     private val userService: UserService,
     ): ViewModel() {
 
-    private val _currentState : MutableStateFlow<State> = MutableStateFlow(State.None)
+    private val _currentState : MutableStateFlow<State> = MutableStateFlow(State.Search)
     private val _currentPage : MutableStateFlow<Int> = MutableStateFlow(0)
     private val _totalPages : MutableStateFlow<Int> = MutableStateFlow(0)
     private val _recipes : MutableStateFlow<List<RecipeSimpleGetDTO>> = MutableStateFlow(listOf())
@@ -58,7 +57,8 @@ class RecipesListViewModel(
         }
     }
 
-    fun loadQuery(rq : RecipeQuery) {
+    fun loadQuery(rq : RecipeQuery = RecipeQuery(), state: State = State.Search) {
+        setState(state)
         _onLoadQuery(rq)
     }
 
@@ -72,7 +72,7 @@ class RecipesListViewModel(
         _selectPage(_currentPage.value+number)
     }
 
-    fun setState(state: State){
+    private fun setState(state: State){
         _currentState.value = state
     }
 
@@ -84,11 +84,11 @@ class RecipesListViewModel(
             }
             else if(_currentState.value == State.Favourite)
             {
-                loadFavoriteRecipes(_recipeQuery.value.copy(PageNumber = pageNumber))
+                _onLoadQuery(_recipeQuery.value.copy(PageNumber = pageNumber))
             }
             else if(_currentState.value == State.Own)
             {
-                loadOwnRecipes(_recipeQuery.value.copy(PageNumber = pageNumber))
+                _onLoadQuery(_recipeQuery.value.copy(PageNumber = pageNumber))
             }
         }
     }
@@ -117,142 +117,18 @@ class RecipesListViewModel(
         _isLoading.value = false
     }
 
-    fun loadOwnRecipes(rq : RecipeQuery = RecipeQuery()){
-        _currentState.value = State.Own
-        _foundResults.value = 0
-        _recipeQuery.value = rq
-        viewModelScope.launch {
-            var tag = "RecipeListViewModel"
-            try {
-                val result = userService.getUserRecipes(rq)
-                when(result) {
-                    is Result.Success -> {
-                        if(result.data != null) {
-                            _recipeImages.value.apply { clear() }
-                            _response.value = result.data
-                            _totalPages.value = result.data.totalPages
-                            _recipes.value = result.data?.items ?: listOf()
-                            _currentPage.value = _recipeQuery.value.PageNumber
-                            if(_recipes.value.size != 0) {
-                                _foundResults.value = 1
-                            } else {
-                                _foundResults.value = 2
-                            }
-                        }
-                        else {
-                            _foundResults.value = 2
-                            Log.w(tag, "_service.findAllMatchingRecipes(rq).body is empty", )
-                        }
-                    }
-                    is Result.Error -> {
-                        _foundResults.value = 2
-                        Log.e(tag, result.message)
-                    }
-                    else -> {
-                        _foundResults.value = 2
-                        Log.e(tag, "Unexpected error occurred ${tag}")
-                    }
-                }
-            } catch (e: Exception) {
-                _foundResults.value = 2
-                Log.e(tag, e.message ?: "couldn't get recipes", )
-            }
-
-            if(_foundResults.value == 1) { //try get images
-                tag = "RecipeListViewModelImages"
-                for (r in recipes.value) {
-                    var bitmap : Bitmap? = null
-                    try {
-                        val result = _service.getRecipeImageBitmap(r.id)
-                        if(result is Result.Success && result.data != null)
-                            bitmap=result.data
-                        else if(result is Result.Error){
-                            Log.e("_onLoadQuery", "Failed to get image: ${result.message}")
-                            // TODO : ADD DEFAULT IMAGE IF FAILED
-                            // bitmap = placeholder
-                        }
-                    }
-                    catch (e: Exception) {
-                        Log.e(tag, e.message ?: "recipe id ${r.id} image couldn't be loaded", )
-                    }
-                    _recipeImages.value.apply { put(r.id, bitmap) }
-                }
-            }
-        }
-    }
-
-    fun loadFavoriteRecipes(rq : RecipeQuery = RecipeQuery()){
-        _currentState.value = State.Favourite
-        _foundResults.value = 0
-        _recipeQuery.value = rq
-        viewModelScope.launch {
-            var tag = "RecipeListViewModel"
-            try {
-                val result = userService.getUserFavouriteRecipes(rq)
-                when(result) {
-                    is Result.Success -> {
-                        if(result.data != null) {
-                            _recipeImages.value.apply { clear() }
-                            _response.value = result.data
-                            _totalPages.value = result.data.totalPages
-                            _recipes.value = result.data?.items ?: listOf()
-                            _currentPage.value = _recipeQuery.value.PageNumber
-                            if(_recipes.value.size != 0) {
-                                _foundResults.value = 1
-                            } else {
-                                _foundResults.value = 2
-                            }
-                        }
-                        else {
-                            _foundResults.value = 2
-                            Log.w(tag, "_service.findAllMatchingRecipes(rq).body is empty", )
-                        }
-                    }
-                    is Result.Error -> {
-                        _foundResults.value = 2
-                        Log.e(tag, result.message)
-                    }
-                    else -> {
-                        _foundResults.value = 2
-                        Log.e(tag, "Unexpected error occurred ${tag}")
-                    }
-                }
-            } catch (e: Exception) {
-                _foundResults.value = 2
-                Log.e(tag, e.message ?: "couldn't get recipes", )
-            }
-
-            if(_foundResults.value == 1) { //try get images
-                tag = "RecipeListViewModelImages"
-                for (r in recipes.value) {
-                    var bitmap : Bitmap? = null
-                    try {
-                        val result = _service.getRecipeImageBitmap(r.id)
-                        if(result is Result.Success && result.data != null)
-                            bitmap=result.data
-                        else if(result is Result.Error){
-                            Log.e("_onLoadQuery", "Failed to get image: ${result.message}")
-                            // TODO : ADD DEFAULT IMAGE IF FAILED
-                            // bitmap = placeholder
-                        }
-                    }
-                    catch (e: Exception) {
-                        Log.e(tag, e.message ?: "recipe id ${r.id} image couldn't be loaded", )
-                    }
-                    _recipeImages.value.apply { put(r.id, bitmap) }
-                }
-            }
-        }
-    }
-
     private fun _onLoadQuery(rq : RecipeQuery) {
-        _currentState.value = State.Search
         _foundResults.value = 0
         _recipeQuery.value = rq
         viewModelScope.launch {
             var tag = "RecipeListViewModel"
             try {
-                val result = _service.findAllMatchingRecipes(rq)
+                val result = when(_currentState.value){
+                    State.Search -> _service.findAllMatchingRecipes(rq)
+                    State.Favourite -> userService.getUserFavouriteRecipes(rq)
+                    State.Own -> userService.getUserRecipes(rq)
+                }
+
                 when(result) {
                     is Result.Success -> {
                         if(result.data != null) {

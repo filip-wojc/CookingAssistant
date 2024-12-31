@@ -2,8 +2,8 @@ package com.cookingassistant.ui.screens.editor
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -16,7 +16,7 @@ import com.cookingassistant.ui.screens.editor.composables.StepsPage
 
 @Composable
 fun EditorScreen(navController: NavController, viewModel: EditorScreenViewModel = viewModel()) {
-    val currentScreen by viewModel.currentScreen.observeAsState("front")
+    val currentScreen by viewModel.currentScreen.collectAsState()
     var doItOnce by remember { mutableStateOf(true) }
 
     if(doItOnce) {

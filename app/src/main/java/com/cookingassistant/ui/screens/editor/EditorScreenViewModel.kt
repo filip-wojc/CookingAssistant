@@ -6,8 +6,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookingassistant.data.DTO.CategoriesGetDTO
@@ -28,8 +26,8 @@ enum class State{
 }
 
 class EditorScreenViewModel(private val recipeService: RecipeService) : ViewModel() {
-    private val _currentScreen = MutableLiveData("front")
-    val currentScreen: LiveData<String> = _currentScreen
+    private val _currentScreen = MutableStateFlow("front")
+    val currentScreen: MutableStateFlow<String> = _currentScreen
 
     val imageConverter = ImageConverter()
     var state by mutableStateOf<State>(State.None)
@@ -78,6 +76,7 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
     }
 
     fun emptyRecipe(){
+        navigateTo("front")
         state = State.Create
 
         id = null
@@ -95,6 +94,7 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
     }
 
     fun loadRecipe(recipeId : Int){
+        navigateTo("front")
         state = State.Modify
 
         viewModelScope.launch {
@@ -143,18 +143,6 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
     fun modifyRecipe(recipe: RecipePostDTO){
         if(id != null)
         {
-//            Log.d("Test","$id")
-//            Log.d("Test","${recipe.name}")
-//            Log.d("Test","${recipe.description}")
-//            Log.d("Test","${recipe.serves}")
-//            Log.d("Test","${recipe.difficultyId}")
-//            Log.d("Test","${recipe.timeInMinutes}")
-//            Log.d("Test","${recipe.categoryId}")
-//            Log.d("Test","${recipe.caloricity}")
-//            Log.d("Test","${recipe.ingredientNames}")
-//            Log.d("Test","${recipe.ingredientQuantities}")
-//            Log.d("Test","${recipe.ingredientUnits}")
-//            Log.d("Test","${recipe.steps}")
             viewModelScope.launch {
                 var success = false
                 try{
