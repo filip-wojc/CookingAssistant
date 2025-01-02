@@ -222,6 +222,7 @@ fun AppNavigator(authService: AuthService,userService: UserService,reviewService
 @Composable
 fun NavGraph(navController: NavHostController, authService: AuthService, userService: UserService,reviewService: ReviewService,recipeService: RecipeService, tokenRepository: TokenRepository, destinationDir: File, voiceToTextParser: VoiceToTextParser) {
     AppTheme(true) {
+        // Control over the life cycle of viewmodels!!!
         val reviewViewModel = ReviewViewModel(reviewService)
         val rsvm = RecipeScreenViewModel(recipeService, userService, reviewService, navController, reviewViewModel)
         val esvm = EditorScreenViewModel(recipeService)

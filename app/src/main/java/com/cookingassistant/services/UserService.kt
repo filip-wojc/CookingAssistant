@@ -18,7 +18,6 @@ import java.io.InputStream
 class UserService(private val _apiRepository: ApiRepository) {
 
     private val _apiResponseParser = ApiResponseParser()
-    private val _imageConverter = ImageConverter()
 
     // TODO: ADD EXCEPTION HANDLING
     suspend fun addRecipeToUserFavourites(recipeId:Int):Result<Unit?>{
@@ -143,7 +142,7 @@ class UserService(private val _apiRepository: ApiRepository) {
             val response = _apiRepository.getUserProfilePicture()
             if (response.isSuccessful && response.body() != null) {
                 val imageByteArray = response.body()!!.bytes()
-                val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
+                val bitmap = ImageConverter.byteArrayToBitmap(imageByteArray)
                 Result.Success(bitmap)
             } else {
                 Result.Error(

@@ -1,5 +1,6 @@
 package com.cookingassistant.ui.screens.editor.composables
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -61,18 +64,23 @@ import com.cookingassistant.util.ImageConverter
 
 @Composable
 fun FrontPage(viewModel: EditorScreenViewModel) {
-    val imageConverter = ImageConverter()
     val context = LocalContext.current
+
+    if (viewModel.image == null) {
+        viewModel.image = BitmapFactory.decodeResource(context.resources, R.drawable.ic_launcher_background)
+    }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            viewModel.image = imageConverter.uriToBitmap(context,uri)
+            viewModel.image = ImageConverter.uriToBitmap(context,uri)
         }
     }
 
     val difficulties by viewModel.difficultyOptions.collectAsState()
     val occasions by viewModel.occasionOptions.collectAsState()
     val categories by viewModel.categoryOptions.collectAsState()
+
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -100,6 +108,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
                     Column(modifier =  Modifier.weight(1f)) {
                         Text(text = "Difficulty", color = MaterialTheme.colorScheme.onBackground,fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                         SearchableDropdownButton(
+                            header = "Difficulty",
                             choosenOption = viewModel.difficulty,
                             options = difficulties,
                             modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
@@ -111,6 +120,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
                     Column(modifier =  Modifier.weight(1f)) {
                         Text(text = "Occasion", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                         SearchableDropdownButton(
+                            header = "Occasion",
                             choosenOption = viewModel.occasion,
                             options =  occasions,
                             modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
@@ -125,6 +135,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
             item{Column(modifier = Modifier.fillMaxWidth()){
                 Text(text = "Category", color = MaterialTheme.colorScheme.onBackground, fontSize = 18.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 SearchableDropdownButton(
+                    header = "Category",
                     choosenOption = viewModel.category,
                     options = categories,
                     modifier = Modifier.fillMaxWidth(0.8f).align(Alignment.CenterHorizontally)
@@ -212,6 +223,7 @@ fun FrontPage(viewModel: EditorScreenViewModel) {
 
 @Composable
 fun SearchableDropdownButton(
+    header: String,
     choosenOption: idNameClassType?,
     options: List<idNameClassType>,
     modifier: Modifier = Modifier,
@@ -238,6 +250,11 @@ fun SearchableDropdownButton(
                 tonalElevation = 8.dp,
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
+
+                    Text(text=header,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+
                     OutlinedTextField(
                         value = searchText,
                         onValueChange = { searchText = it },
@@ -247,8 +264,8 @@ fun SearchableDropdownButton(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Column {
-                        filteredOptions.forEach { option ->
+                    LazyColumn(modifier = Modifier.fillMaxHeight(0.3f)){
+                        items(filteredOptions) { option ->
                             TextButton(
                                 onClick = {
                                     selectedOption = option
@@ -262,7 +279,7 @@ fun SearchableDropdownButton(
                             }
                         }
                     }
-                    Button(onClick = { isDialogOpen = false }, modifier =Modifier.align(Alignment.End)) {
+                    Button(onClick = { isDialogOpen = false }, modifier =Modifier.align(Alignment.CenterHorizontally).fillMaxWidth(0.6f)) {
                         Text("Cancel")
                     }
                     Spacer(modifier = Modifier.width(8.dp))

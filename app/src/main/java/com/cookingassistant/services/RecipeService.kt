@@ -1,35 +1,29 @@
 package com.cookingassistant.services
-import com.cookingassistant.data.DTO.RecipeQuery
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.cookingassistant.data.DTO.CategoriesGetDTO
 import com.cookingassistant.data.DTO.DifficultiesGetDTO
-import com.cookingassistant.util.RequestBodyFormatter
 import com.cookingassistant.data.DTO.OccasionsGetDTO
-import com.cookingassistant.util.ApiResponseParser
 import com.cookingassistant.data.DTO.RecipeGetDTO
 import com.cookingassistant.data.DTO.RecipeNameDTO
 import com.cookingassistant.data.DTO.RecipePageResponse
 import com.cookingassistant.data.DTO.RecipePostDTO
-import com.cookingassistant.data.repositories.ApiRepository
+import com.cookingassistant.data.DTO.RecipeQuery
 import com.cookingassistant.data.Models.Result
+import com.cookingassistant.data.repositories.ApiRepository
+import com.cookingassistant.util.ApiResponseParser
 import com.cookingassistant.util.ImageConverter
+import com.cookingassistant.util.RequestBodyFormatter
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
-import retrofit2.Response
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
+
 public const val INTERNAL_SERVICE_ERROR_CODE = -1
 
 class RecipeService(private val _apiRepository: ApiRepository) {
 
     private val _apiResponseParser = ApiResponseParser()
-    private val _imageConverter = ImageConverter()
     private val _formatter = RequestBodyFormatter()
 
 
@@ -191,7 +185,7 @@ class RecipeService(private val _apiRepository: ApiRepository) {
 
             if (response.isSuccessful && response.body() != null) {
                 val imageByteArray = response.body()!!.bytes()
-                val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
+                val bitmap = ImageConverter.byteArrayToBitmap(imageByteArray)
                 Result.Success(bitmap)
 
             } else {
