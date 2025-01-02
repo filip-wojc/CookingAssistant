@@ -51,6 +51,7 @@ import androidx.navigation.NavController
 import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
 import com.cookingassistant.ui.screens.editor.State
+import com.cookingassistant.util.ImageConverter
 
 @Composable
 fun StepsPage(navController: NavController,viewModel: EditorScreenViewModel) {
@@ -305,7 +306,9 @@ fun StepDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Row {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                     Button(onClick = { onDismiss() }) {
                         Text("Cancel")
                     }
@@ -315,7 +318,7 @@ fun StepDialog(
                             onSave(text)
                         }
                     }) {
-                        Text("Save")
+                        Text("Accept")
                     }
                 }
             }
@@ -335,12 +338,12 @@ fun AcceptDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                 Text("Are you sure you want to accept the changes?")
                 Spacer(modifier = Modifier.height(16.dp))
                 Row {
-                    Button(onClick = onConfirm) {
-                        Text("Accept")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = onDismiss) {
                         Text("Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = onConfirm) {
+                        Text("Accept")
                     }
                 }
             }
@@ -355,7 +358,7 @@ fun AcceptedConfirmationDialog(navController: NavController, viewModel: EditorSc
         val quantity = viewModel.ingredients.map { it.quantity }
         val unit = viewModel.ingredients.map { it.unit }
 
-        val convertedImage = viewModel.imageConverter.bitmapToByteArray(viewModel.image!!)
+        val convertedImage = ImageConverter.bitmapToByteArray(viewModel.image!!)
 
         val recipe = RecipePostDTO(
             name = viewModel.name,

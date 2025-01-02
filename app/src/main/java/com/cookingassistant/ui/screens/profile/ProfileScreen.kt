@@ -209,12 +209,11 @@ private fun profilButton(
 
 @Composable
 fun profilImage(profileScreenViewModel: ProfileScreenViewModel) {
-    val imageConverter = ImageConverter()
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            profileScreenViewModel.userProfilePicture = imageConverter.uriToBitmap(context,uri)
+            profileScreenViewModel.userProfilePicture = ImageConverter.uriToBitmap(context,uri)
             profileScreenViewModel.addUserProfilePicture(context.contentResolver.openInputStream(uri)!!,context.contentResolver.getType(uri)!!)
         }
     }

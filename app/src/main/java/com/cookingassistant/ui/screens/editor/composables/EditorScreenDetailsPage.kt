@@ -61,9 +61,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.cookingassistant.data.DTO.RecipeIngredientGetDTO
 import com.cookingassistant.ui.screens.editor.EditorScreenViewModel
-import androidx.compose.foundation.layout.Row as Row1
-import androidx.compose.material3.Button as Button1
-import androidx.compose.material3.Text as Text1
 
 
 @Composable
@@ -89,16 +86,16 @@ fun DetailsPage(viewModel: EditorScreenViewModel) {
                     firstLazyColumnBottom = position
                 },
         ) {
-            item{Text1(
+            item{Text(
                 text = "Calories",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
             )}
-            item{NumberPicker(viewModel.calories,0,99999){
+            item{NumberPicker("Calories",viewModel.calories,0,99999){
                     selectedCalories ->
                 viewModel.calories = selectedCalories
             }}
-            item{Text1(
+            item{Text(
                 text = "Preparation time",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
@@ -107,16 +104,16 @@ fun DetailsPage(viewModel: EditorScreenViewModel) {
                 timeInMinutes = viewModel.time,
                 onTimeSelected = { selectedMinutes -> viewModel.time = selectedMinutes }
             )}
-            item{Text1(
+            item{Text(
                 text = "Serves",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
             )}
-            item{NumberPicker(viewModel.serves,0,200){
+            item{NumberPicker("Serves",viewModel.serves,0,200){
                     selectedServes ->
                 viewModel.serves = selectedServes
             }}
-            item{Text1(
+            item{Text(
                 text = "Ingredients",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
@@ -182,6 +179,7 @@ fun DetailsPage(viewModel: EditorScreenViewModel) {
 
 @Composable
 fun NumberPicker(
+    header: String,
     number: Int?,
     minValue: Int = 0,
     maxValue: Int = 100,
@@ -189,13 +187,13 @@ fun NumberPicker(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    Button1(
+    Button(
         onClick = { showDialog = true },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1), contentColor = Color.White),
         shape = RoundedCornerShape(20)
     ) {
-        Text1(text = number?.toString() ?: "Select number")
+        Text(text = number?.toString() ?: "Select number")
     }
 
     if (showDialog) {
@@ -211,11 +209,11 @@ fun NumberPicker(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text1(text = "Select Number", style = MaterialTheme.typography.titleLarge)
+                    Text(text=header)
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Row1(
+                    Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = {
@@ -230,7 +228,6 @@ fun NumberPicker(
                         TextField(
                             value = currentNumber,
                             onValueChange = { newText ->
-                                // Filtrujemy do cyfr, konwertujemy na int i sprawdzamy limity
                                 val newValue = newText.filter { it.isDigit() }.toIntOrNull() ?: minValue
                                 if (newValue in minValue..maxValue) {
                                     currentNumber = newValue.toString()
@@ -252,19 +249,19 @@ fun NumberPicker(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Row1(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Button1(onClick = { showDialog = false }) {
-                            Text1("Cancel")
+                        Button(onClick = { showDialog = false }) {
+                            Text("Cancel")
                         }
-                        Button1(onClick = {
+                        Button(onClick = {
                             val selectedNumber = currentNumber.toIntOrNull() ?: minValue
                             onSelectOption(selectedNumber)
                             showDialog = false
                         }) {
-                            Text1("Ok")
+                            Text("Accept")
                         }
                     }
                 }
@@ -282,18 +279,20 @@ fun TimePicker(
     var selectedTime by remember { mutableStateOf(timeInMinutes?.let { formatTime(it / 60, it % 60) } ?: "Select time") }
     var errorText by remember { mutableStateOf("") }
 
-    Button1(
+    Button(
         onClick = { isDialogOpen = true },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1),contentColor = Color.White),
         shape = RoundedCornerShape(20)
     ) {
-        Text1(text = selectedTime)
+        Text(text = selectedTime)
     }
 
 
     if (isDialogOpen) {
-        Dialog(onDismissRequest = { isDialogOpen = false }) {
+        Dialog(onDismissRequest = {
+            isDialogOpen = false
+            errorText = ""}) {
             var firstHour by remember { mutableStateOf((timeInMinutes ?: 0) / 60) }
             var firstMinute by remember { mutableStateOf((timeInMinutes ?: 0) % 60) }
             Surface {
@@ -302,16 +301,11 @@ fun TimePicker(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text1(text = "Select time", style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text1(
-                        text = "Select Number",
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    Text(text = "Preparation time")
                     Spacer(modifier = Modifier.height(8.dp))
                     Row {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text1(
+                            Text(
                                 text = "Hour",
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
@@ -349,7 +343,7 @@ fun TimePicker(
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text1(
+                            Text(
                                 text = "Minute",
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
@@ -387,26 +381,31 @@ fun TimePicker(
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text1(text = errorText)
+                    Text(text = errorText)
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Row1 {
-                        Button1(onClick = { isDialogOpen = false }) {
-                            Text1("Cancel")
+
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Button(onClick = {
+                            errorText = ""
+                            isDialogOpen = false }) {
+                            Text("Cancel")
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button1(onClick = {
+                        Button(onClick = {
                             if (firstHour == 0 && firstMinute == 0) {
-                                errorText = "Need to set first time!"
+                                errorText = "Need to set time!"
                             } else {
                                 val totalMinutes = firstHour * 60 + firstMinute
                                 selectedTime = formatTime(firstHour, firstMinute)
                                 onTimeSelected(totalMinutes)
+                                errorText = ""
                                 isDialogOpen = false
                             }
 
                         }) {
-                            Text1("OK")
+                            Text("Accept")
                         }
                     }
                 }
@@ -569,7 +568,9 @@ fun IngredientDialog(
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(shape = MaterialTheme.shapes.medium, modifier = Modifier.padding(16.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Add/Edit Ingredient")
+                Text(text="Add/Edit Ingredient",
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
 
                 ComboBox(
                     label = "Ingredient",
@@ -584,7 +585,7 @@ fun IngredientDialog(
                     onValueChange = { amount = it }
                 )
 
-                ComboBox(
+                TextComboBox (
                     label = "Unit",
                     options = unitOptions,
                     selectedOption = unit,
@@ -593,7 +594,9 @@ fun IngredientDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Row {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Button(onClick = { onDismiss() }) {
                         Text("Cancel")
                     }
@@ -670,6 +673,91 @@ fun ComboBox(
                     .fillMaxWidth()
                     .padding(8.dp)
             )
+
+            Column(
+                modifier = Modifier
+                    .height(200.dp)
+                    .verticalScroll(scrollState)
+                    .padding(8.dp)
+            ) {
+                options.filter { it.contains(searchQuery, ignoreCase = true) }.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            onOptionSelected(option)
+                            expanded = false
+                            searchQuery = ""
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TextComboBox(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
+){
+    var expanded by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    val scrollState = rememberScrollState()
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { expanded = !expanded },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9E72E1),contentColor = Color.White),
+            shape = RoundedCornerShape(20)
+        ) {
+            Text(text = if (selectedOption.isEmpty()) label else selectedOption)
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Dropdown",
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Add/Search $label") },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(
+                    onClick = { onOptionSelected(searchQuery)
+                        expanded = false
+                        searchQuery = "" },
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(Color(0xFF9E72E1), shape = CircleShape)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "add unit",
+                        tint = Color.White
+                    )
+                }
+            }
+
+
 
             Column(
                 modifier = Modifier

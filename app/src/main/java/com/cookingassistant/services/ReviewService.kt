@@ -12,8 +12,6 @@ import com.cookingassistant.util.ImageConverter
 class ReviewService(private val _apiRepository: ApiRepository) {
 
     private val _apiResponseParser = ApiResponseParser()
-    private val _imageConverter = ImageConverter()
-
 
     suspend fun addReview(recipeId: Int, reviewPostDTO: ReviewPostDTO):Result<Unit?>{
         return try {
@@ -89,7 +87,7 @@ class ReviewService(private val _apiRepository: ApiRepository) {
             val response = _apiRepository.getReviewImage(reviewId)
             if(response.isSuccessful && response.body() != null) {
                 val imageByteArray = response.body()!!.bytes()
-                val bitmap = _imageConverter.convertByteArrayToBitmap(imageByteArray)
+                val bitmap = ImageConverter.byteArrayToBitmap(imageByteArray)
 
                 return Result.Success(bitmap)
 

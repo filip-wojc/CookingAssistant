@@ -128,7 +128,7 @@ class RecipesListViewModel(
                     State.Favourite -> userService.getUserFavouriteRecipes(rq)
                     State.Own -> userService.getUserRecipes(rq)
                 }
-
+                Log.e("yes","${_currentState.value}")
                 when(result) {
                     is Result.Success -> {
                         if(result.data != null) {

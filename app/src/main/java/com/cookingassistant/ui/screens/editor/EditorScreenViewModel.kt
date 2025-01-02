@@ -15,7 +15,6 @@ import com.cookingassistant.data.DTO.RecipeIngredientGetDTO
 import com.cookingassistant.data.DTO.RecipePostDTO
 import com.cookingassistant.data.Models.Result
 import com.cookingassistant.services.RecipeService
-import com.cookingassistant.util.ImageConverter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -29,7 +28,6 @@ class EditorScreenViewModel(private val recipeService: RecipeService) : ViewMode
     private val _currentScreen = MutableStateFlow("front")
     val currentScreen: MutableStateFlow<String> = _currentScreen
 
-    val imageConverter = ImageConverter()
     var state by mutableStateOf<State>(State.None)
 
     var id by mutableStateOf<Int?>(null)
