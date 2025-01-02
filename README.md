@@ -36,7 +36,6 @@ The app follows the **MVVM (Model-View-ViewModel)** architecture, ensuring clean
 - **Jetpack Compose** - Modern UI toolkit for Android development
 - **Retrofit** - HTTP client for network communication
 - **Coroutines** - Asynchronous programming
-- **Room Database** - Local storage for caching data
 - **Gson** - JSON serialization and deserialization
 - **Coil** - Image loading library
 - **ViewModel and LiveData** - For state management in the MVVM architecture
